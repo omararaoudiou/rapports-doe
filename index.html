@@ -3,175 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL / BYTEL - GEN RAPPORT V4</title>
+    <title>SOGETREL / BYTEL - GÉNÉRATEUR OFFICIEL</title>
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        :root { --blue: #002d5b; --green: #28a745; --orange: #ff7900; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 10px; padding-bottom: 120px; color: #333; }
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin-bottom: 15px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 5px solid var(--blue); }
-        h3 { color: var(--blue); font-size: 1rem; margin: 0 0 10px 0; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 0.85rem; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        :root { --blue: #002d5b; --green: #28a745; --orange: #ff7900; --light: #f4f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding-bottom: 120px; color: #333; }
+        .header { background: var(--blue); color: white; padding: 20px; text-align: center; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .container { max-width: 800px; margin: auto; padding: 10px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid var(--blue); }
+        h3 { color: var(--blue); font-size: 1.1em; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; text-transform: uppercase; }
+        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 0.9em; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; background: #fff; }
         .hidden { display: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-gen { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--green); color: white; border: none; padding: 20px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(40,167,69,0.3); z-index: 1000; cursor: pointer; }
-        .radio-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
-        .radio-table th { background: #eee; padding: 5px; border: 1px solid #ddd; }
-        .radio-table td { padding: 3px; border: 1px solid #ddd; }
-        .radio-table input { padding: 5px; font-size: 11px; border: none; background: #fffde7; }
-        .mat-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
-        .mat-item input[type="number"] { width: 60px; padding: 5px; }
+        .btn-gen { position: fixed; bottom: 15px; left: 15px; right: 15px; background: var(--green); color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; cursor: pointer; }
+        .btn-add { background: var(--blue); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
+        canvas { width: 100%; border-radius: 8px; margin-top: 10px; background: #eee; display: none; border: 1px solid #ccc; }
+        .radio-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        .radio-table th { background: var(--blue); color: white; padding: 10px; border: 1px solid #ddd; }
+        .radio-table td { border: 1px solid #ddd; padding: 0; }
+        .radio-table input { border: none; border-radius: 0; text-align: center; }
+        .pico-block { background: #f9f9f9; border-left: 5px solid var(--green); padding: 15px; margin-top: 15px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <strong>🔧 SYSTÈME EXPERT : AUDIT & DOE</strong>
-</div>
+<div class="header">🛠️ SOGETREL : GÉNÉRATEUR MULTI-RAPPORTS</div>
 
-<div class="card">
-    <h3>⚙️ Type de Mission</h3>
-    <div class="grid">
-        <div>
-            <label>Solution</label>
-            <select id="solution" onchange="updateUI()">
-                <option value="STARLINK">STARLINK</option>
-                <option value="CRADLEPOINT">CRADLEPOINT</option>
-                <option value="PICO">PICO BTS</option>
+<div class="container">
+    <div class="card">
+        <h3>1. Modèle de Rapport</h3>
+        <select id="mainModel" onchange="initForm()">
+            <option value="">-- Sélectionner l'intervention --</option>
+            <option value="AUDIT_PICO">Audit PICO BTS (VT)</option>
+            <option value="DOE_PICO">DOE PICO BTS (Recette)</option>
+            <option value="AUDIT_STARLINK">Audit STARLINK</option>
+            <option value="DOE_STARLINK">DOE STARLINK (INFO U)</option>
+            <option value="AUDIT_CRADLE">Audit CRADLEPOINT (W1850/W1855)</option>
+            <option value="DOE_CRADLE">DOE CRADLEPOINT (W1850/W1855)</option>
+            <option value="AUDIT_TRAVAUX">Audit TRAVAUX (Chiffrage/Devis)</option>
+        </select>
+    </div>
+
+    <div id="stepGeneral" class="card hidden">
+        <h3>2. Identification</h3>
+        <input type="text" id="ot" placeholder="Numéro d'OT / Commande">
+        <input type="text" id="client" placeholder="Raison Sociale Client (ex: INFO.U)">
+        <textarea id="adresse" rows="2" placeholder="Adresse complète du site"></textarea>
+        <input type="text" id="cdp" placeholder="CDP Bytel / Sogetrel">
+    </div>
+
+    <div id="ui_AUDIT_PICO" class="dynamic-ui hidden">
+        <div class="card">
+            <h3>🗺️ Plan de Masse du Site</h3>
+            <label>Photo du plan (avec points de mesures PM)</label>
+            <input type="file" accept="image/*" capture="camera" onchange="previewImg(this, 'canvasPlan')">
+            <canvas id="canvasPlan"></canvas>
+        </div>
+        <div id="picoContainer"></div>
+        <button class="btn-add" onclick="addPicoBlock()">+ AJOUTER UNE ANTENNE PICO</button>
+    </div>
+
+    <div id="ui_MESURES" class="dynamic-ui hidden">
+        <div class="card">
+            <h3>📊 Relevés Radio (INFO U Standard)</h3>
+            <div class="grid">
+                <select id="tableScope" onchange="buildRadioTable()">
+                    <option value="MULTI">Bytel + Orange</option>
+                    <option value="MONO">Bouygues Telecom Seul</option>
+                </select>
+                <select id="tableTech" onchange="buildRadioTable()">
+                    <option value="4G">Mode 4G LTE</option>
+                    <option value="5G">Mode 5G NSA/SA</option>
+                </select>
+            </div>
+            <label>Localisation des mesures</label>
+            <select id="locTest">
+                <option value="BAIE">Au niveau de la Baie Informatique</option>
+                <option value="EXT">En extérieur / Toiture (Antenne)</option>
+                <option value="VITRINE">Intérieur - Proche Vitrine</option>
+            </select>
+            <div id="tablePlace"></div>
+            <label>Conclusion Radio</label>
+            <textarea id="conclRadio" placeholder="Ex: Couverture insuffisante en baie, déport nécessaire..."></textarea>
+        </div>
+    </div>
+
+    <div id="ui_STARLINK" class="dynamic-ui hidden">
+        <div class="card">
+            <h3>🛰️ Détails Starlink</h3>
+            <div id="starlinkDoeFields" class="hidden">
+                <label>N° du Kit STARLINK</label>
+                <input type="text" id="kitSn" placeholder="KIT4E000...">
+                <label>Migration Support System U</label>
+                <select id="migration"><option>Effectuée / OK</option><option>Non Requise</option></select>
+            </div>
+            <label>Cheminement de câble</label>
+            <select id="gaineStarlink">
+                <option>Gaine mise à disposition par le client</option>
+                <option>Pose de gaine diam. 40 par Sogetrel</option>
+                <option>Cheminement en faux-plafond / goulotte</option>
             </select>
         </div>
-        <div>
-            <label>Phase</label>
-            <select id="phase" onchange="updateUI()">
-                <option value="AUDIT">AUDIT (VT)</option>
-                <option value="DOE">DOE (Recette)</option>
+    </div>
+
+    <div id="ui_TRAVAUX" class="dynamic-ui hidden">
+        <div class="card">
+            <h3>🛠️ Besoins et Fournitures</h3>
+            <div id="matList">
+                </div>
+            <label>Moyens d'accès</label>
+            <select id="acces">
+                <option>Escabeau / PIRL</option>
+                <option>Nacelle avec déport</option>
+                <option>Échelle simple</option>
             </select>
         </div>
     </div>
 </div>
 
-<div class="card">
-    <h3>📍 Infos Site</h3>
-    <input type="text" id="ot" placeholder="N° OT (ex: 12486728)">
-    <input type="text" id="client" placeholder="Client / Enseigne (ex: INFO.U)">
-    <input type="text" id="cdp" placeholder="CDP Bytel (ex: Afaf MOUDAOUI)">
-    <textarea id="adresse" rows="2" placeholder="Adresse du site"></textarea>
-</div>
-
-<div id="divStarlink" class="card">
-    <h3>🛰️ Détails Starlink</h3>
-    <label>N° Kit (DOE uniquement)</label>
-    <input type="text" id="kitSn" placeholder="KIT4E000...">
-    <label>Cheminement</label>
-    <select id="cheminStarlink">
-        <option>Gaine client existante</option>
-        <option>Pose de gaine diam. 40 (Sogetrel)</option>
-        <option>Cheminement faux-plafond</option>
-    </select>
-</div>
-
-<div id="divCradle" class="card hidden">
-    <h3>📶 Mesures Radio & Débits</h3>
-    <table class="radio-table">
-        <tr><th>Opé</th><th>EnB</th><th>RSRP</th><th>SNR</th><th>DL (Mb)</th></tr>
-        <tr>
-            <td style="color:var(--blue);font-weight:bold">BYTEL</td>
-            <td><input type="text" id="enbB"></td>
-            <td><input type="text" id="rsrpB"></td>
-            <td><input type="text" id="snrB"></td>
-            <td><input type="text" id="dlB"></td>
-        </tr>
-        <tr>
-            <td style="color:var(--orange);font-weight:bold">ORANGE</td>
-            <td><input type="text" id="enbO"></td>
-            <td><input type="text" id="rsrpO"></td>
-            <td><input type="text" id="snrO"></td>
-            <td><input type="text" id="dlO"></td>
-        </tr>
-    </table>
-</div>
-
-<div id="divMateriel" class="card hidden">
-    <h3>🛠️ Besoins Travaux (Devis)</h3>
-    <div id="listeMatos">
-        </div>
-    <label>Ressources</label>
-    <div class="grid">
-        <input type="text" id="intervenants" placeholder="Nb techniciens">
-        <input type="text" id="duree" placeholder="Durée estimée">
-    </div>
-</div>
-
-<div class="card">
-    <h3>📸 Photos Terrain</h3>
-    <input type="file" id="camera" accept="image/*" capture="camera" style="margin-bottom:10px">
-    <canvas id="photoCanvas"></canvas>
-    <p style="font-size:0.75rem; color:#666; text-align:center">Le canevas permet de marquer l'emplacement des équipements.</p>
-</div>
-
-<button class="btn-gen" onclick="genererRapportComplet()">📥 GÉNÉRER LE RAPPORT DOCX</button>
+<button class="btn-gen" onclick="generateDoc()">📥 GÉNÉRER LE RAPPORT CONFORME</button>
 
 <script>
-    const matosParSolution = {
-        'STARLINK': ["Kit Starlink HP", "Mât 1.2m", "Dalles lestées (unité)", "Câble Starlink 25m", "Gaine fendue (m)"],
-        'CRADLEPOINT': ["Cradlepoint W1850", "Cradlepoint W1855 (Ext)", "Câble Cat6 (m)", "Noyaux RJ45", "Support mural"],
-        'PICO': ["Pico BTS", "Injecteur POE", "Bandeau alimentation", "Câble RJ45 Cat6 (m)"]
-    };
+    let picoIdx = 0;
 
-    function updateUI() {
-        const sol = document.getElementById('solution').value;
-        const phase = document.getElementById('phase').value;
-
-        // Toggle sections principales
-        document.getElementById('divStarlink').classList.toggle('hidden', sol !== 'STARLINK');
-        document.getElementById('divCradle').classList.toggle('hidden', sol !== 'CRADLEPOINT');
-        document.getElementById('divMateriel').classList.toggle('hidden', phase !== 'AUDIT');
-
-        // Mise à jour de la liste matériel
-        const container = document.getElementById('listeMatos');
-        container.innerHTML = '';
-        matosParSolution[sol].forEach(item => {
-            container.innerHTML += `
-                <div class="mat-item">
-                    <span>${item}</span>
-                    <input type="number" placeholder="Qté" data-item="${item}">
-                </div>`;
-        });
-    }
-
-    // Gestion Photo
-    const canvas = document.getElementById('photoCanvas');
-    const ctx = canvas.getContext('2d');
-    let imgSource = new Image();
-
-    document.getElementById('camera').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            imgSource.src = event.target.result;
-            imgSource.onload = () => {
-                canvas.width = 800;
-                canvas.height = 800 * (imgSource.height / imgSource.width);
-                canvas.style.display = 'block';
-                ctx.drawImage(imgSource, 0, 0, canvas.width, canvas.height);
-            };
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    async function genererRapportComplet() {
-        // Logique de génération DOCX (structure identique à tes modèles)
-        const ot = document.getElementById('ot').value || "SANS_OT";
-        alert("Création du rapport " + ot + " en cours selon les standards Bytel...");
+    function initForm() {
+        const model = document.getElementById('mainModel').value;
+        document.querySelectorAll('.dynamic-ui').forEach(el => el.classList.add('hidden'));
+        document.getElementById('stepGeneral').classList.toggle('hidden', !model);
         
-        // Note : La fonction docx.js ici compilerait les tableaux de mesures, 
-        // les mentions VoLTE pour Pico, et les listes de matériel pour les audits.
-        // Packer.toBlob(doc).then(blob => saveAs(blob, `RAPPORT_${ot}.docx`));
+        if(!model) return;
+
+        if(model.includes('PICO')) {
+            if(model.includes('AUDIT')) {
+                document.getElementById('ui_AUDIT_PICO').classList.remove('hidden');
+                document.getElementById('ui_MESURES').classList.remove('hidden');
+            } else {
+                // DOE PICO logic
+            }
+        }
+        if(model.includes('CRADLE')) {
+            document.getElementById('ui_MESURES').classList.remove('hidden');
+            document.getElementById('ui_TRAVAUX').classList.remove('hidden');
+            buildRadioTable();
+        }
+        if(model.includes('STARLINK')) {
+            document.getElementById('ui_STARLINK').classList.remove('hidden');
+            document.getElementById('ui_TRAVAUX').classList.remove('hidden');
+            document.getElementById('starlinkDoeFields').classList.toggle('hidden', model.includes('AUDIT'));
+        }
+        if(model === 'AUDIT_TRAVAUX') {
+            document.getElementById('ui_TRAVAUX').classList.remove('hidden');
+        }
+        
+        buildRadioTable();
+        loadMaterials();
     }
 
-    // Init au chargement
-    updateUI();
+    function buildRadioTable() {
+        const isMulti = document.getElementById('tableScope').value === 'MULTI';
+        const tech = document.getElementById('tableTech').value;
+        let html = `<table class="radio-table"><tr><th>Indicateurs ${tech}</th><th>BYTEL</th>${isMulti ? '<th style="background:var(--orange)">ORANGE</th>':''}</tr>`;
+        const rows = ["EnB / CID", "Bande", "RSRP", "RSRQ", "SNR (>10)", "DL (Mb/s)", "UL (Mb/s)"];
+        rows.forEach(r => {
+            html += `<tr><td style="padding:8px; font-weight:bold">${r}</td><td><input type="text"></td>${isMulti ? '<td><input type="text"></td>' : ''}</tr>`;
+        });
+        html += `</table>`;
+        document.getElementById('tablePlace').innerHTML = html;
+    }
+
+    function addPicoBlock() {
+        picoIdx++;
+        const html = `
+            <div class="pico-block" id="pico_${picoIdx}">
+                <h4>📍 PICO N°${picoIdx}</h4>
+                <label>Photo de l'emplacement</label>
+                <input type="file" accept="image/*" capture="camera" onchange="previewImg(this, 'canvasPico_${picoIdx}', 'EMPLACEMENT PICO ${picoIdx}')">
+                <canvas id="canvasPico_${picoIdx}"></canvas>
+                <label>Métrage Desserte (m)</label>
+                <input type="number" placeholder="Distance vers baie">
+            </div>`;
+        document.getElementById('picoContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function loadMaterials() {
+        const items = ["Câble RJ45 (m)", "Gaine diam. 40 (m)", "Mât 1.2m", "Dalles lestées", "Injecteur POE", "Petit matériel"];
+        let html = "";
+        items.forEach(it => {
+            html += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding:5px 0;">
+                <span>${it}</span><input type="number" style="width:70px; padding:5px;" placeholder="Qté">
+            </div>`;
+        });
+        document.getElementById('matList').innerHTML = html;
+    }
+
+    function previewImg(input, canvasId, label = "") {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = 800; canvas.height = 800 * (img.height/img.width);
+                canvas.style.display = 'block';
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                if(label) {
+                    ctx.fillStyle = "rgba(40, 167, 69, 0.8)";
+                    ctx.fillRect(0, 0, canvas.width, 60);
+                    ctx.fillStyle = "white";
+                    ctx.font = "bold 30px Arial";
+                    ctx.fillText(label, 20, 42);
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function generateDoc() {
+        const ot = document.getElementById('ot').value || "SANS_OT";
+        alert("Rapport " + ot + " : Génération du document Word en cours...");
+        // Logique de compilation docx.js ici
+    }
 </script>
+
 </body>
 </html>
