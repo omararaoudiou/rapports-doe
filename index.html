@@ -3,185 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL / BYTEL - GENERATEUR MASTER</title>
-    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <title>SOGETREL / BYTEL - GÉNÉRATEUR FINAL V8</title>
     <style>
         :root { --blue: #002d5b; --green: #28a745; --orange: #ff7900; --light: #f4f7f9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding-bottom: 120px; }
         .header { background: var(--blue); color: white; padding: 15px; text-align: center; font-weight: bold; }
         .container { max-width: 800px; margin: auto; padding: 10px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid var(--blue); }
-        h3 { color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 5px; text-transform: uppercase; }
+        h3 { color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 5px; text-transform: uppercase; margin-top: 20px; }
         label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 0.9em; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
-        .hidden { display: none; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-gen { position: fixed; bottom: 15px; left: 15px; right: 15px; background: var(--green); color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; cursor: pointer; }
-        .btn-add { background: var(--blue); color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; margin: 10px 0; cursor: pointer; }
-        canvas { width: 100%; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid #ccc; }
-        .radio-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .radio-table th { background: var(--blue); color: white; padding: 8px; border: 1px solid #ddd; font-size: 12px; }
+        canvas { width: 100%; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid #ccc; background: #eee; }
+        .radio-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        .radio-table th { background: var(--blue); color: white; padding: 8px; border: 1px solid #ddd; }
         .radio-table td { border: 1px solid #ddd; padding: 0; }
-        .radio-table input { border: none; text-align: center; padding: 8px; }
-        .pico-block { background: #f9f9f9; border-left: 5px solid var(--green); padding: 15px; margin-top: 10px; }
-        .status-doe { padding: 10px; border-radius: 8px; margin-top: 5px; font-weight: bold; }
+        .radio-table input { border: none; text-align: center; padding: 8px; width: 100%; box-sizing: border-box; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="header">SOGETREL - GENERATEUR DE RAPPORTS TERRAIN</div>
+<div class="header">SOGETREL - AUDIT & DOE (CRADLE/STARLINK/PICO)</div>
 
 <div class="container">
     <div class="card">
-        <h3>Modèle de Rapport</h3>
-        <select id="mainModel" onchange="initForm()">
-            <option value="">-- Choisir le type --</option>
-            <optgroup label="PICO BTS">
-                <option value="AUDIT_PICO">Audit PICO</option>
-                <option value="DOE_PICO">DOE PICO</option>
-            </optgroup>
-            <optgroup label="CRADLEPOINT">
-                <option value="AUDIT_CRADLE_1850">Audit Cradlepoint W1850 (Intérieur)</option>
-                <option value="AUDIT_CRADLE_1855">Audit Cradlepoint W1855 (Extérieur)</option>
-                <option value="DOE_CRADLE">DOE Cradlepoint</option>
-            </optgroup>
-            <optgroup label="STARLINK">
-                <option value="AUDIT_STARLINK">Audit Starlink</option>
-                <option value="DOE_STARLINK">DOE Starlink</option>
-            </optgroup>
-            <option value="AUDIT_TRAVAUX">Audit Travaux (Chiffrage)</option>
+        <h3>Type d'intervention</h3>
+        <select id="mainModel" onchange="updateUI()">
+            <option value="">-- Sélectionner --</option>
+            <option value="AUDIT_C_S">AUDIT (Cradlepoint / Starlink)</option>
+            <option value="DOE_C_S">DOE (Cradlepoint / Starlink)</option>
+            <option value="AUDIT_PICO">AUDIT PICO BTS</option>
+            <option value="DOE_PICO">DOE PICO BTS</option>
         </select>
     </div>
 
-    <div id="stepGeneral" class="card hidden">
-        <h3>Identification</h3>
+    <div id="sec_ident" class="card hidden">
+        <h3>Identification Site</h3>
         <input type="text" id="ot" placeholder="Numéro d'OT">
-        <input type="text" id="client" placeholder="Client (ex: INFO U / GRDF)">
-        <input type="text" id="adresse" placeholder="Adresse du site">
+        <input type="text" id="client" placeholder="Client (ex: INFO U)">
+        <input type="text" id="adresse" placeholder="Adresse complète">
     </div>
 
-    <div id="ui_PICO" class="dynamic-ui hidden">
-        <div class="card">
-            <h3>Plan du Site</h3>
-            <label>Plan de masse avec position des mesures</label>
-            <input type="file" accept="image/*" capture="camera" onchange="previewImg(this, 'canvasPlan')">
-            <canvas id="canvasPlan"></canvas>
+    <div id="sec_radio" class="card hidden">
+        <h3>Relevés de Mesures</h3>
+        <div class="grid">
+            <select id="opMode" onchange="buildTable()"><option value="MULTI">Bytel + Orange</option><option value="MONO">Bytel Seul</option></select>
+            <select id="locRadio"><option>En Baie</option><option>En Extérieur</option></select>
         </div>
-        <div id="picoList"></div>
-        <button class="btn-add" onclick="addPico()">+ Ajouter une Pico / Emplacement</button>
-    </div>
-
-    <div id="ui_MESURES" class="dynamic-ui hidden card">
-        <h3>Relevés Radio</h3>
-        <label>Affichage Opérateurs</label>
-        <select id="opMode" onchange="buildTable()"><option value="MULTI">Bytel + Orange</option><option value="MONO">Bytel Seul</option></select>
-        <label>Localisation du test</label>
-        <select id="locRadio"><option>En Baie</option><option>En Extérieur (Toiture)</option><option>Près Vitrine</option></select>
         <div id="tablePlace"></div>
     </div>
 
-    <div id="ui_TRAVAUX" class="dynamic-ui hidden">
-        <div class="card">
-            <h3>Accès & Sécurité</h3>
-            <label>Moyen d'accès nécessaire</label>
-            <select id="moyenAcces">
-                <option value="ESCABEAU">Escabeau / PIRL (H < 3m)</option>
-                <option value="NACELLE">Nacelle avec déport obligatoire</option>
-                <option value="ECHELLE">Échelle simple</option>
-            </select>
-            <label>EPI Spécifiques</label>
-            <input type="text" id="epi" placeholder="Ex: Harnais, Casque, Chaussures sécu">
-            <label>Conditions d'accès particulières</label>
-            <textarea id="condAcces" placeholder="Ex: Badge à l'accueil, Clés terrasse via PC Sécurité"></textarea>
+    <div id="sec_photos" class="card hidden">
+        <h3>Reporting Photos</h3>
+        
+        <label>Emplacement de l'équipement (Antenne/Routeur)</label>
+        <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_ant', 'EMPLACEMENT EQUIPEMENT')">
+        <canvas id="c_photo_ant"></canvas>
+
+        <label>Vue de la Baie Informatique</label>
+        <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_baie', 'VUE BAIE INFO')">
+        <canvas id="c_photo_baie"></canvas>
+
+        <label>Cheminement du câble (Passage / Percement)</label>
+        <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_chem', 'CHEMINEMENT CABLE')">
+        <canvas id="c_photo_chem"></canvas>
+
+        <div id="doe_specific_photos" class="hidden">
+            <label>Équipement installé & SN (Routeur/Injecteur)</label>
+            <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_inst', 'EQUIPEMENT INSTALLE')">
+            <canvas id="c_photo_inst"></canvas>
+        </div>
+    </div>
+
+    <div id="sec_travaux" class="card hidden">
+        <h3>Accès & Travaux</h3>
+        <label>Moyen d'accès & Sécurité</label>
+        <select id="moyen"><option>Escabeau / PIRL</option><option>Nacelle avec déport</option></select>
+        <input type="text" id="epi" placeholder="EPI nécessaires (Harnais, etc.)">
+        
+        <div id="doe_logic" class="hidden">
+            <label>Statut de l'installation</label>
+            <select id="doeStatus" onchange="toggleRAF()"><option value="RAS">Terminé - RAS</option><option value="RAF">Reste à faire / Réserves</option></select>
         </div>
 
-        <div class="card" id="travauxSection">
-            <h3>Besoins Travaux / Reste à faire</h3>
-            
-            <div id="doeStatusSwitch" class="hidden">
-                <label>État de l'installation</label>
-                <select id="doeStatus" onchange="toggleDoeTravaux()">
-                    <option value="RAS">Terminé - RAS</option>
-                    <option value="RAF">Reste à faire (Réserves)</option>
-                </select>
-            </div>
-
-            <div id="travauxContenu">
-                <label id="labelTravaux">Détails des fournitures et travaux</label>
-                <textarea id="txtTravaux" rows="4" placeholder="Lister le matériel et les percements nécessaires..."></textarea>
-            </div>
-        </div>
+        <label id="labelTravaux">Détails Travaux / Matériel</label>
+        <textarea id="txtTravaux" rows="4" placeholder="Précisez ici les besoins ou les réserves..."></textarea>
     </div>
 </div>
 
-<button class="btn-gen" onclick="alert('Génération du rapport Word...')">GÉNÉRER LE RAPPORT DOCX</button>
+<button class="btn-gen" onclick="alert('Génération Word...')">📥 GÉNÉRER LE RAPPORT</button>
 
 <script>
-    let pCount = 0;
-
-    function initForm() {
+    function updateUI() {
         const m = document.getElementById('mainModel').value;
-        document.querySelectorAll('.dynamic-ui').forEach(el => el.classList.add('hidden'));
-        document.getElementById('doeStatusSwitch').classList.add('hidden');
-        if(!m) return;
-
-        document.getElementById('stepGeneral').classList.remove('hidden');
-        document.getElementById('ui_TRAVAUX').classList.remove('hidden');
-
-        if(m.includes('AUDIT')) {
-            document.getElementById('labelTravaux').innerText = "Fournitures et travaux à prévoir :";
-            if(m.includes('PICO')) document.getElementById('ui_PICO').classList.remove('hidden');
-            if(m.includes('CRADLE')) {
-                document.getElementById('ui_MESURES').classList.remove('hidden');
-                buildTable();
-            }
-        } 
+        const all = document.querySelectorAll('.hidden');
+        document.getElementById('sec_ident').classList.toggle('hidden', !m);
+        document.getElementById('sec_radio').classList.toggle('hidden', !m);
+        document.getElementById('sec_photos').classList.toggle('hidden', !m);
+        document.getElementById('sec_travaux').classList.toggle('hidden', !m);
         
-        if(m.includes('DOE')) {
-            document.getElementById('doeStatusSwitch').classList.remove('hidden');
-            toggleDoeTravaux(); // Initialise l'état RAS
+        // Spécificités DOE
+        const isDoe = m.includes('DOE');
+        document.getElementById('doe_specific_photos').classList.toggle('hidden', !isDoe);
+        document.getElementById('doe_logic').classList.toggle('hidden', !isDoe);
+        
+        if(m) {
+            buildTable();
+            toggleRAF();
         }
     }
 
-    function toggleDoeTravaux() {
+    function buildTable() {
+        const multi = document.getElementById('opMode').value === 'MULTI';
+        let h = `<table class="radio-table"><tr><th>Indicateur</th><th>BYTEL</th>${multi?'<th style="background:var(--orange)">ORANGE</th>':''}</tr>`;
+        ["EnB", "RSRP", "SNR (>10)", "Débit Down", "Débit Up"].forEach(r => {
+            h += `<tr><td style="padding:8px; font-weight:bold">${r}</td><td><input type="text"></td>${multi?'<td><input type="text"></td>':''}</tr>`;
+        });
+        document.getElementById('tablePlace').innerHTML = h + "</table>";
+    }
+
+    function toggleRAF() {
+        const m = document.getElementById('mainModel').value;
+        if(!m.includes('DOE')) {
+            document.getElementById('labelTravaux').innerText = "Fournitures et travaux à prévoir :";
+            document.getElementById('txtTravaux').readOnly = false;
+            document.getElementById('txtTravaux').style.background = "#fff";
+            return;
+        }
         const status = document.getElementById('doeStatus').value;
         const area = document.getElementById('txtTravaux');
         if(status === 'RAS') {
-            area.value = "RAS - L'installation est terminée et fonctionnelle.";
+            area.value = "RAS - Installation conforme aux règles de l'art.";
             area.readOnly = true;
             area.style.background = "#e8f5e9";
         } else {
             area.value = "";
             area.readOnly = false;
             area.style.background = "#fff";
-            area.placeholder = "Indiquez ici les travaux restant à réaliser...";
+            document.getElementById('labelTravaux').innerText = "Reste à faire / Réserves :";
         }
     }
 
-    function buildTable() {
-        const multi = document.getElementById('opMode').value === 'MULTI';
-        let h = `<table class="radio-table"><tr><th>Radio</th><th>BYTEL</th>${multi?'<th>ORANGE</th>':''}</tr>`;
-        const rows = ["EnB", "RSRP", "SNR", "Down (Mb/s)", "Up (Mb/s)"];
-        rows.forEach(r => {
-            h += `<tr><td style="padding:8px; font-weight:bold">${r}</td><td><input type="text"></td>${multi?'<td><input type="text"></td>':''}</tr>`;
-        });
-        document.getElementById('tablePlace').innerHTML = h + "</table>";
-    }
-
-    function addPico() {
-        pCount++;
-        const div = document.createElement('div');
-        div.className = 'card pico-block';
-        div.innerHTML = `<h4>PICO/EMPLACEMENT N°${pCount}</h4>
-            <label>Photo de l'emplacement (avec annotation)</label>
-            <input type="file" accept="image/*" capture="camera" onchange="previewImg(this, 'c_pico${pCount}', 'PICO ${pCount}')">
-            <canvas id="c_pico${pCount}"></canvas>
-            <label>Métrage Desserte (m)</label>
-            <input type="number" placeholder="Ex: 45">`;
-        document.getElementById('picoList').appendChild(div);
-    }
-
-    function previewImg(input, cid, label="") {
+    function preview(input, cid, label) {
         const canvas = document.getElementById(cid);
         const ctx = canvas.getContext('2d');
         const reader = new FileReader();
@@ -191,18 +156,14 @@
                 canvas.width = 800; canvas.height = 600;
                 canvas.style.display = 'block';
                 ctx.drawImage(img, 0, 0, 800, 600);
-                if(label) {
-                    ctx.fillStyle = "rgba(0,45,91,0.7)";
-                    ctx.fillRect(0,0,250,50);
-                    ctx.fillStyle = "white"; ctx.font = "bold 20px Arial";
-                    ctx.fillText(label, 20, 32);
-                }
+                ctx.fillStyle = "rgba(0,45,91,0.8)"; ctx.fillRect(0,0,300,45);
+                ctx.fillStyle = "white"; ctx.font = "bold 18px Arial";
+                ctx.fillText(label, 15, 30);
             };
             img.src = e.target.result;
         };
         reader.readAsDataURL(input.files[0]);
     }
 </script>
-
 </body>
 </html>
