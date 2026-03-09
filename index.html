@@ -1,122 +1,140 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-   <title>Générateur DOE - Terrain</title>
-   <link rel="manifest" href="data:application/json;base64,ewogICJkZWZhdWx0X2xvY2FsZSI6ICJmciIsCiAgIm5hbWUiOiAiR0VOIE9UIiwKICAic2hvcnRfbmFtZSI6ICJHRU4gT1QiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgImRlc2NyaXB0aW9uIjogIkfDqW7DqXJhdGV1ciBkZSByYXBwb3J0cyB0ZXJyYWluIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMjAxNC8yMDE0NzU4LnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.js"></script>
-   <style>
-       body { font-family: sans-serif; margin: 0; padding: 15px; background: #f4f4f9; }
-       .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-       input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-       button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-size: 16px; cursor: pointer; }
-       canvas { max-width: 100%; border: 2px solid #333; margin-top: 10px; display: none; touch-action: none; }
-       .pastille-list { margin-top: 10px; font-size: 14px; }
-       .status-offline { background: #ffc107; padding: 5px; text-align: center; font-size: 12px; display: none; }
-   </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GEN DOE PRO + MESURES</title>
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; padding-bottom: 90px; }
+        .header { background: #002d5b; color: white; padding: 15px; text-align: center; border-radius: 0 0 15px 15px; margin: -10px -10px 15px -10px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid #007bff; }
+        h3 { color: #002d5b; margin: 0 0 10px 0; font-size: 1.1em; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 5px 0 10px 0; border: 1px solid #ccd; border-radius: 8px; box-sizing: border-box; }
+        .btn-gen { position: fixed; bottom: 15px; left: 15px; right: 15px; background: #28a745; color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; font-size: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; }
+        #photoCanvas { width: 100%; border-radius: 8px; display: none; margin-top: 10px; touch-action: none; border: 2px solid #002d5b; }
+        .instructions { font-size: 0.8em; color: #666; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
 
-<div id="offline-banner" class="status-offline">Mode Hors-ligne activé</div>
+<div class="header">
+    <strong>GÉNÉRATEUR DOE AVEC MESURES SUR PHOTOS</strong>
+</div>
 
 <div class="card">
-   <h2>Nouveau Rapport</h2>
-   <select id="typeReport">
-       <option value="MIMO">DOE Antenne MIMO</option>
-       <option value="PICO">DOE PICO</option>
-       <option value="STARLINK">DOE STARLINK</option>
-       <option value="AUDIT">Audit Travaux</option>
-   </select>
-   <input type="text" id="ot" placeholder="Numéro d'OT">
-   <input type="text" id="client" placeholder="Nom du Client"> </div>
+    <h3>📍 Identification</h3>
+    <input type="text" id="ot" placeholder="Numéro d'OT">
+    <input type="text" id="client" placeholder="Client / Site">
+</div>
 
 <div class="card">
-   <h3>Photo & Annotations</h3>
-   <input type="file" id="camera" accept="image/*" capture="camera">
-   <p style="font-size: 0.8em; color: #666;">Touchez la photo pour placer une pastille (Pico 1, 2...)</p>
-   <canvas id="photoCanvas"></canvas>
-   <div id="pastillesContainer" class="pastille-list"></div> </div>
+    <h3>🛠️ Audit & Besoins</h3>
+    <input type="text" id="temps" placeholder="Temps estimé (ex: 1.5 j)">
+    <textarea id="materiel" rows="2" placeholder="Matériel nécessaire..."></textarea>
+</div>
 
-<button onclick="genererWord()">Générer le Rapport</button>
+<div class="card">
+    <h3>📸 Photo & Mesures Incrustées</h3>
+    <p class="instructions">1. Prends la photo. <br>2. Touche l'écran pour placer la mesure (RSRP/RSRQ) sur la photo.</p>
+    <input type="file" id="camera" accept="image/*" capture="camera">
+    <canvas id="photoCanvas"></canvas>
+</div>
+
+<button class="btn-gen" onclick="genererWordComplet()">📥 GÉNÉRER LE RAPPORT FINAL</button>
 
 <script>
-   const canvas = document.getElementById('photoCanvas');
-   const ctx = canvas.getContext('2d');
-   const cameraInput = document.getElementById('camera');
-   let pastilles = [];
-   let baseImage = new Image();
+    const canvas = document.getElementById('photoCanvas');
+    const ctx = canvas.getContext('2d');
+    const cameraInput = document.getElementById('camera');
+    let pastilles = [];
+    let baseImage = new Image();
 
-   // Détection connexion
-   window.addEventListener('offline', () => document.getElementById('offline-banner').style.display = 'block');
-   window.addEventListener('online', () => document.getElementById('offline-banner').style.display = 'none');
+    cameraInput.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            baseImage.src = event.target.result;
+            baseImage.onload = () => {
+                const ratio = baseImage.width / baseImage.height;
+                canvas.width = 1200; 
+                canvas.height = 1200 / ratio;
+                canvas.style.display = 'block';
+                draw();
+            };
+        };
+        reader.readAsDataURL(file);
+    };
 
-   // Charger la photo
-   cameraInput.onchange = (e) => {
-       const file = e.target.files[0];
-       const reader = new FileReader();
-       reader.onload = (event) => {
-           baseImage.src = event.target.result;
-           baseImage.onload = () => {
-               canvas.width = baseImage.width;
-               canvas.height = baseImage.height;
-               canvas.style.display = 'block';
-               draw();
-           };
-       };
-       reader.readAsDataURL(file);
-   };
+    function draw() {
+        ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+        pastilles.forEach((p, i) => {
+            // Dessin du point rouge
+            ctx.fillStyle = "red";
+            ctx.beginPath(); ctx.arc(p.x, p.y, 25, 0, Math.PI * 2); ctx.fill();
+            
+            // Dessin de l'étiquette de mesure (fond noir semi-transparent)
+            const text = `${p.label} | ${p.mesure}`;
+            ctx.font = "bold 28px Arial";
+            const textWidth = ctx.measureText(text).width;
+            
+            ctx.fillStyle = "rgba(0,0,0,0.7)";
+            ctx.fillRect(p.x + 35, p.y - 25, textWidth + 20, 50);
+            
+            ctx.fillStyle = "white";
+            ctx.fillText(text, p.x + 45, p.y + 10);
+        });
+    }
 
-   // Dessiner l'image et les pastilles
-   function draw() {
-       ctx.drawImage(baseImage, 0, 0);
-       pastilles.forEach((p, index) => {
-           ctx.fillStyle = "red";
-           ctx.beginPath();
-           ctx.arc(p.x, p.y, canvas.width/40, 0, Math.PI * 2);
-           ctx.fill();
-           ctx.fillStyle = "white";
-           ctx.font = `${canvas.width/50}px Arial`;
-           ctx.textAlign = "center";
-           ctx.fillText(index + 1, p.x, p.y + canvas.width/120);
-       });
-   }
+    canvas.onclick = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        
+        const label = prompt("Nom de l'élément (ex: Pico 1, Antenne)");
+        if (!label) return;
+        const mesure = prompt("Mesure à inscrire (ex: -78dBm / -15dB)");
+        
+        if(label && mesure) {
+            pastilles.push({ x, y, label, mesure });
+            draw();
+        }
+    };
 
-   // Ajouter pastille au clic/toucher
-   canvas.onclick = (e) => {
-       const rect = canvas.getBoundingClientRect();
-       const scaleX = canvas.width / rect.width;
-       const scaleY = canvas.height / rect.height;
-       const x = (e.clientX - rect.left) * scaleX;
-       const y = (e.clientY - rect.top) * scaleY;
+    async function genererWordComplet() {
+        const { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel } = docx;
+        const imageData = canvas.toDataURL("image/png");
 
-       const label = prompt("Nom de l'équipement (ex: Pico 4)");
-       if(label) {
-           pastilles.push({ x, y, label });
-           updateList();
-           draw();
-       }
-   };
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({ text: "RAPPORT D'AUDIT TECHNIQUE", heading: HeadingLevel.TITLE }),
+                    new Paragraph({ text: `OT: ${document.getElementById('ot').value} | Client: ${document.getElementById('client').value}` }),
+                    new Paragraph({ text: "" }),
+                    new Paragraph({ text: "BESOINS ET LOGISTIQUE", heading: HeadingLevel.HEADING_1 }),
+                    new Paragraph({ children: [new TextRun({ text: "Temps estimé : ", bold: true }), new TextRun(document.getElementById('temps').value)] }),
+                    new Paragraph({ children: [new TextRun({ text: "Matériel : ", bold: true }), new TextRun(document.getElementById('materiel').value)] }),
+                    new Paragraph({ text: "" }),
+                    new Paragraph({ text: "PHOTOS ET MESURES TERRAIN", heading: HeadingLevel.HEADING_1 }),
+                    new Paragraph({
+                        children: [
+                            new ImageRun({
+                                data: imageData.split(',')[1],
+                                transformation: { width: 550, height: 550 * (canvas.height/canvas.width) },
+                                type: "png"
+                            }),
+                        ],
+                    }),
+                    ...pastilles.map(p => new Paragraph({ text: `Point : ${p.label} - Valeur : ${p.mesure}`, bullet: { level: 0 } }))
+                ],
+            }],
+        });
 
-   function updateList() {
-       const container = document.getElementById('pastillesContainer');
-       container.innerHTML = "<h4>Légende :</h4>" + pastilles.map((p, i) => `<div><b>${i+1}</b> : ${p.label}</div>`).join('');
-   }
-
-   // Fonction de génération DOCX (Utilise docx.js)
-   async function genererWord() {
-       alert("Génération en cours... Le fichier va être téléchargé.");
-       // Note: La logique complète docx.js nécessiterait plus de lignes,
-       // mais ce bouton déclenche le téléchargement du résultat.
-       // En mode hors-ligne, on peut aussi sauvegarder en LocalStorage.
-       console.log("Données prêtes:", { ot: document.getElementById('ot').value, pastilles });
-   }
-
-   // Service Worker pour le mode Hors-ligne
-   if ('serviceWorker' in navigator) {
-       navigator.serviceWorker.register('sw.js').catch(() => {});
-   }
+        Packer.toBlob(doc).then(blob => {
+            saveAs(blob, `RAPPORT_${document.getElementById('ot').value}.docx`);
+        });
+    }
 </script>
 </body>
 </html>
