@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL PRO - GÉNÉRATEUR COMPLET AVEC OCR</title>
+    <title>SOGETREL PRO - GÉNÉRATEUR COMPLET v3</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 
     <style>
-        :root { --sogetrel-blue: #002d5b; --sogetrel-green: #27ae60; --sogetrel-orange: #f39c12; }
+        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; }
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px; user-select: none; }
-        .header { background: var(--sogetrel-blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
-        .btn-resume { position: absolute; left: 10px; top: 15px; background: var(--sogetrel-orange); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; font-weight: bold; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--sogetrel-blue); }
-        h3 { margin-top: 0; color: var(--sogetrel-blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
+        .btn-resume { position: absolute; left: 10px; top: 15px; background: var(--orange); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
+        h3 { margin-top: 0; color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .form-block { display: none; }
-        .btn-gen { background: var(--sogetrel-green); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
-        .btn-ocr { background: #6c5ce7; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
-        #ocr-status { font-size: 11px; color: #666; text-align: center; margin-top: 5px; }
-        #signature-pad { border: 2px dashed #bbb; height: 150px; background: #fff; width: 100%; border-radius: 8px; touch-action: none; }
+        .btn-gen { background: var(--green); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn-ocr { background: var(--purple); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
+        .cp-manager { display: flex; gap: 5px; margin-top: 5px; }
+        .btn-add { background: var(--green); color: white; border: none; padding: 10px; border-radius: 8px; }
+        #signature-pad { border: 2px dashed #bbb; height: 130px; background: #fff; width: 100%; border-radius: 8px; touch-action: none; }
         .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; z-index: 1000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid #ddd; }
     </style>
 </head>
@@ -31,20 +32,20 @@
 
 <div class="header">
     <button class="btn-resume" onclick="chargerBrouillon()">📂 REPRENDRE</button>
-    <h2 style="margin:0;">SOGETREL</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Reporting Intelligent (OCR Intégré)</p>
+    <h2 style="margin:0;">SOGETREL AI</h2>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Gestionnaire de Rapports Intelligent</p>
 </div>
 
-<div class="card" style="border-top-color: #6c5ce7;">
-    <h3>📷 Importation de Données (Capture)</h3>
-    <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Importez une capture d'écran de l'OT pour remplir automatiquement les champs.</p>
-    <input type="file" id="ocr_file" accept="image/*" style="display: none;" onchange="traiterOCR(event)">
-    <button class="btn-ocr" onclick="document.getElementById('ocr_file').click()">⚡ SCANNER UNE CAPTURE D'ÉCRAN</button>
-    <div id="ocr-status">En attente de fichier...</div>
+<div class="card" style="border-top-color: var(--purple);">
+    <h3>📸 Scan de l'Ordre de Travail</h3>
+    <input type="file" id="input_ocr" accept="image/*" style="display:none" onchange="traiterOCR(event)">
+    <button class="btn-ocr" onclick="document.getElementById('input_ocr').click()">⚡ SCANNER CAPTURE D'ÉCRAN</button>
+    <div id="ocr-status" style="font-size:11px; text-align:center; color: #666;">Prêt pour analyse</div>
 </div>
 
 <div class="card">
-    <h3>📍 Informations Client & Contact</h3>
+    <h3>📍 Informations Dossier</h3>
+    
     <label>Type de Rapport</label>
     <select id="selectRapport" onchange="changerFormulaire(); sauvegarderAuto();">
         <option value="">-- Choisir un modèle --</option>
@@ -55,14 +56,23 @@
         <option value="ANTENNE_DEPORTEE">📡 Antenne Déportée</option>
         <option value="STARLINK">🛰️ Starlink</option>
     </select>
-    
-    <div class="grid">
-        <input type="text" id="num_rapport" placeholder="N° OT" oninput="sauvegarderAuto()">
-        <input type="text" id="client_nom" placeholder="Nom du Client" oninput="sauvegarderAuto()">
+
+    <label>N° OT / Commande</label>
+    <input type="text" id="num_rapport" placeholder="ex: 13063317" oninput="sauvegarderAuto()">
+
+    <label>Chef de Projet (CP)</label>
+    <select id="liste_cp" onchange="sauvegarderAuto()"></select>
+    <div class="cp-manager">
+        <input type="text" id="nouveau_cp" placeholder="Ajouter un CP..." style="margin-bottom:0">
+        <button class="btn-add" onclick="ajouterCP()">＋</button>
     </div>
-    
-    <label>Adresse & Contact sur site</label>
-    <input type="text" id="ville_site" placeholder="Adresse complète du site" oninput="sauvegarderAuto()">
+    <button onclick="supprimerCP()" style="border:none; color:red; background:none; font-size:11px; margin-bottom:10px;">Supprimer le CP sélectionné</button>
+
+    <label>Client</label>
+    <input type="text" id="client_nom" placeholder="ex: ARPAVIE" oninput="sauvegarderAuto()">
+
+    <label>Adresse & Contact Site</label>
+    <input type="text" id="ville_site" placeholder="Adresse complète" oninput="sauvegarderAuto()">
     <input type="text" id="contact_nom" placeholder="Nom du contact" oninput="sauvegarderAuto()">
     <div class="grid">
         <input type="tel" id="contact_tel" placeholder="Téléphone" oninput="sauvegarderAuto()">
@@ -70,111 +80,93 @@
     </div>
 </div>
 
-<div id="bloc_audit" class="form-block card">
-    <h3>🔍 Détails de l'Audit</h3>
+<div id="bloc_audit" class="form-block card" style="border-top-color: #00bcd4;">
+    <h3>🔍 Détails Audit</h3>
     <textarea id="audit_existant" rows="2" placeholder="Analyse de l'existant" oninput="sauvegarderAuto()"></textarea>
     <div class="grid">
         <select id="audit_nacelle" onchange="sauvegarderAuto()"><option>NACELLE : NON</option><option>NACELLE : OUI</option></select>
         <input type="number" id="audit_hauteur" placeholder="Hauteur (m)" oninput="sauvegarderAuto()">
     </div>
+    <input type="text" id="audit_support" placeholder="Support préconisé" style="margin-top:5px;" oninput="sauvegarderAuto()">
+</div>
+
+<div id="bloc_doe_cp" class="form-block card" style="border-top-color: #e67e22;">
+    <h3>📊 Mesures Cradlepoint</h3>
+    <div class="grid">
+        <input type="text" id="cp_sn" placeholder="S/N Modem" oninput="sauvegarderAuto()">
+        <input type="text" id="cp_rsrp" placeholder="RSRP (dBm)" oninput="sauvegarderAuto()">
+    </div>
 </div>
 
 <div class="card">
-    <h3>✍️ Signature</h3>
-    <input type="text" id="nom_signataire" placeholder="Nom du signataire" oninput="sauvegarderAuto()">
+    <h3>✍️ Validation Technicien</h3>
+    <input type="text" id="nom_tech" placeholder="Votre Nom et Prénom" oninput="sauvegarderAuto()">
     <canvas id="signature-pad"></canvas>
-    <button onclick="sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height)" style="width:100%; margin-top:5px; padding:5px;">Effacer</button>
+    <button onclick="sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height)" style="width:100%; padding:8px; margin-top:5px; border-radius:5px; border:1px solid #ccc;">Effacer Signature</button>
 </div>
 
 <div class="footer-btns">
-    <button class="btn-gen" style="background:#007bff;" onclick="genererWordFinal()">GÉNÉRER WORD</button>
-    <button class="btn-gen" onclick="window.print()">IMPRIMER PDF</button>
+    <button class="btn-gen" style="background:var(--blue);" onclick="genererWordFinal()">GÉNÉRER WORD</button>
+    <button class="btn-gen" style="background:#666;" onclick="window.print()">IMPRIMER / PDF</button>
 </div>
 
 <script>
-    /** LOGIQUE OCR (TESSERACT) **/
+    /** GESTION DES CHEFS DE PROJET **/
+    let chefsDeProjet = JSON.parse(localStorage.getItem('liste_cp_v3')) || ["Omar ARAOUDIOU"];
+    function rafraichirCP() {
+        const sel = document.getElementById('liste_cp'); sel.innerHTML = "";
+        chefsDeProjet.forEach(nom => { let o = document.createElement('option'); o.value = nom; o.text = nom; sel.add(o); });
+        localStorage.setItem('liste_cp_v3', JSON.stringify(chefsDeProjet));
+    }
+    function ajouterCP() {
+        let n = document.getElementById('nouveau_cp').value.trim();
+        if(n && !chefsDeProjet.includes(n)) { chefsDeProjet.push(n); document.getElementById('nouveau_cp').value=""; rafraichirCP(); }
+    }
+    function supprimerCP() {
+        chefsDeProjet.splice(document.getElementById('liste_cp').selectedIndex, 1); rafraichirCP();
+    }
+
+    /** OCR - EXTRACTION AUTO **/
     async function traiterOCR(event) {
         const file = event.target.files[0];
-        if (!file) return;
-
         const status = document.getElementById('ocr-status');
-        status.innerHTML = "⏳ Analyse de l'image en cours... Merci de patienter.";
-        status.style.color = "var(--sogetrel-orange)";
-
+        status.innerText = "⏳ Analyse de la capture...";
         try {
-            const { data: { text } } = await Tesseract.recognize(file, 'fra', {
-                logger: m => console.log(m)
-            });
-
-            console.log("Texte extrait : ", text);
-            extraireChamps(text);
-            
-            status.innerHTML = "✅ Extraction terminée ! Vérifiez les champs.";
-            status.style.color = "var(--sogetrel-green)";
+            const { data: { text } } = await Tesseract.recognize(file, 'fra');
+            const otMatch = text.match(/\b\d{8}\b/);
+            if(otMatch) document.getElementById('num_rapport').value = otMatch[0];
+            const telMatch = text.match(/0[67]\s*(\d{2}\s*){4}/);
+            if(telMatch) document.getElementById('contact_tel').value = telMatch[0].replace(/\s/g, '');
+            status.innerText = "✅ Scan réussi !";
             sauvegarderAuto();
-        } catch (error) {
-            status.innerHTML = "❌ Erreur lors du scan.";
-            status.style.color = "var(--sogetrel-red)";
-        }
+        } catch (e) { status.innerText = "❌ Erreur de lecture."; }
     }
 
-    function extraireChamps(text) {
-        // Logique Regex pour trouver l'OT (souvent 8 chiffres commençant par 13 ou 6)
-        const otMatch = text.match(/\b(13|6)\d{6,7}\b/);
-        if (otMatch) document.getElementById('num_rapport').value = otMatch[0];
-
-        // Téléphone (format FR)
-        const telMatch = text.match(/(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}/);
-        if (telMatch) document.getElementById('contact_tel').value = telMatch[0].replace(/\s/g, '');
-
-        // Email
-        const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-        if (emailMatch) document.getElementById('contact_mail').value = emailMatch[0];
-
-        // Client (Souvent après "Client :" ou en début de ligne majuscule)
-        const lines = text.split('\n');
-        lines.forEach(line => {
-            if(line.toUpperCase().includes("CLIENT")) {
-                document.getElementById('client_nom').value = line.split(':')[1]?.trim() || line.trim();
-            }
-        });
-    }
-
-    /** LOGIQUE INTERFACE & WORD (Identique au précédent) **/
+    /** LOGIQUE FORMULAIRE & SAUVEGARDE **/
     function changerFormulaire() {
-        const val = document.getElementById("selectRapport").value;
-        document.getElementById("bloc_audit").style.display = (val.includes("AUDIT")) ? "block" : "none";
+        const v = document.getElementById("selectRapport").value;
+        document.getElementById("bloc_audit").style.display = v.includes("AUDIT") ? "block" : "none";
+        document.getElementById("bloc_doe_cp").style.display = v === "DOE_CRADLEPOINT" ? "block" : "none";
     }
 
     function sauvegarderAuto() {
-        const data = {
-            type: document.getElementById("selectRapport").value,
-            ot: document.getElementById("num_rapport").value,
-            client: document.getElementById("client_nom").value,
-            ville: document.getElementById("ville_site").value,
-            c_nom: document.getElementById("contact_nom").value,
-            c_tel: document.getElementById("contact_tel").value,
-            c_mail: document.getElementById("contact_mail").value,
-            nom_sig: document.getElementById("nom_signataire").value
-        };
-        localStorage.setItem("brouillon_sogetrel_ocr", JSON.stringify(data));
+        const fields = ["selectRapport","num_rapport","liste_cp","client_nom","ville_site","contact_nom","contact_tel","contact_mail","audit_existant","nom_tech"];
+        let data = {}; fields.forEach(f => data[f] = document.getElementById(f).value);
+        localStorage.setItem("brouillon_v3", JSON.stringify(data));
     }
 
     function chargerBrouillon() {
-        const data = JSON.parse(localStorage.getItem("brouillon_sogetrel_ocr"));
-        if (!data) return alert("Aucun brouillon.");
-        Object.keys(data).forEach(k => {
-            const el = document.getElementById(k === 'ot' ? 'num_rapport' : (k === 'nom_sig' ? 'nom_signataire' : k));
-            if(el) el.value = data[k];
-        });
-        changerFormulaire();
+        let data = JSON.parse(localStorage.getItem("brouillon_v3"));
+        if(!data) return alert("Aucun brouillon.");
+        Object.keys(data).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = data[k]; });
+        changerFormulaire(); rafraichirCP();
     }
 
-    // Canvas Signature
+    /** SIGNATURE **/
     const sigCanvas = document.getElementById('signature-pad');
     const sigCtx = sigCanvas.getContext('2d');
     let signing = false;
-    sigCanvas.width = sigCanvas.offsetWidth; sigCanvas.height = 150;
+    sigCanvas.width = sigCanvas.offsetWidth; sigCanvas.height = 130;
     sigCanvas.onmousedown = sigCanvas.ontouchstart = (e) => { signing = true; sigCtx.beginPath(); };
     window.onmouseup = window.ontouchend = () => signing = false;
     sigCanvas.onmousemove = sigCanvas.ontouchmove = (e) => {
@@ -185,21 +177,59 @@
         sigCtx.lineTo(x, y); sigCtx.stroke();
     };
 
+    /** GÉNÉRATION WORD FINALE (STRUCTURE DEMANDÉE) **/
     async function genererWordFinal() {
-        const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType } = docx;
-        const ot = document.getElementById("num_rapport").value || "SANS-OT";
+        const { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, WidthType } = docx;
+        
+        const ot = document.getElementById("num_rapport").value || "SANS OT";
+        const cp = document.getElementById("liste_cp").value || "NON DÉFINI";
+        const client = document.getElementById("client_nom").value || "CLIENT";
+        const sigData = sigCanvas.toDataURL("image/png");
+        const resS = await fetch(sigData); const blobS = await resS.blob();
+
         const doc = new Document({
             sections: [{
+                properties: { page: { margin: { top: 720, right: 720, bottom: 720, left: 720 } } },
                 children: [
                     new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: "RAPPORT : " + document.getElementById("selectRapport").value, heading: docx.HeadingLevel.TITLE }),
-                    new Paragraph({ text: "Client : " + document.getElementById("client_nom").value }),
-                    new Paragraph({ text: "OT : " + ot })
+                    new Paragraph({ text: "", spacing: { after: 300 } }),
+                    new Paragraph({ children: [new TextRun({ text: document.getElementById("selectRapport").value.replace(/_/g, ' '), bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
+                    new Paragraph({ text: "", spacing: { after: 400 } }),
+
+                    // TABLEAU : OT > CP > CLIENT
+                    new Table({
+                        width: { size: 100, type: WidthType.PERCENTAGE },
+                        rows: [
+                            new TableRow({ children: [
+                                new TableCell({ children: [new Paragraph({ text: "N° OT / COMMANDE", bold: true })], shading: {fill:"f0f0f0"} }),
+                                new TableCell({ children: [new Paragraph(ot)] })
+                            ]}),
+                            new TableRow({ children: [
+                                new TableCell({ children: [new Paragraph({ text: "CHEF DE PROJET", bold: true })], shading: {fill:"f0f0f0"} }),
+                                new TableCell({ children: [new Paragraph(cp)] })
+                            ]}),
+                            new TableRow({ children: [
+                                new TableCell({ children: [new Paragraph({ text: "CLIENT", bold: true })], shading: {fill:"f0f0f0"} }),
+                                new TableCell({ children: [new Paragraph(client)] })
+                            ]}),
+                            new TableRow({ children: [
+                                new TableCell({ children: [new Paragraph({ text: "ADRESSE SITE", bold: true })], shading: {fill:"f0f0f0"} }),
+                                new TableCell({ children: [new Paragraph(document.getElementById("ville_site").value)] })
+                            ]})
+                        ]
+                    }),
+
+                    new Paragraph({ text: "SIGNATURE :", bold: true, spacing: { before: 800 } }),
+                    new Paragraph({ text: "Technicien : " + document.getElementById("nom_tech").value }),
+                    new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] })
                 ]
             }]
         });
         Packer.toBlob(doc).then(b => saveAs(b, `RAPPORT_${ot}.docx`));
     }
+
+    rafraichirCP();
+    document.onkeydown = (e) => { if(e.keyCode == 123) return false; };
 </script>
 
 </body>
