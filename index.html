@@ -3,166 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL / BYTEL - GÉNÉRATEUR FINAL V8</title>
+    <title>GÉNÉRATEUR DOE PRO - SOGETREL</title>
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        :root { --blue: #002d5b; --green: #28a745; --orange: #ff7900; --light: #f4f7f9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding-bottom: 120px; }
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; font-weight: bold; }
-        .container { max-width: 800px; margin: auto; padding: 10px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid var(--blue); }
-        h3 { color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 5px; text-transform: uppercase; margin-top: 20px; }
-        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 0.9em; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; padding-bottom: 100px; }
+        .header { background: #002d5b; color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid #007bff; }
+        .form-block { display: none; }
+        h3 { color: #002d5b; margin-top: 0; font-size: 1.1em; text-transform: uppercase; border-bottom: 2px solid #f0f4f8; padding-bottom: 8px; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.85em; color: #555; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 5px 0 10px 0; border: 1px solid #ccd; border-radius: 8px; box-sizing: border-box; background: #f9f9ff; font-size: 14px; }
+        .btn-gen { position: fixed; bottom: 10px; left: 10px; right: 10px; background: #28a745; color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; font-size: 16px; box-shadow: 0 5px 15px rgba(40,167,69,0.4); z-index: 1000; }
+        .btn-add { background: #007bff; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 10px; }
+        canvas { width: 100%; border-radius: 8px; display: none; margin-top: 10px; border: 2px solid #002d5b; touch-action: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-gen { position: fixed; bottom: 15px; left: 15px; right: 15px; background: var(--green); color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; cursor: pointer; }
-        canvas { width: 100%; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid #ccc; background: #eee; }
-        .radio-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .radio-table th { background: var(--blue); color: white; padding: 8px; border: 1px solid #ddd; }
-        .radio-table td { border: 1px solid #ddd; padding: 0; }
-        .radio-table input { border: none; text-align: center; padding: 8px; width: 100%; box-sizing: border-box; }
-        .hidden { display: none; }
+        .photo-container { border: 1px dashed #ccc; padding: 10px; margin-top: 10px; border-radius: 8px; position: relative; }
+        .delete-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<div class="header">SOGETREL - AUDIT & DOE (CRADLE/STARLINK/PICO)</div>
+<script>
+    const CODE_ACCES = "TECHNICIEN2026"; 
+    if (sessionStorage.getItem("auth") !== "true") {
+        let essai = prompt("Code d'accès requis :");
+        if (essai === CODE_ACCES) { sessionStorage.setItem("auth", "true"); } 
+        else { document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Accès refusé</h2>"; window.stop(); }
+    }
+</script>
 
-<div class="container">
-    <div class="card">
-        <h3>Type d'intervention</h3>
-        <select id="mainModel" onchange="updateUI()">
-            <option value="">-- Sélectionner --</option>
-            <option value="AUDIT_C_S">AUDIT (Cradlepoint / Starlink)</option>
-            <option value="DOE_C_S">DOE (Cradlepoint / Starlink)</option>
-            <option value="AUDIT_PICO">AUDIT PICO BTS</option>
-            <option value="DOE_PICO">DOE PICO BTS</option>
-        </select>
+<div class="header">
+    <strong>GÉNÉRATEUR DOE & AUDIT</strong><br>
+    <small>Sogetrel / Expertise Terrain</small> </div>
+
+<div class="card" style="border-top-color: #343a40;">
+    <h3>🏠 Page de Garde & Site</h3>
+    <input type="text" id="ot" placeholder="Numéro d'OT">
+    <input type="text" id="client_nom" placeholder="Nom du Client / Site">
+    <label>Photo de la façade (Page de garde)</label>
+    <input type="file" id="photo_garde" accept="image/*" capture="camera" onchange="apercuGarde(event)">
+    <img id="view_garde" style="width:100%; display:none; border-radius:8px; margin-top:10px;"> </div>
+
+<div class="card">
+    <h3>👤 Contact Site</h3>
+    <div class="grid">
+        <input type="text" id="nom_contact" placeholder="Nom">
+        <input type="text" id="prenom_contact" placeholder="Prénom">
     </div>
+    <input type="email" id="mail_contact" placeholder="Email">
+    <input type="tel" id="tel_contact" placeholder="Téléphone"> </div>
 
-    <div id="sec_ident" class="card hidden">
-        <h3>Identification Site</h3>
-        <input type="text" id="ot" placeholder="Numéro d'OT">
-        <input type="text" id="client" placeholder="Client (ex: INFO U)">
-        <input type="text" id="adresse" placeholder="Adresse complète">
-    </div>
+<div class="card">
+    <h3>📋 Type de Rapport</h3>
+    <select id="selectRapport" onchange="changerFormulaire()">
+        <option value="">-- Sélectionner le formulaire --</option>
+        <option value="AUDIT">🛠️ Audit Travaux</option>
+        <option value="STARLINK">📡 DOE Starlink</option>
+        <option value="PICO">🏢 DOE PICO</option>
+        <option value="MIMO">📶 DOE Antenne MIMO</option>
+        <option value="CRADLEPOINT">⚙️ DOE Cradlepoint / Routeur</option>
+    </select>
+</div>
 
-    <div id="sec_radio" class="card hidden">
-        <h3>Relevés de Mesures</h3>
-        <div class="grid">
-            <select id="opMode" onchange="buildTable()"><option value="MULTI">Bytel + Orange</option><option value="MONO">Bytel Seul</option></select>
-            <select id="locRadio"><option>En Baie</option><option>En Extérieur</option></select>
-        </div>
-        <div id="tablePlace"></div>
-    </div>
+<div id="bloc_audit" class="form-block card">
+    <h3>🛠️ Détails Audit</h3>
+    <label>Temps estimé</label><input type="text" id="audit_temps" placeholder="ex: 2 jours">
+    <label>Matériel nécessaire</label>
+    <textarea id="audit_materiel" rows="3" placeholder="Tube PVC, Nacelle, etc..."></textarea> </div>
 
-    <div id="sec_photos" class="card hidden">
-        <h3>Reporting Photos</h3>
-        
-        <label>Emplacement de l'équipement (Antenne/Routeur)</label>
-        <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_ant', 'EMPLACEMENT EQUIPEMENT')">
-        <canvas id="c_photo_ant"></canvas>
+<div id="bloc_starlink" class="form-block card">
+    <h3>📡 Spécifications Starlink</h3>
+    <input type="text" id="sl_kit" placeholder="N° de Kit Starlink">
+    <label>Obstructions</label>
+    <select id="sl_obs"><option>Aucune (OK)</option><option>Faible</option><option>Bloquant</option></select>
+    <label>Logistique</label>
+    <textarea id="sl_log" rows="2" placeholder="Support, dalles, etc."></textarea> </div>
 
-        <label>Vue de la Baie Informatique</label>
-        <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_baie', 'VUE BAIE INFO')">
-        <canvas id="c_photo_baie"></canvas>
-
-        <label>Cheminement du câble (Passage / Percement)</label>
-        <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_chem', 'CHEMINEMENT CABLE')">
-        <canvas id="c_photo_chem"></canvas>
-
-        <div id="doe_specific_photos" class="hidden">
-            <label>Équipement installé & SN (Routeur/Injecteur)</label>
-            <input type="file" accept="image/*" capture="camera" onchange="preview(this, 'c_photo_inst', 'EQUIPEMENT INSTALLE')">
-            <canvas id="c_photo_inst"></canvas>
-        </div>
-    </div>
-
-    <div id="sec_travaux" class="card hidden">
-        <h3>Accès & Travaux</h3>
-        <label>Moyen d'accès & Sécurité</label>
-        <select id="moyen"><option>Escabeau / PIRL</option><option>Nacelle avec déport</option></select>
-        <input type="text" id="epi" placeholder="EPI nécessaires (Harnais, etc.)">
-        
-        <div id="doe_logic" class="hidden">
-            <label>Statut de l'installation</label>
-            <select id="doeStatus" onchange="toggleRAF()"><option value="RAS">Terminé - RAS</option><option value="RAF">Reste à faire / Réserves</option></select>
-        </div>
-
-        <label id="labelTravaux">Détails Travaux / Matériel</label>
-        <textarea id="txtTravaux" rows="4" placeholder="Précisez ici les besoins ou les réserves..."></textarea>
+<div id="bloc_pico" class="form-block card">
+    <h3>🏢 Détails PICO</h3>
+    <input type="text" id="pico_etage" placeholder="Étage">
+    <textarea id="pico_inv" rows="3" placeholder="Inventaire S/N et MAC"></textarea>
+    <div class="grid">
+        <input type="text" id="pico_rsrp" placeholder="RSRP">
+        <input type="text" id="pico_snr" placeholder="SNR">
     </div>
 </div>
 
-<button class="btn-gen" onclick="alert('Génération Word...')">📥 GÉNÉRER LE RAPPORT</button>
+<div id="bloc_mimo" class="form-block card">
+    <h3>📶 Signal MIMO Avant/Après</h3>
+    <label>Capture AVANT POSE</label>
+    <input type="file" id="mimo_img_av" accept="image/*" capture="camera">
+    <div class="grid">
+        <input type="text" id="mimo_rsrp_av" placeholder="RSRP Avant">
+        <input type="text" id="mimo_rsrp_ap" placeholder="RSRP Après">
+    </div>
+    <label>Capture APRÈS POSE</label>
+    <input type="file" id="mimo_img_ap" accept="image/*" capture="camera"> </div>
+
+<div id="bloc_cradlepoint" class="form-block card">
+    <h3>⚙️ Cradlepoint & Dépose</h3>
+    <input type="text" id="cp_modem" placeholder="Modèle & Emplacement">
+    <label>Signal Orange (RSRP)</label><input type="text" id="cp_orange" placeholder="-80">
+    <label>Signal Bouygues (RSRP)</label><input type="text" id="cp_bytel" placeholder="-75">
+    <label>♻️ Matériel Déposé (Décommissionnement)</label>
+    <textarea id="cp_depose" rows="2" placeholder="Modèle et S/N du matériel retiré"></textarea> </div>
+
+<div class="card">
+    <h3>📸 Reportage Photo Annoté</h3>
+    <div id="container_photos"></div>
+    <button type="button" class="btn-add" onclick="ajouterPhoto()">+ AJOUTER UNE PHOTO (Cheminement/Dépose)</button> </div>
+
+<button class="btn-gen" onclick="genererWordFinal()">📥 GÉNÉRER LE RAPPORT (.DOCX)</button>
 
 <script>
-    function updateUI() {
-        const m = document.getElementById('mainModel').value;
-        const all = document.querySelectorAll('.hidden');
-        document.getElementById('sec_ident').classList.toggle('hidden', !m);
-        document.getElementById('sec_radio').classList.toggle('hidden', !m);
-        document.getElementById('sec_photos').classList.toggle('hidden', !m);
-        document.getElementById('sec_travaux').classList.toggle('hidden', !m);
-        
-        // Spécificités DOE
-        const isDoe = m.includes('DOE');
-        document.getElementById('doe_specific_photos').classList.toggle('hidden', !isDoe);
-        document.getElementById('doe_logic').classList.toggle('hidden', !isDoe);
-        
-        if(m) {
-            buildTable();
-            toggleRAF();
-        }
+    let listePhotos = [];
+
+    function changerFormulaire() {
+        const type = document.getElementById("selectRapport").value;
+        document.querySelectorAll(".form-block").forEach(b => b.style.display = "none");
+        if(type) document.getElementById("bloc_" + type.toLowerCase()).style.display = "block";
     }
 
-    function buildTable() {
-        const multi = document.getElementById('opMode').value === 'MULTI';
-        let h = `<table class="radio-table"><tr><th>Indicateur</th><th>BYTEL</th>${multi?'<th style="background:var(--orange)">ORANGE</th>':''}</tr>`;
-        ["EnB", "RSRP", "SNR (>10)", "Débit Down", "Débit Up"].forEach(r => {
-            h += `<tr><td style="padding:8px; font-weight:bold">${r}</td><td><input type="text"></td>${multi?'<td><input type="text"></td>':''}</tr>`;
-        });
-        document.getElementById('tablePlace').innerHTML = h + "</table>";
+    function apercuGarde(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.getElementById('view_garde');
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
     }
 
-    function toggleRAF() {
-        const m = document.getElementById('mainModel').value;
-        if(!m.includes('DOE')) {
-            document.getElementById('labelTravaux').innerText = "Fournitures et travaux à prévoir :";
-            document.getElementById('txtTravaux').readOnly = false;
-            document.getElementById('txtTravaux').style.background = "#fff";
-            return;
-        }
-        const status = document.getElementById('doeStatus').value;
-        const area = document.getElementById('txtTravaux');
-        if(status === 'RAS') {
-            area.value = "RAS - Installation conforme aux règles de l'art.";
-            area.readOnly = true;
-            area.style.background = "#e8f5e9";
-        } else {
-            area.value = "";
-            area.readOnly = false;
-            area.style.background = "#fff";
-            document.getElementById('labelTravaux').innerText = "Reste à faire / Réserves :";
-        }
+    function ajouterPhoto() {
+        const id = Date.now();
+        const html = `
+            <div class="photo-container" id="card_${id}">
+                <input type="file" accept="image/*" capture="camera" onchange="chargerImage(event, ${id})">
+                <canvas id="canvas_${id}"></canvas>
+                <div id="legende_${id}" style="margin-top:5px; font-weight:bold; color:#002d5b;"></div>
+                <button class="delete-btn" onclick="supprimerPhoto(${id})">Supprimer</button>
+            </div>`;
+        document.getElementById('container_photos').insertAdjacentHTML('beforeend', html);
     }
 
-    function preview(input, cid, label) {
-        const canvas = document.getElementById(cid);
-        const ctx = canvas.getContext('2d');
+    function chargerImage(event, id) {
+        const file = event.target.files[0];
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
-            img.onload = () => {
-                canvas.width = 800; canvas.height = 600;
-                canvas.style.display = 'block';
-                ctx.drawImage(img, 0, 0, 800, 600);
-                ctx.fillStyle = "rgba(0,45,91,0.8)"; ctx.fillRect(0,0,300,45);
-                ctx.fillStyle = "white"; ctx.font = "bold 18px Arial";
-                ctx.fillText(label, 15, 30);
-            };
             img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.getElementById(`canvas_${id}`);
+                const ctx = canvas.getContext('2d');
+                canvas.width = 1000;
+                canvas.height = 1000 * (img.height / img.width);
+                canvas.style.display = 'block';
+                const obj = { id, canvas, ctx, img, pastilles: [] };
+                listePhotos.push(obj);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.onclick = (ev) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = (ev.clientX - rect.left) * (canvas.width / rect.width);
+                    const y = (ev.clientY - rect.top) * (canvas.height / rect.height);
+                    const txt = prompt("Légende du point :");
+                    if(txt) { obj.pastilles.push({x, y, txt}); draw(obj); }
+                };
+            };
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
+    }
+
+    function draw(obj) {
+        obj.ctx.drawImage(obj.img, 0, 0, obj.canvas.width, obj.canvas.height);
+        obj.pastilles.forEach((p, i) => {
+            obj.ctx.fillStyle = "red"; obj.ctx.beginPath(); obj.ctx.arc(p.x, p.y, 25, 0, 7); obj.ctx.fill();
+            obj.ctx.fillStyle = "white"; obj.ctx.font = "bold 25px Arial"; obj.ctx.textAlign="center";
+            obj.ctx.fillText(i+1, p.x, p.y+10);
+        });
+        document.getElementById(`legende_${obj.id}`).innerHTML = obj.pastilles.map((p,i) => `(${i+1}) ${p.txt}`).join(' | ');
+    }
+
+    function supprimerPhoto(id) {
+        document.getElementById(`card_${id}`).remove();
+        listePhotos = listePhotos.filter(p => p.id !== id);
+    }
+
+    const toBase64 = file => new Promise((res) => {
+        const r = new FileReader(); r.readAsDataURL(file); r.onload = () => res(r.result);
+    });
+
+    async function genererWordFinal() {
+        const { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel, AlignmentType } = docx;
+        const type = document.getElementById("selectRapport").value;
+        if(!type) return alert("Choisis un type de rapport");
+
+        let content = [
+            new Paragraph({ text: `RAPPORT D'INTERVENTION : ${type}`, heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER }),
+        ];
+
+        // Photo de garde
+        const fGarde = document.getElementById('photo_garde').files[0];
+        if(fGarde) {
+            const bGarde = await toBase64(fGarde);
+            content.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: bGarde.split(',')[1], transformation: { width: 500, height: 350 }, type: "png" })] }));
+        }
+
+        content.push(new Paragraph({ text: `OT : ${document.getElementById('ot').value}`, alignment: AlignmentType.CENTER }));
+        content.push(new Paragraph({ text: `CLIENT : ${document.getElementById('client_nom').value}`, alignment: AlignmentType.CENTER }));
+        content.push(new Paragraph({ text: "----------------------------------------------------" }));
+        
+        // Coordonnées
+        content.push(new Paragraph({ text: "CONTACT SITE", heading: HeadingLevel.HEADING_1 }));
+        content.push(new Paragraph({ text: `Nom : ${document.getElementById('nom_contact').value} ${document.getElementById('prenom_contact').value}` }));
+        content.push(new Paragraph({ text: `Email : ${document.getElementById('mail_contact').value} | Tel : ${document.getElementById('tel_contact').value}` }));
+
+        // Modules spécifiques (Exemple simplifié pour le bloc)
+        if(type === "CRADLEPOINT") {
+            content.push(new Paragraph({ text: "DÉTAILS TECHNIQUES & DÉPOSE", heading: HeadingLevel.HEADING_1 }));
+            content.push(new Paragraph({ text: `Modem : ${document.getElementById('cp_modem').value}` }));
+            content.push(new Paragraph({ text: `Signal Orange : ${document.getElementById('cp_orange').value} | Bouygues : ${document.getElementById('cp_bytel').value}` }));
+            content.push(new Paragraph({ text: `MATÉRIEL DÉPOSÉ : ${document.getElementById('cp_depose').value}`, bold: true }));
+        }
+        // ... (Les autres blocs suivent la même logique d'insertion)
+
+        // Photos Cheminement
+        content.push(new Paragraph({ text: "REPORTAGE PHOTOS ANNOTÉ", heading: HeadingLevel.HEADING_1 }));
+        for(let p of listePhotos) {
+            const b64 = p.canvas.toDataURL("image/png").split(',')[1];
+            content.push(new Paragraph({ children: [new ImageRun({ data: b64, transformation: { width: 550, height: 550*(p.canvas.height/p.canvas.width) }, type: "png" })] }));
+            p.pastilles.forEach((past, i) => content.push(new Paragraph({ text: `Point ${i+1} : ${past.txt}`, bullet: {level:0} })));
+        }
+
+        const doc = new Document({ sections: [{ children: content }] });
+        Packer.toBlob(doc).then(blob => saveAs(blob, `DOE_${type}_${document.getElementById('ot').value}.docx`));
     }
 </script>
 </body>
