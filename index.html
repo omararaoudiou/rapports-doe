@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CIT Report IA - Système Intégral</title>
+    <title>CIT Report IA - MASTER FINAL</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 
     <style>
-        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; --red: #e74c3c; }
+        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; --red: #e74c3c; --cyan: #00bcd4; }
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px; }
         .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); transition: 0.3s; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
         h3 { margin-top: 0; color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        /* Photo Management avec accès Caméra */
+        /* Système Photo Mobile */
         .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
         .photo-box { border: 2px dashed #bbb; padding: 10px; text-align: center; border-radius: 8px; font-size: 11px; cursor: pointer; background: #fafafa; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .photo-box img { max-width: 100%; max-height: 90px; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd; }
+        .photo-box img { max-width: 100%; max-height: 90px; margin-top: 5px; border-radius: 4px; }
         
-        /* Couleurs de Signal */
+        /* Couleurs Qualité Signal */
         .sig-exc { background-color: #2ecc71 !important; color: white; }
-        .sig-good { background-color: #f1c40f !important; }
+        .sig-good { background-color: #f1c40f !important; color: black; }
         .sig-fair { background-color: #e67e22 !important; color: white; }
         .sig-poor { background-color: #e74c3c !important; color: white; }
 
@@ -38,22 +38,22 @@
 <body>
 
 <div class="header">
-    <h2 style="margin:0;">CIT Report IA</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Expertise Terrain Sogetrel v6.0</p>
+    <h2 id="main-title">CIT Report IA</h2>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Audit & DOE : Cradlepoint | Starlink | PICO | Antenne Déportée</p>
 </div>
 
 <div class="card" style="border-top-color: var(--purple);">
-    <h3>📋 Type de Mission</h3>
-    <label>Sélectionner le type de rapport</label>
-    <select id="selectRapport" onchange="majAffichageConditionnel()">
+    <h3>📋 Type de Rapport</h3>
+    <select id="selectRapport" onchange="majInterfaceGlobale()">
         <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint 1850</option>
         <option value="DOE_CRADLEPOINT">🏢 DOE Cradlepoint 1850</option>
+        <option value="ANTENNE_DEPORTEE">📡 Audit/DOE Antenne Déportée</option>
         <option value="AUDIT_PICO">🔍 Audit PICO</option>
         <option value="DOE_PICO">🏢 DOE PICO</option>
         <option value="STARLINK">🛰️ Audit/DOE Starlink</option>
     </select>
     
-    <label>Responsabilité</label>
+    <label>Modèle INFO U</label>
     <select id="type_projet">
         <option value="SOGETREL_100">UTILE / SCHIEVER (100% Sogetrel)</option>
         <option value="AERIEN_PARTAGE">PROJET AÉRIEN (Magasin U)</option>
@@ -61,30 +61,40 @@
 </div>
 
 <div class="card">
-    <h3>📍 Informations Dossier</h3>
+    <h3>📍 Informations Site</h3>
     <input type="text" id="val_ot" placeholder="Numéro d'OT">
     <select id="liste_cp"></select>
-    <input type="text" id="val_client" placeholder="Client">
-    <input type="text" id="val_adresse" placeholder="Adresse complète">
+    <input type="text" id="val_client" placeholder="Client / Enseigne">
+    <input type="text" id="val_adresse" placeholder="Adresse du site">
 </div>
 
 <div id="section_pico" class="card hidden" style="border-top-color: var(--orange);">
-    <h3>📶 Informations Spécifiques PICO</h3>
+    <h3>📶 Spécifications PICO</h3>
     <div class="grid">
-        <input type="text" id="pico_imei" placeholder="Numéro IMEI">
-        <input type="text" id="pico_num" placeholder="Numéro de Pico">
+        <input type="text" id="pico_imei" placeholder="IMEI">
+        <input type="text" id="pico_num" placeholder="N° Pico">
     </div>
-    <label>Longueur de câble réseau (m)</label>
-    <input type="number" id="pico_cable" placeholder="Ex: 25">
+    <input type="number" id="pico_cable" placeholder="Longueur câble RJ45 (m)">
+</div>
+
+<div id="section_antenne_dep" class="card hidden" style="border-top-color: var(--red);">
+    <h3>📡 Détails Antenne Déportée</h3>
+    <label>Type de support</label>
+    <select id="ant_support">
+        <option value="FACADE">Fixation Murale / Façade</option>
+        <option value="TOITURE_AUTOSTABLE">Toiture - Mât autostable</option>
+        <option value="CERCLAGE">Cheminée / Cerclage</option>
+    </select>
+    <input type="number" id="ant_cable" placeholder="Longueur câble Coaxial (m)">
 </div>
 
 <div id="section_radio" class="card" style="border-top-color: var(--green);">
-    <h3>📡 Mesures Radio (4G/5G)</h3>
+    <h3>📊 Mesures Signal & Débits</h3>
     <div class="grid">
-        <div><label>RSRP</label><input type="number" id="v_rsrp" placeholder="-85" oninput="colorer(this, 'rsrp')"></div>
-        <div><label>RSRQ</label><input type="number" id="v_rsrq" placeholder="-12" oninput="colorer(this, 'rsrq')"></div>
-        <div><label>SNR</label><input type="number" id="v_snr" placeholder="15" oninput="colorer(this, 'snr')"></div>
-        <div><label>Ping</label><input type="number" id="v_ping" placeholder="30"></div>
+        <div><label>RSRP (dBm)</label><input type="number" id="v_rsrp" placeholder="-85" oninput="colorer(this, 'rsrp')"></div>
+        <div><label>RSRQ (dB)</label><input type="number" id="v_rsrq" placeholder="-12" oninput="colorer(this, 'rsrq')"></div>
+        <div><label>SNR (dB)</label><input type="number" id="v_snr" placeholder="15" oninput="colorer(this, 'snr')"></div>
+        <div><label>Ping (ms)</label><input type="number" id="v_ping" placeholder="30"></div>
         <div><label>DL (Mbps)</label><input type="number" id="v_dl" placeholder="100"></div>
         <div><label>UL (Mbps)</label><input type="number" id="v_ul" placeholder="40"></div>
     </div>
@@ -92,88 +102,63 @@
 
 <div class="card">
     <h3>🖼️ Reportage Photos</h3>
-    <p style="font-size:10px; color:#666;">Cliquez pour choisir : Bibliothèque ou Appareil Photo</p>
     <div class="photo-grid">
-        <div class="photo-box" onclick="triggerImg('f_baie_p')">
-            📸 Baie (Vue Proche)
-            <input type="file" id="f_baie_p" class="hidden" accept="image/*" capture="environment" onchange="preview(this)">
-            <div class="prev"></div>
-        </div>
-        <div class="photo-box" onclick="triggerImg('f_baie_l')">
-            📸 Baie (Vue Large)
-            <input type="file" id="f_baie_l" class="hidden" accept="image/*" capture="environment" onchange="preview(this)">
-            <div class="prev"></div>
-        </div>
-        <div id="box_antenne" class="photo-box" onclick="triggerImg('f_ant')">
-            📸 Emplacement Antenne
-            <input type="file" id="f_ant" class="hidden" accept="image/*" capture="environment" onchange="preview(this)">
-            <div class="prev"></div>
-        </div>
-        <div class="photo-box" onclick="triggerImg('f_chem')">
-            📸 Cheminement Câble
-            <input type="file" id="f_chem" class="hidden" accept="image/*" capture="environment" onchange="preview(this)">
-            <div class="prev"></div>
-        </div>
-        <div class="photo-box" style="grid-column: span 2;" onclick="triggerImg('f_plan')">
-            📍 Plan du site (Pastilles)
-            <input type="file" id="f_plan" class="hidden" accept="image/*" onchange="preview(this)">
-            <div class="prev"></div>
-        </div>
-        <div id="box_starlink_app" class="photo-box hidden" style="grid-column: span 2; border-color: #00bcd4;" onclick="triggerImg('f_star')">
-            📲 Capture App Starlink (Obstruction)
-            <input type="file" id="f_star" class="hidden" accept="image/*" onchange="preview(this)">
-            <div class="prev"></div>
-        </div>
+        <div class="photo-box" onclick="triggerImg('f_baie_p')">📸 Baie (Proche)<input type="file" id="f_baie_p" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" onclick="triggerImg('f_baie_l')">📸 Baie (Vue Large)<input type="file" id="f_baie_l" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" onclick="triggerImg('f_ant')">📸 Extérieur Antenne<input type="file" id="f_ant" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" onclick="triggerImg('f_chem')">📸 Cheminement<input type="file" id="f_chem" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" style="grid-column: span 2;" onclick="triggerImg('f_plan')">📍 Plan (Pastilles)<input type="file" id="f_plan" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div></div>
+        <div id="box_starlink_app" class="photo-box hidden" style="grid-column: span 2; border-color: var(--cyan);" onclick="triggerImg('f_star')">📲 Capture Obstruction Starlink<input type="file" id="f_star" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div></div>
     </div>
 </div>
 
 <div class="card">
-    <h3>✍️ Technicien & Signature</h3>
+    <h3>✍️ Signature</h3>
     <input type="text" id="val_tech" placeholder="Nom du technicien">
     <canvas id="signature-pad"></canvas>
 </div>
 
 <div class="footer-btns">
-    <button onclick="genererWordMaster()" style="background:var(--blue); color:white; font-weight:bold; border:none; border-radius:8px;">GÉNÉRER WORD</button>
+    <button onclick="genererWord()" style="background:var(--blue); color:white; font-weight:bold; border:none; border-radius:8px;">GÉNÉRER RAPPORT</button>
     <button onclick="window.print()" style="background:#ddd; border:none; border-radius:8px;">VERSION PDF</button>
 </div>
 
 <script>
-    // --- LOGIQUE D'AFFICHAGE DYNAMIQUE ---
-    function majAffichageConditionnel() {
-        const type = document.getElementById('selectRapport').value;
+    // --- GESTION DES SECTIONS ---
+    function majInterfaceGlobale() {
+        const r = document.getElementById('selectRapport').value;
         
-        // Section PICO
-        document.getElementById('section_pico').classList.toggle('hidden', !type.includes('PICO'));
+        // PICO
+        document.getElementById('section_pico').classList.toggle('hidden', !r.includes('PICO'));
         
-        // Section Radio
-        document.getElementById('section_radio').classList.toggle('hidden', type === 'STARLINK');
+        // Antenne Déportée
+        document.getElementById('section_antenne_dep').classList.toggle('hidden', r !== 'ANTENNE_DEPORTEE');
         
-        // Capture App Starlink
-        document.getElementById('box_starlink_app').classList.toggle('hidden', type !== 'STARLINK');
+        // Starlink specific
+        document.getElementById('box_starlink_app').classList.toggle('hidden', r !== 'STARLINK');
+        document.getElementById('section_radio').classList.toggle('hidden', r === 'STARLINK');
 
-        // Titre de la page
-        document.querySelector('h2').innerText = type.replace('_', ' ');
+        document.getElementById('main-title').innerText = r.replace('_', ' ');
     }
 
-    // --- COULEURS DE QUALITÉ ---
+    // --- COULEURS SIGNAL ---
     function colorer(el, type) {
-        const val = parseFloat(el.value);
+        const v = parseFloat(el.value);
         el.className = "";
         if (type === 'rsrp') {
-            if (val >= -80) el.classList.add('sig-exc');
-            else if (val >= -95) el.classList.add('sig-good');
-            else if (val >= -105) el.classList.add('sig-fair');
+            if (v >= -80) el.classList.add('sig-exc');
+            else if (v >= -95) el.classList.add('sig-good');
+            else if (v >= -110) el.classList.add('sig-fair');
             else el.classList.add('sig-poor');
         } else if (type === 'snr') {
-            if (val >= 20) el.classList.add('sig-exc');
-            else if (val >= 13) el.classList.add('sig-good');
-            else if (val >= 5) el.classList.add('sig-fair');
+            if (v >= 20) el.classList.add('sig-exc');
+            else if (v >= 10) el.classList.add('sig-good');
+            else if (v >= 3) el.classList.add('sig-fair');
             else el.classList.add('sig-poor');
         }
     }
 
-    // --- GESTION PHOTO (Mobile friendly) ---
+    // --- PHOTOS ---
     function triggerImg(id) { document.getElementById(id).click(); }
     function preview(input) {
         if (input.files && input.files[0]) {
@@ -186,7 +171,7 @@
     }
 
     // --- GÉNÉRATION WORD ---
-    async function genererWordMaster() {
+    async function genererWord() {
         const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, ImageRun, AlignmentType } = docx;
         const typeDoc = document.getElementById('selectRapport').value;
         const ot = document.getElementById('val_ot').value || "SANS_OT";
@@ -198,28 +183,28 @@
 
         const bPlan = await getB('f_plan');
         const content = [
-            new Paragraph({ children: [new TextRun({ text: "RAPPORT SOGETREL : " + typeDoc, bold: true, size: 32 })], alignment: AlignmentType.CENTER }),
-            new Paragraph({ text: "Numéro d'OT : " + ot, spacing: {before: 200} }),
+            new Paragraph({ children: [new TextRun({ text: "SOGETREL - RAPPORT " + typeDoc, bold: true, size: 32 })], alignment: AlignmentType.CENTER }),
+            new Paragraph({ text: "OT : " + ot, spacing: {before: 200} }),
             new Paragraph({ text: "Client : " + document.getElementById('val_client').value })
         ];
 
-        if(typeDoc.includes('PICO')) {
-            content.push(new Paragraph({ text: "SPÉCIFICATIONS PICO", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 300} }));
-            content.push(new Paragraph("IMEI : " + document.getElementById('pico_imei').value));
-            content.push(new Paragraph("N° Pico : " + document.getElementById('pico_num').value));
-            content.push(new Paragraph("Longueur Câble : " + document.getElementById('pico_cable').value + " m"));
+        // Insertion dynamique Antenne Déportée
+        if(typeDoc === 'ANTENNE_DEPORTEE') {
+            content.push(new Paragraph({ text: "DÉTAILS ANTENNE DÉPORTÉE", heading: docx.HeadingLevel.HEADING_1 }));
+            content.push(new Paragraph("Support : " + document.getElementById('ant_support').value));
+            content.push(new Paragraph("Longueur Coaxial : " + document.getElementById('ant_cable').value + " m"));
         }
 
         if(bPlan) {
-            content.push(new Paragraph({ text: "PLAN D'IMPLANTATION DU SITE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 300} }));
-            content.push(new Paragraph({ children: [new ImageRun({ data: bPlan, transformation: { width: 500, height: 350 } })] }));
+            content.push(new Paragraph({ text: "PLAN D'IMPLANTATION", heading: docx.HeadingLevel.HEADING_1 }));
+            content.push(new Paragraph({ children: [new ImageRun({ data: bPlan, transformation: { width: 450, height: 300 } })] }));
         }
 
         const doc = new Document({ sections: [{ children: content }] });
-        Packer.toBlob(doc).then(blob => saveAs(blob, `CIT_REPORT_${ot}.docx`));
+        Packer.toBlob(doc).then(blob => saveAs(blob, `RAPPORT_${ot}.docx`));
     }
 
-    // --- SIGNATURE PAD ---
+    // --- SIGNATURE ---
     const canvas = document.getElementById('signature-pad');
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.offsetWidth; canvas.height = 120;
@@ -234,9 +219,9 @@
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    // INIT CP
-    ["Emmanuel MAUDET", "Omar ARAOUDIOU", "Nouveau CP..."].forEach(n => document.getElementById('liste_cp').add(new Option(n,n)));
-    majAffichageConditionnel();
+    // INIT
+    ["Emmanuel MAUDET", "Omar ARAOUDIOU"].forEach(n => document.getElementById('liste_cp').add(new Option(n,n)));
+    majInterfaceGlobale();
 </script>
 </body>
 </html>
