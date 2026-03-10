@@ -3,303 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL PRO - GÉNÉRATEUR OFFICIEL</title>
-    
-    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-    <style>
-        :root { --sogetrel-blue: #002d5b; --sogetrel-green: #27ae60; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px;
-            user-select: none; -webkit-user-select: none;
-        }
-        .header { background: var(--sogetrel-blue); color: white; padding: 20px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--sogetrel-blue); }
-        h3 { margin-top: 0; color: var(--sogetrel-blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .form-block { display: none; }
-        .btn-gen { background: var(--sogetrel-green); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
-        .photo-item { background: #eee; padding: 10px; border-radius: 10px; margin-bottom: 10px; position: relative; }
-        canvas { max-width: 100%; border-radius: 5px; background: #fff; touch-action: none; }
-        #signature-pad { border: 2px dashed #bbb; height: 150px; }
-        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    </style>
-</head>
-<body oncontextmenu="return false;">
-
-<div class="header">
-    <h2 style="margin:0;">SOGETREL</h2>
-    <p style="margin:5px 0 0; opacity:0.8;">Reporting Technique & DOE</p>
-</div>
-
-<div class="card">
-    <h3>📍 Informations Dossier</h3>
-    <label>Type de Rapport</label>
-    <select id="selectRapport" onchange="changerFormulaire()">
-        <option value="">-- Choisir un modèle --</option>
-        <option value="AUDIT_PICO">🔍 Audit PICO (Relevé)</option>
-        <option value="PICO">🏢 DOE PICO (Installation)</option>
-        <option value="ANTENNE_DEPORTEE">📡 Antenne Déportée</option>
-        <option value="STARLINK">🛰️ Starlink</option>
-    </select>
-    <div class="grid">
-        <div><label>N° OT</label><input type="text" id="num_rapport" placeholder="ex: 13063317"></div>
-        <div><label>Client</label><input type="text" id="client_nom" placeholder="ex: ARPAVIE"></div>
-    </div>
-    <label>Ville / Site</label>
-    <input type="text" id="ville_site" placeholder="ex: Paris (75)">
-</div>
-
-<div class="card">
-    <h3>📸 Photo de Garde</h3>
-    <input type="file" accept="image/*" capture="camera" onchange="apercuGarde(event)">
-    <img id="view_garde" style="display:none; width:100%; margin-top:10px; border-radius:8px; border:1px solid #ddd;">
-</div>
-
-<div id="bloc_audit_pico" class="form-block card" style="border-top-color: #00bcd4;">
-    <h3>🔍 Détails Audit PICO</h3>
-    <label>État de l'existant</label>
-    <textarea id="ap_existant" rows="2" placeholder="Accès, environnement..."></textarea>
-    <div class="grid">
-        <div><label>Nacelle ?</label><select id="ap_nacelle"><option>NON</option><option>OUI</option></select></div>
-        <div><label>Hauteur (m)</label><input type="number" id="ap_hauteur"></div>
-    </div>
-    <label>Support préconisé</label>
-    <input type="text" id="ap_support" placeholder="Mur, Toiture...">
-</div>
-
-<div id="bloc_pico" class="form-block card" style="border-top-color: #2ecc71;">
-    <h3>🏢 Détails DOE PICO</h3>
-    <label>Emplacement Baie</label>
-    <input type="text" id="p_emplacement" placeholder="Local technique">
-    <div class="grid">
-        <div><label>S/N Baie</label><input type="text" id="p_sn_baie"></div>
-        <div><label>Modèle Antenne</label><input type="text" id="p_modele"></div>
-    </div>
-    <div class="grid">
-        <div><label>Mesure Sortie 1</label><input type="text" id="p_dbm_1"></div>
-        <div><label>Mesure Sortie 2</label><input type="text" id="p_dbm_2"></div>
-    </div>
-</div>
-
-<div class="card">
-    <h3>🖼️ Reportage Photos (Annotations)</h3>
-    <input type="file" accept="image/*" capture="camera" multiple onchange="ajouterPhotos(event)">
-    <div id="container_photos" style="margin-top:10px;"></div>
-</div>
-
-<div class="card" style="border-top-color: #6c757d;">
-    <h3>✍️ Validation & Signature</h3>
-    <label>Nom du signataire</label>
-    <input type="text" id="nom_signataire" placeholder="Nom Prénom">
-    <label>Signature (Tactile)</label>
-    <canvas id="signature-pad"></canvas>
-    <button type="button" onclick="effacerSignature()" style="margin-top:10px; width:100%; background:#95a5a6; color:white; border:none; padding:8px; border-radius:5px;">Effacer signature</button>
-</div>
-
-<div class="footer-btns">
-    <button class="btn-gen" style="background:#007bff;" onclick="genererWordFinal()">GÉNÉRER WORD</button>
-    <button class="btn-gen" onclick="window.print()">IMPRIMER PDF</button>
-</div>
-
-<script>
-    /** SÉCURITÉ **/
-    document.onkeydown = function(e) {
-        if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
-    };
-
-    /** GESTION INTERFACE **/
-    let listePhotos = [];
-
-    function changerFormulaire() {
-        const val = document.getElementById("selectRapport").value;
-        document.querySelectorAll('.form-block').forEach(b => b.style.display = 'none');
-        if(val === "AUDIT_PICO") document.getElementById("bloc_audit_pico").style.display = "block";
-        if(val === "PICO") document.getElementById("bloc_pico").style.display = "block";
-    }
-
-    function apercuGarde(e) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const img = document.getElementById('view_garde');
-            img.src = reader.result;
-            img.style.display = "block";
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
-    /** SYSTÈME DE PHOTOS ANNOTÉES **/
-    function ajouterPhotos(event) {
-        const files = event.target.files;
-        for (let file of files) {
-            const id = Date.now() + Math.random();
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 800; canvas.height = 600;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, 800, 600);
-                    
-                    const obj = { id, canvas, ctx, img, pastilles: [] };
-                    listePhotos.push(obj);
-                    renderPhotoList(obj);
-                };
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function renderPhotoList(obj) {
-        const div = document.createElement('div');
-        div.className = "photo-item";
-        div.id = `photo_${obj.id}`;
-        div.innerHTML = `<p style='font-size:12px; margin:0 0 5px;'>Cliquez sur l'image pour annoter</p>`;
-        
-        obj.canvas.onclick = (e) => {
-            const rect = obj.canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (obj.canvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (obj.canvas.height / rect.height);
-            const txt = prompt("Légende de la pastille :");
-            if(txt) {
-                obj.pastilles.push({x, y, txt});
-                redessinerPhoto(obj);
-            }
-        };
-
-        div.appendChild(obj.canvas);
-        const legende = document.createElement('div');
-        legende.id = `leg_${obj.id}`;
-        legende.style.fontSize = "12px";
-        div.appendChild(legende);
-        
-        const btnSup = document.createElement('button');
-        btnSup.innerText = "Supprimer";
-        btnSup.onclick = () => { div.remove(); listePhotos = listePhotos.filter(p => p.id !== obj.id); };
-        div.appendChild(btnSup);
-
-        document.getElementById('container_photos').appendChild(div);
-    }
-
-    function redessinerPhoto(obj) {
-        obj.ctx.drawImage(obj.img, 0, 0, 800, 600);
-        obj.pastilles.forEach((p, i) => {
-            obj.ctx.fillStyle = "red"; obj.ctx.beginPath(); obj.ctx.arc(p.x, p.y, 20, 0, 7); obj.ctx.fill();
-            obj.ctx.fillStyle = "white"; obj.ctx.font = "bold 20px Arial"; obj.ctx.textAlign="center";
-            obj.ctx.fillText(i+1, p.x, p.y+7);
-        });
-        document.getElementById(`leg_${obj.id}`).innerHTML = obj.pastilles.map((p,i) => `<b>(${i+1})</b> ${p.txt}`).join(' | ');
-    }
-
-    /** SIGNATURE **/
-    const sigCanvas = document.getElementById('signature-pad');
-    const sigCtx = sigCanvas.getContext('2d');
-    let signing = false;
-    sigCanvas.width = sigCanvas.offsetWidth; sigCanvas.height = 150;
-
-    function getSigPos(e) {
-        const r = sigCanvas.getBoundingClientRect();
-        const cx = e.touches ? e.touches[0].clientX : e.clientX;
-        const cy = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: cx - r.left, y: cy - r.top };
-    }
-    sigCanvas.addEventListener('mousedown', () => { signing = true; sigCtx.beginPath(); });
-    sigCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); signing = true; sigCtx.beginPath(); });
-    window.addEventListener('mouseup', () => signing = false);
-    sigCanvas.addEventListener('mousemove', (e) => {
-        if(!signing) return;
-        const p = getSigPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
-    });
-    sigCanvas.addEventListener('touchmove', (e) => {
-        e.preventDefault(); if(!signing) return;
-        const p = getSigPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
-    });
-    function effacerSignature() { sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
-
-    /** GÉNÉRATION WORD SOGETREL **/
-    async function genererWordFinal() {
-        const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Table, TableRow, TableCell, WidthType } = docx;
-        const type = document.getElementById("selectRapport").value;
-        const ot = document.getElementById("num_rapport").value || "SANS-OT";
-
-        // Image Garde
-        let imgG = [];
-        const viewG = document.getElementById('view_garde');
-        if(viewG.src.startsWith('data')) {
-            const res = await fetch(viewG.src); const b = await res.blob();
-            imgG = [new ImageRun({ data: b, transformation: { width: 450, height: 300 } })];
-        }
-
-        // Photos Annotées
-        const photosWord = [];
-        for (let pObj of listePhotos) {
-            const dataP = pObj.canvas.toDataURL("image/jpeg", 0.7);
-            const resP = await fetch(dataP); const blobP = await resP.blob();
-            photosWord.push(new Paragraph({ text: `Rapport Photo - Légendes : ${document.getElementById(`leg_${pObj.id}`).innerText}`, bold: true, spacing: {before: 400} }));
-            photosWord.push(new Paragraph({ children: [new ImageRun({ data: blobP, transformation: { width: 550, height: 400 } })], alignment: AlignmentType.CENTER }));
-        }
-
-        // Signature
-        const sigData = sigCanvas.toDataURL("image/png");
-        const resS = await fetch(sigData); const blobS = await resS.blob();
-
-        const doc = new Document({
-            sections: [{
-                children: [
-                    new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: type.replace('_', ' '), heading: docx.HeadingLevel.TITLE, alignment: AlignmentType.CENTER }),
-                    new Paragraph({ children: imgG, alignment: AlignmentType.CENTER, spacing: {after: 400} }),
-                    
-                    new Table({
-                        width: { size: 100, type: WidthType.PERCENTAGE },
-                        rows: [
-                            new TableRow({ children: [new TableCell({ children: [new Paragraph("N° OT")], shading: {fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(ot)] })] }),
-                            new TableRow({ children: [new TableCell({ children: [new Paragraph("CLIENT")], shading: {fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(document.getElementById('client_nom').value)] })] })
-                        ]
-                    }),
-
-                    new Paragraph({ text: "REPORTAGE PHOTOGRAPHIQUE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 500} }),
-                    ...photosWord,
-
-                    new Paragraph({ text: "SIGNATURE ET VALIDATION", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 500}, pageBreakBefore: true }),
-                    new Paragraph({ text: "Signataire : " + document.getElementById('nom_signataire').value, bold: true }),
-                    new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 200, height: 80 } })] })
-                ]
-            }]
-        });
-
-        Packer.toBlob(doc).then(blob => saveAs(blob, `RAPPORT_${ot}.docx`));
-    }
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL PRO - GÉNÉRATEUR COMPLET</title>
+    <title>SOGETREL PRO - GÉNÉRATEUR MULTI-MODÈLES</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        :root { --sogetrel-blue: #002d5b; --sogetrel-green: #27ae60; }
+        :root { --sogetrel-blue: #002d5b; --sogetrel-green: #27ae60; --sogetrel-orange: #f39c12; }
         body { 
             font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px;
             user-select: none; -webkit-user-select: none;
         }
         .header { background: var(--sogetrel-blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
-        .btn-resume { position: absolute; left: 10px; top: 15px; background: #f39c12; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .btn-resume { position: absolute; left: 10px; top: 15px; background: var(--sogetrel-orange); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; font-weight: bold; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--sogetrel-blue); }
         h3 { margin-top: 0; color: var(--sogetrel-blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
@@ -316,7 +33,7 @@
 <div class="header">
     <button class="btn-resume" onclick="chargerBrouillon()">📂 REPRENDRE</button>
     <h2 style="margin:0;">SOGETREL</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 12px;">Reporting & Sauvegarde Auto</p>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Audit & DOE : PICO, Cradlepoint, Starlink</p>
 </div>
 
 <div class="card">
@@ -324,8 +41,10 @@
     <label>Type de Rapport</label>
     <select id="selectRapport" onchange="changerFormulaire(); sauvegarderAuto();">
         <option value="">-- Choisir un modèle --</option>
-        <option value="AUDIT_PICO">🔍 Audit PICO (Relevé)</option>
-        <option value="PICO">🏢 DOE PICO (Installation)</option>
+        <option value="AUDIT_PICO">🔍 Audit PICO</option>
+        <option value="DOE_PICO">🏢 DOE PICO</option>
+        <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint</option>
+        <option value="DOE_CRADLEPOINT">🏢 DOE Cradlepoint</option>
         <option value="ANTENNE_DEPORTEE">📡 Antenne Déportée</option>
         <option value="STARLINK">🛰️ Starlink</option>
     </select>
@@ -335,37 +54,45 @@
         <input type="text" id="client_nom" placeholder="Nom du Client" oninput="sauvegarderAuto()">
     </div>
     
-    <label>Adresse & Contact</label>
-    <input type="text" id="ville_site" placeholder="Adresse complète / Ville" oninput="sauvegarderAuto()">
-    <input type="text" id="contact_nom" placeholder="Nom du contact sur site" oninput="sauvegarderAuto()">
+    <label>Adresse & Contact sur site</label>
+    <input type="text" id="ville_site" placeholder="Adresse complète du site" oninput="sauvegarderAuto()">
+    <input type="text" id="contact_nom" placeholder="Nom du contact" oninput="sauvegarderAuto()">
     <div class="grid">
         <input type="tel" id="contact_tel" placeholder="Téléphone" oninput="sauvegarderAuto()">
         <input type="email" id="contact_mail" placeholder="Email" oninput="sauvegarderAuto()">
     </div>
 </div>
 
-<div class="card">
-    <h3>📸 Photo de Garde</h3>
-    <input type="file" accept="image/*" capture="camera" onchange="apercuGarde(event)">
-    <img id="view_garde" style="display:none; width:100%; margin-top:10px; border-radius:8px;">
-</div>
-
-<div id="bloc_audit_pico" class="form-block card">
-    <h3>🔍 Détails Audit PICO</h3>
-    <textarea id="ap_existant" rows="2" placeholder="État de l'existant" oninput="sauvegarderAuto()"></textarea>
+<div id="bloc_audit" class="form-block card" style="border-top-color: #00bcd4;">
+    <h3>🔍 Détails de l'Audit</h3>
+    <textarea id="audit_existant" rows="2" placeholder="Analyse de l'existant / Environnement" oninput="sauvegarderAuto()"></textarea>
     <div class="grid">
-        <select id="ap_nacelle" onchange="sauvegarderAuto()"><option>NACELLE : NON</option><option>NACELLE : OUI</option></select>
-        <input type="number" id="ap_hauteur" placeholder="Hauteur (m)" oninput="sauvegarderAuto()">
+        <select id="audit_nacelle" onchange="sauvegarderAuto()"><option>NACELLE : NON</option><option>NACELLE : OUI</option></select>
+        <input type="number" id="audit_hauteur" placeholder="Hauteur (m)" oninput="sauvegarderAuto()">
     </div>
-    <input type="text" id="ap_support" placeholder="Support préconisé" style="margin-top:10px;" oninput="sauvegarderAuto()">
+    <input type="text" id="audit_support" placeholder="Support préconisé (Mur, Poteau...)" style="margin-top:10px;" oninput="sauvegarderAuto()">
 </div>
 
-<div id="bloc_pico" class="form-block card">
-    <h3>🏢 Détails DOE PICO</h3>
-    <input type="text" id="p_emplacement" placeholder="Emplacement Baie" oninput="sauvegarderAuto()">
+<div id="bloc_doe_cp" class="form-block card" style="border-top-color: #e67e22;">
+    <h3>📊 Relevés Cradlepoint (4G/5G)</h3>
+    <div class="grid">
+        <input type="text" id="cp_modele" placeholder="Modèle (ex: E300, IBR900)" oninput="sauvegarderAuto()">
+        <input type="text" id="cp_sn" placeholder="N° de Série (S/N)" oninput="sauvegarderAuto()">
+    </div>
+    <label>Mesures Signal</label>
+    <div class="grid">
+        <input type="text" id="cp_rsrp" placeholder="RSRP (dBm)" oninput="sauvegarderAuto()">
+        <input type="text" id="cp_sinr" placeholder="SINR (dB)" oninput="sauvegarderAuto()">
+    </div>
+    <input type="text" id="cp_debit" placeholder="Débit constaté (D/U Mbps)" style="margin-top:10px;" oninput="sauvegarderAuto()">
+</div>
+
+<div id="bloc_doe_pico" class="form-block card" style="border-top-color: #2ecc71;">
+    <h3>🏢 Détails Installation PICO</h3>
+    <input type="text" id="p_emplacement" placeholder="Emplacement Baie Info" oninput="sauvegarderAuto()">
     <div class="grid" style="margin-top:10px;">
         <input type="text" id="p_sn_baie" placeholder="S/N Baie" oninput="sauvegarderAuto()">
-        <input type="text" id="p_modele" placeholder="Modèle Antenne" oninput="sauvegarderAuto()">
+        <input type="text" id="p_dbm" placeholder="Mesure Sortie Antenne" oninput="sauvegarderAuto()">
     </div>
 </div>
 
@@ -373,7 +100,7 @@
     <h3>✍️ Validation & Signature</h3>
     <input type="text" id="nom_signataire" placeholder="Nom du signataire" oninput="sauvegarderAuto()">
     <canvas id="signature-pad"></canvas>
-    <button onclick="sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height)" style="width:100%; margin-top:5px; padding:5px; border-radius:5px; border:1px solid #ccc;">Effacer</button>
+    <button onclick="sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height)" style="width:100%; margin-top:5px; padding:5px; border:1px solid #ccc; background:#f9f9f9;">Effacer signature</button>
 </div>
 
 <div class="footer-btns">
@@ -384,61 +111,30 @@
 <script>
     /** SAUVEGARDE AUTOMATIQUE **/
     function sauvegarderAuto() {
-        const data = {
-            type: document.getElementById("selectRapport").value,
-            ot: document.getElementById("num_rapport").value,
-            client: document.getElementById("client_nom").value,
-            ville: document.getElementById("ville_site").value,
-            c_nom: document.getElementById("contact_nom").value,
-            c_tel: document.getElementById("contact_tel").value,
-            c_mail: document.getElementById("contact_mail").value,
-            ap_existant: document.getElementById("ap_existant").value,
-            ap_nacelle: document.getElementById("ap_nacelle").value,
-            ap_hauteur: document.getElementById("ap_hauteur").value,
-            ap_support: document.getElementById("ap_support").value,
-            p_emplacement: document.getElementById("p_emplacement").value,
-            p_sn_baie: document.getElementById("p_sn_baie").value,
-            p_modele: document.getElementById("p_modele").value,
-            nom_signataire: document.getElementById("nom_signataire").value
-        };
-        localStorage.setItem("brouillon_sogetrel", JSON.stringify(data));
+        const fields = ["selectRapport","num_rapport","client_nom","ville_site","contact_nom","contact_tel","contact_mail","audit_existant","audit_nacelle","audit_hauteur","audit_support","cp_modele","cp_sn","cp_rsrp","cp_sinr","cp_debit","p_emplacement","p_sn_baie","p_dbm","nom_signataire"];
+        const data = {};
+        fields.forEach(id => data[id] = document.getElementById(id).value);
+        localStorage.setItem("brouillon_sogetrel_v2", JSON.stringify(data));
     }
 
     function chargerBrouillon() {
-        const data = JSON.parse(localStorage.getItem("brouillon_sogetrel"));
+        const data = JSON.parse(localStorage.getItem("brouillon_sogetrel_v2"));
         if (!data) return alert("Aucun brouillon trouvé.");
-        document.getElementById("selectRapport").value = data.type || "";
-        document.getElementById("num_rapport").value = data.ot || "";
-        document.getElementById("client_nom").value = data.client || "";
-        document.getElementById("ville_site").value = data.ville || "";
-        document.getElementById("contact_nom").value = data.c_nom || "";
-        document.getElementById("contact_tel").value = data.c_tel || "";
-        document.getElementById("contact_mail").value = data.c_mail || "";
-        document.getElementById("ap_existant").value = data.ap_existant || "";
-        document.getElementById("ap_nacelle").value = data.ap_nacelle || "NACELLE : NON";
-        document.getElementById("ap_hauteur").value = data.ap_hauteur || "";
-        document.getElementById("ap_support").value = data.ap_support || "";
-        document.getElementById("p_emplacement").value = data.p_emplacement || "";
-        document.getElementById("p_sn_baie").value = data.p_sn_baie || "";
-        document.getElementById("p_modele").value = data.p_modele || "";
-        document.getElementById("nom_signataire").value = data.nom_signataire || "";
+        Object.keys(data).forEach(key => { if(document.getElementById(key)) document.getElementById(key).value = data[key]; });
         changerFormulaire();
         alert("Brouillon récupéré !");
     }
 
-    /** INTERFACE **/
+    /** INTERFACE DYNAMIQUE **/
     function changerFormulaire() {
         const val = document.getElementById("selectRapport").value;
-        document.getElementById("bloc_audit_pico").style.display = val === "AUDIT_PICO" ? "block" : "none";
-        document.getElementById("bloc_pico").style.display = val === "PICO" ? "block" : "none";
+        // Reset blocks
+        document.getElementById("bloc_audit").style.display = (val.includes("AUDIT")) ? "block" : "none";
+        document.getElementById("bloc_doe_pico").style.display = (val === "DOE_PICO") ? "block" : "none";
+        document.getElementById("bloc_doe_cp").style.display = (val === "DOE_CRADLEPOINT") ? "block" : "none";
     }
 
-    function apercuGarde(e) {
-        const reader = new FileReader();
-        reader.onload = () => { document.getElementById('view_garde').src = reader.result; document.getElementById('view_garde').style.display="block"; };
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
+    // Signature
     const sigCanvas = document.getElementById('signature-pad');
     const sigCtx = sigCanvas.getContext('2d');
     let signing = false;
@@ -456,17 +152,11 @@
         const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
     };
 
-    /** GÉNÉRATION WORD (STYLE SOGETREL) **/
+    /** GÉNÉRATION WORD STYLE SOGETREL **/
     async function genererWordFinal() {
         const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Table, TableRow, TableCell, WidthType } = docx;
         
-        // Données
         const ot = document.getElementById("num_rapport").value || "SANS-OT";
-        const client = document.getElementById("client_nom").value || "CLIENT";
-        const adresse = document.getElementById("ville_site").value || "";
-        const contact = `${document.getElementById("contact_nom").value} / ${document.getElementById("contact_tel").value}`;
-
-        // Signature
         const sigData = sigCanvas.toDataURL("image/png");
         const resS = await fetch(sigData); const blobS = await resS.blob();
 
@@ -475,31 +165,30 @@
                 properties: { page: { margin: { top: 720, right: 720, bottom: 720, left: 720 } } },
                 children: [
                     new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: "", spacing: { after: 400 } }),
-                    new Paragraph({ children: [new TextRun({ text: document.getElementById("selectRapport").value.replace('_', ' '), bold: true, size: 40, color: "002d5b" })], alignment: AlignmentType.CENTER }),
+                    new Paragraph({ text: "", spacing: { after: 300 } }),
+                    new Paragraph({ children: [new TextRun({ text: document.getElementById("selectRapport").value.replace(/_/g, ' '), bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
                     new Paragraph({ text: "", spacing: { after: 400 } }),
                     
-                    // TABLEAU DE GARDE (Modèle Officiel)
                     new Table({
                         width: { size: 100, type: WidthType.PERCENTAGE },
                         rows: [
                             new TableRow({ children: [
                                 new TableCell({ children: [new Paragraph({ text: "SITE / CLIENT", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(`${client} \n ${adresse}`)] })
+                                new TableCell({ children: [new Paragraph(`${document.getElementById("client_nom").value} \n ${document.getElementById("ville_site").value}`)] })
                             ]}),
                             new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "CONTACT SITE", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(contact)] })
+                                new TableCell({ children: [new Paragraph({ text: "CONTACT", bold: true })], shading: {fill:"f0f0f0"} }),
+                                new TableCell({ children: [new Paragraph(`${document.getElementById("contact_nom").value} (${document.getElementById("contact_tel").value})`)] })
                             ]}),
                             new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "N° OT / DOSSIER", bold: true })], shading: {fill:"f0f0f0"} }),
+                                new TableCell({ children: [new Paragraph({ text: "DOSSIER OT", bold: true })], shading: {fill:"f0f0f0"} }),
                                 new TableCell({ children: [new Paragraph(ot)] })
                             ]})
                         ]
                     }),
 
                     new Paragraph({ text: "SIGNATURE :", bold: true, spacing: { before: 800 } }),
-                    new Paragraph({ text: "Signataire : " + document.getElementById("nom_signataire").value }),
+                    new Paragraph({ text: "Validé par : " + document.getElementById("nom_signataire").value }),
                     new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] })
                 ]
             }]
@@ -507,7 +196,6 @@
         Packer.toBlob(doc).then(b => saveAs(b, `RAPPORT_${ot}.docx`));
     }
 
-    // Protection F12
     document.onkeydown = (e) => { if(e.keyCode == 123) return false; };
 </script>
 
