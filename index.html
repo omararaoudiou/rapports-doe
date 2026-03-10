@@ -3,69 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL - AUDIT PICO BTS PRO</title>
-    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <title>SOGETREL - GÉNÉRATEUR AUDIT PICO V10</title>
     
-    <style>
-        :root { 
-            --blue: #002d5b; --blue-light: #0056b3; --green: #28a745; 
-            --light: #f4f7f9; --text: #333; --border: #ced4da;
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: var(--light); color: var(--text); margin: 0; padding-bottom: 100px; 
-        }
-        .header { 
-            background: var(--blue); color: white; padding: 20px; 
-            text-align: center; font-weight: bold; font-size: 1.4em;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        .container { max-width: 900px; margin: auto; padding: 15px; }
-        .card { 
-            background: white; padding: 20px; border-radius: 10px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; 
-            border-top: 5px solid var(--blue); 
-        }
-        h3 { 
-            color: var(--blue); text-transform: uppercase; font-size: 1.1em; 
-            border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top: 0;
-            display: flex; align-items: center;
-        }
-        label { display: block; margin: 15px 0 5px; font-weight: 600; color: #444; }
-        input, select, textarea { 
-            width: 100%; padding: 12px; border: 1px solid var(--border); 
-            border-radius: 6px; box-sizing: border-box; font-size: 15px;
-        }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        /* Tableaux */
-        .table-radio { width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #ddd; }
-        .table-radio th { background: #f8f9fa; padding: 10px; border: 1px solid #ddd; font-size: 12px; }
-        .table-radio td { border: 1px solid #ddd; padding: 0; }
-        .table-radio input { border: none; text-align: center; padding: 10px; height: 100%; border-radius: 0; }
-        
-        /* Boutons */
-        .btn-add { 
-            background: var(--blue); color: white; border: none; padding: 12px; 
-            width: 100%; border-radius: 6px; cursor: pointer; margin-top: 15px; 
-            font-weight: bold; transition: 0.3s;
-        }
-        .btn-add:hover { background: var(--blue-light); }
-        .btn-gen { 
-            position: fixed; bottom: 20px; left: 20px; right: 20px; 
-            background: var(--green); color: white; border: none; padding: 20px; 
-            border-radius: 50px; font-weight: bold; font-size: 18px; 
-            cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 1000;
-        }
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-        /* Photos */
+    <style>
+        :root { --blue: #002d5b; --green: #28a745; --light: #f4f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding-bottom: 120px; color: #333; }
+        .header { background: var(--blue); color: white; padding: 20px; text-align: center; font-weight: bold; font-size: 1.2em; }
+        .container { max-width: 800px; margin: auto; padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 5px solid var(--blue); }
+        h3 { color: var(--blue); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 8px; text-transform: uppercase; font-size: 1em; }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
         canvas { width: 100%; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid #ddd; }
-        .pico-box { 
-            background: #f0f7ff; padding: 15px; border-radius: 8px; 
-            border-left: 5px solid var(--blue); margin-top: 20px; 
-        }
-        .img-label { font-size: 0.8em; color: #666; font-style: italic; }
+        .btn-add { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .btn-gen { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--green); color: white; border: none; padding: 20px; border-radius: 50px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.4); z-index: 1000; }
+        .table-radio { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .table-radio th, .table-radio td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 13px; }
+        .pico-unit { background: #f0f7ff; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 6px solid var(--blue); }
     </style>
 </head>
 <body>
@@ -73,164 +30,146 @@
 <div class="header">📋 SOGETREL - AUDIT PICO BTS</div>
 
 <div class="container">
-    
     <div class="card">
         <h3>1. Identification du Site</h3>
-        <div class="grid">
-            <div>
-                <label>Numéro d'OT</label>
-                <input type="text" id="ot" placeholder="Ex: 63335">
-            </div>
-            <div>
-                <label>CDP Bytel</label>
-                <input type="text" id="cdp" placeholder="Nom du CDP">
-            </div>
-        </div>
-        <label>Raison Sociale / Client</label>
-        <input type="text" id="client" placeholder="Ex: BATIGERE HABITAT">
-        <label>Adresse du site</label>
-        <textarea id="adresse" rows="2" placeholder="Adresse complète..."></textarea>
+        <input type="text" id="ot" placeholder="Numéro d'OT (ex: 63221)">
+        <input type="text" id="client" placeholder="Client (ex: BATIGERE / CDC HABITAT)" style="margin-top:10px;">
+        <textarea id="adresse" placeholder="Adresse complète du site" style="margin-top:10px;"></textarea>
     </div>
 
     <div class="card">
-        <h3>2. Accès Site & Façade</h3>
-        <p class="img-label">Prendre une vue large pour localiser l'entrée technique ou le stationnement nacelle.</p>
-        <input type="file" accept="image/*" capture="camera" onchange="processImg(this, 'c_facade', 'VUE FACADE / ACCES SITE')">
+        <h3>2. Photo de la Façade / Accès</h3>
+        <input type="file" accept="image/*" capture="camera" onchange="loadPhoto(this, 'c_facade', 'VUE FACADE / ACCES')">
         <canvas id="c_facade"></canvas>
     </div>
 
     <div class="card">
-        <h3>3. Relevés Radio & Plan</h3>
-        <label>Plan de masse annoté</label>
-        <input type="file" accept="image/*" capture="camera" onchange="processImg(this, 'c_plan', 'PLAN DE MASSE / POINTS MESURES')">
+        <h3>3. Plan de masse & Mesures</h3>
+        <input type="file" accept="image/*" capture="camera" onchange="loadPhoto(this, 'c_plan', 'PLAN DE MASSE')">
         <canvas id="c_plan"></canvas>
-
-        <label style="margin-top:25px;">Tableau de mesures (Network Cell Info)</label>
+        
         <table class="table-radio">
             <thead>
-                <tr>
-                    <th>Point</th>
-                    <th>4G (RSRP/Band)</th>
-                    <th>5G (RSRP/Band)</th>
-                    <th>Speedtest (DL/UP)</th>
-                </tr>
+                <tr><th>Point</th><th>4G (RSRP)</th><th>5G (RSRP)</th><th>DL/UP</th></tr>
             </thead>
-            <tbody id="mesuresBody"></tbody>
+            <tbody id="mBody"></tbody>
         </table>
-        <button class="btn-add" onclick="addPM()">+ Ajouter un Point de Mesure (PM)</button>
+        <button class="btn-add" onclick="addPM()">+ Ajouter un point de mesure</button>
     </div>
 
     <div class="card">
-        <h3>4. Solution PICO BTS</h3>
+        <h3>4. Local Technique & Picos</h3>
         <label>Photo de la Baie Informatique</label>
-        <input type="file" accept="image/*" capture="camera" onchange="processImg(this, 'c_baie', 'LOCAL TECHNIQUE / BAIE')">
+        <input type="file" accept="image/*" capture="camera" onchange="loadPhoto(this, 'c_baie', 'VUE BAIE INFO')">
         <canvas id="c_baie"></canvas>
-
-        <div id="picoContainer"></div>
-        <button class="btn-add" onclick="addPico()">+ Ajouter une Antenne PICO</button>
+        
+        <div id="pContainer"></div>
+        <button class="btn-add" onclick="addPico()">+ Ajouter une Antenne Pico</button>
     </div>
 
     <div class="card">
-        <h3>5. Mise en œuvre & Travaux</h3>
-        <div class="grid">
-            <div>
-                <label>Hauteur max (m)</label>
-                <input type="text" id="hauteur" placeholder="Ex: 3m">
-            </div>
-            <div>
-                <label>Moyen d'accès</label>
-                <select id="moyen">
-                    <option>Escabeau / PIRL</option>
-                    <option>Nacelle nécessaire</option>
-                    <option>Échelle</option>
-                </select>
-            </div>
-        </div>
-        <label>Détails des travaux / Fournitures</label>
-        <textarea id="travaux" rows="4">Installation de X BTS.
-Métrage total de câble : XX m.
-Matériel : Injecteurs POE, plateau d'alim.</textarea>
+        <h3>5. Travaux & Matériel</h3>
+        <textarea id="moe" rows="4">Installation conforme. Prévoir plateau d'alimentation et injecteur POE.</textarea>
     </div>
-
 </div>
 
-<button class="btn-gen" onclick="generateReport()">📥 GÉNÉRER L'AUDIT COMPLET (DOCX)</button>
+<button class="btn-gen" onclick="generateWordDoc()">📥 GÉNÉRER LE RAPPORT (.DOCX)</button>
 
 <script>
-    let pmCount = 0;
-    let picoCount = 0;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel, AlignmentType } = window.docx;
+    let pmCount = 0; let picoCount = 0;
+    const photoStore = {};
 
-    // Ajout dynamique de points de mesure
     function addPM() {
         pmCount++;
-        const row = `<tr>
-            <td style="text-align:center; font-weight:bold; background:#f0f0f0;">PM0${pmCount}</td>
-            <td><input type="text" id="rsrp4g_${pmCount}" placeholder="-110 / B3"></td>
-            <td><input type="text" id="rsrp5g_${pmCount}" placeholder="-115 / n78"></td>
-            <td><input type="text" id="speed_${pmCount}" placeholder="25 / 5"></td>
-        </tr>`;
-        document.getElementById('mesuresBody').insertAdjacentHTML('beforeend', row);
+        const row = `<tr><td>PM${pmCount}</td>
+            <td><input type="text" id="v4_${pmCount}" value="-105"></td>
+            <td><input type="text" id="v5_${pmCount}" value="-112"></td>
+            <td><input type="text" id="vS_${pmCount}" value="30/10"></td></tr>`;
+        document.getElementById('mBody').insertAdjacentHTML('beforeend', row);
     }
 
-    // Ajout dynamique de Picos
     function addPico() {
         picoCount++;
-        const html = `
-            <div class="pico-box" id="pico_div_${picoCount}">
-                <label>ANTENNE PICO N°${picoCount}</label>
-                <input type="file" accept="image/*" capture="camera" onchange="processImg(this, 'c_pico_${picoCount}', 'EMPLACEMENT PICO ${picoCount}')">
-                <canvas id="c_pico_${picoCount}"></canvas>
-                <label>Distance Desserte (mètres)</label>
-                <input type="number" id="dist_pico_${picoCount}" placeholder="Ex: 35">
-            </div>`;
-        document.getElementById('picoContainer').insertAdjacentHTML('beforeend', html);
+        const h = `<div class="pico-unit">
+            <label>PICO N°${picoCount} - Emplacement</label>
+            <input type="file" accept="image/*" capture="camera" onchange="loadPhoto(this, 'c_p${picoCount}', 'PICO ${picoCount}')">
+            <canvas id="c_p${picoCount}"></canvas>
+            <input type="number" id="d_p${picoCount}" placeholder="Métrage desserte (m)" style="margin-top:10px;">
+        </div>`;
+        document.getElementById('pContainer').insertAdjacentHTML('beforeend', h);
     }
 
-    // Traitement des images (Compression + Marquage bleu Sogetrel)
-    function processImg(input, canvasId, labelText) {
+    function loadPhoto(input, cid, label) {
         if (!input.files[0]) return;
-        const canvas = document.getElementById(canvasId);
+        const canvas = document.getElementById(cid);
         const ctx = canvas.getContext('2d');
         const reader = new FileReader();
-
-        reader.onload = function(e) {
+        reader.onload = (e) => {
             const img = new Image();
-            img.onload = function() {
-                // Resize proportionnel
-                const maxWidth = 1000;
-                const scale = maxWidth / img.width;
-                canvas.width = maxWidth;
-                canvas.height = img.height * scale;
-                
+            img.onload = () => {
+                const ratio = img.height / img.width;
+                canvas.width = 800; canvas.height = 800 * ratio;
                 canvas.style.display = 'block';
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                // Bandeau Bleu SOGETREL
-                ctx.fillStyle = "rgba(0, 45, 91, 0.9)";
-                ctx.fillRect(0, 0, 350, 50);
-                ctx.fillStyle = "white";
-                ctx.font = "bold 20px Arial";
-                ctx.fillText(labelText, 20, 32);
-            }
+                ctx.drawImage(img, 0, 0, 800, 800 * ratio);
+                // Badge Sogetrel
+                ctx.fillStyle = "rgba(0,45,91,0.85)"; ctx.fillRect(0,0,250,40);
+                ctx.fillStyle = "white"; ctx.font = "bold 18px Arial"; ctx.fillText(label, 15, 26);
+                photoStore[cid] = canvas.toDataURL("image/jpeg", 0.75);
+            };
             img.src = e.target.result;
-        }
+        };
         reader.readAsDataURL(input.files[0]);
     }
 
-    // Fonction de génération (Simulation pour cette version web)
-    async function generateReport() {
-        const clientName = document.getElementById('client').value || "Client_Inconnu";
-        alert("📊 Préparation du rapport pour " + clientName + "\n\nLe fichier Word inclura :\n- Photo de façade\n- Plan de masse\n- Tableau de mesures\n- Photos des " + picoCount + " antennes.");
-        
-        // Logique docx.js ici pour l'export réel
-        // (La structure est prête pour l'intégration des objets Paragraph et Image de docx.js)
+    async function generateWordDoc() {
+        try {
+            const children = [
+                new Paragraph({ text: "AUDIT TECHNIQUE PICO BTS", heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER }),
+                new Paragraph({ text: "" }),
+                new Paragraph({ children: [new TextRun({ text: `CLIENT : ${document.getElementById('client').value}`, bold: true })] }),
+                new Paragraph({ text: `Numéro d'OT : ${document.getElementById('ot').value}` }),
+                new Paragraph({ text: `Adresse : ${document.getElementById('adresse').value}` }),
+                new Paragraph({ text: "" })
+            ];
+
+            const pushImg = (title, id) => {
+                children.push(new Paragraph({ text: title, heading: HeadingLevel.HEADING_1 }));
+                if(photoStore[id]) {
+                    const base64 = photoStore[id].split(',')[1];
+                    children.push(new Paragraph({
+                        children: [new ImageRun({ data: Uint8Array.from(atob(base64), c => c.charCodeAt(0)), width: 500, height: 375 })]
+                    }));
+                } else { children.push(new Paragraph("Absence de photo.")); }
+            };
+
+            pushImg("1. VUE DE LA FACADE", 'c_facade');
+            pushImg("2. PLAN DE MASSE", 'c_plan');
+            pushImg("3. LOCAL TECHNIQUE", 'c_baie');
+
+            children.push(new Paragraph({ text: "4. DÉTAILS DES ANTENNES PICO", heading: HeadingLevel.HEADING_1 }));
+            for(let i=1; i<=picoCount; i++) {
+                const d = document.getElementById(`d_p${i}`).value || "0";
+                children.push(new Paragraph({ text: `Antenne Pico n°${i} - Desserte estimée : ${d}m`, heading: HeadingLevel.HEADING_2 }));
+                if(photoStore[`c_p${i}`]) {
+                    const b64 = photoStore[`c_p${i}`].split(',')[1];
+                    children.push(new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(b64), c => c.charCodeAt(0)), width: 450, height: 337 })] }));
+                }
+            }
+
+            children.push(new Paragraph({ text: "5. SYNTHÈSE TRAVAUX", heading: HeadingLevel.HEADING_1 }));
+            children.push(new Paragraph(document.getElementById('moe').value));
+
+            const doc = new Document({ sections: [{ children }] });
+            const blob = await Packer.toBlob(doc);
+            window.saveAs(blob, `Audit_Pico_${document.getElementById('ot').value || "Sogetrel"}.docx`);
+        } catch (e) {
+            alert("Erreur de génération : " + e.message);
+        }
     }
 
-    // Initialisation par défaut
-    window.onload = () => {
-        for(let i=0; i<4; i++) addPM(); // 4 points de mesure par défaut
-    };
+    // Init PM
+    for(let i=0; i<3; i++) addPM();
 </script>
-
 </body>
 </html>
