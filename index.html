@@ -3,240 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CIT REPORT IA - SOLUTION INTEGRALE V10.0</title>
+    <title>SOGETREL - EXPERT REPORT V19</title>
     
-    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.2/docxtemplater.js"></script>
+    <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
-        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; --red: #e74c3c; --light-grey: #f4f7f9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light-grey); margin: 0; padding: 10px; padding-bottom: 140px; }
+        :root { --blue: #002d5b; --green: #27ae60; --orange: #f39c12; --light: #f4f7f9; --red: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 10px; padding-bottom: 140px; color: #333; }
         
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* Header */
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .header h2 { margin: 0; font-size: 1.2em; }
+
+        /* Cards */
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
+        h3 { margin-top: 0; color: var(--blue); font-size: 1em; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         
-        h3 { margin-top: 0; color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; text-transform: uppercase; }
-        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 13px; margin-bottom: 5px; }
-        
-        /* Tableaux de mesures Full Colonnes (Modèle Sogetrel) */
-        .table-container { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd; }
-        .measure-table { width: 100%; border-collapse: collapse; font-size: 10px; min-width: 850px; }
-        .measure-table th, .measure-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
-        .measure-table th { background-color: #f8f9fa; color: var(--blue); font-weight: bold; white-space: nowrap; }
-        .measure-table input { width: 100%; border: none; text-align: center; font-size: 10px; background: transparent; padding: 4px; }
-        
-        .ant-header-label { background: #eceff1; padding: 10px; font-weight: bold; font-size: 12px; color: var(--blue); margin: 15px 0 5px 0; border-radius: 6px; border-left: 5px solid var(--red); }
-
-        /* États Signal (RSRP & SNR) */
-        .sig-exc { background-color: #27ae60 !important; color: white !important; font-weight: bold; }
-        .sig-good { background-color: #f1c40f !important; color: black !important; font-weight: bold; }
-        .sig-poor { background-color: #e74c3c !important; color: white !important; font-weight: bold; }
-        .snr-valid { border-bottom: 3px solid var(--green) !important; font-weight: bold; color: var(--green); }
-
-        /* Media & Signature */
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .photo-box { border: 2px dashed #bbb; padding: 10px; text-align: center; border-radius: 8px; font-size: 11px; cursor: pointer; background: #fafafa; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .photo-box img { max-width: 100%; max-height: 90px; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd; }
-        #signature-pad { border: 1px solid #ccc; width: 100%; height: 140px; border-radius: 8px; background: #fff; touch-action: none; cursor: crosshair; }
-        
+        /* Form elements */
+        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 5px; font-size: 14px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
-        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        .btn-main { background: var(--blue); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .btn-pdf { background: #eee; color: #333; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        /* Section styling */
+        .section-label { background: #e3f2fd; padding: 8px; font-weight: bold; font-size: 11px; color: var(--blue); margin: 15px 0 10px 0; border-radius: 4px; border-left: 4px solid var(--orange); }
+        .work-split { background: #fff9c4; padding: 10px; border-radius: 8px; border: 1px solid #fbc02d; margin-bottom: 10px; font-size: 12px; }
+
+        /* Floating Footer */
+        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
+        .btn-gen { background: var(--green); color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+        
+        /* Signature */
+        #sig-canvas { border: 1px solid #ccc; background: #fff; width: 100%; height: 120px; border-radius: 8px; touch-action: none; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 id="main-title" style="margin:0;">CIT Report IA</h2>
-    <p style="margin:5px 0 0; font-size: 10px; opacity:0.9;">Audit & DOE Expert - Réseaux 4G/5G</p>
+    <h2>SOGETREL CIT FIELD</h2>
+    <p>Générateur de Rapports Multi-Missions</p>
 </div>
 
-<div class="card" style="border-top-color: var(--purple);">
-    <h3>📋 Configuration</h3>
+<div class="card" style="border-top-color: var(--orange);">
+    <h3>📋 Type de Mission</h3>
     <select id="selectRapport" onchange="updateUI()">
-        <option value="ANTENNE_DEPORTEE">📡 Audit/DOE Antenne Déportée</option>
-        <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint 1850</option>
-        <option value="DOE_CRADLEPOINT">🏢 DOE Cradlepoint 1850</option>
-        <option value="AUDIT_PICO">🔍 Audit PICO</option>
-        <option value="DOE_PICO">🏢 DOE PICO</option>
-        <option value="STARLINK">🛰️ Audit/DOE Starlink</option>
-    </select>
-    <select id="type_projet" style="margin-top:10px;">
-        <option value="UTILE_SCHIEVER">UTILE / SCHIEVER (100% Sogetrel)</option>
-        <option value="AERIEN_MAGASIN_U">PROJET AÉRIEN (Magasin U)</option>
+        <optgroup label="STARLINK & CRADLEPOINT">
+            <option value="AUDIT_STARLINK">🛰️ Audit STARLINK Pur</option>
+            <option value="INFO_U_CO">🤝 INFO U (Co-réalisation)</option>
+            <option value="INFO_U_100">🏗️ INFO U (100% Sogetrel)</option>
+        </optgroup>
+        <optgroup label="PICO BTS">
+            <option value="DOE_PICO">🏢 DOE PICO (Fin de chantier)</option>
+            <option value="AUDIT_PICO">📶 Audit PICO BTS</option>
+        </optgroup>
+        <optgroup label="ANTENNE DÉPORTÉE">
+            <option value="DOE_ANTENNE">📡 DOE Antenne Déportée</option>
+            <option value="AUDIT_ANTENNE">📡 Audit Antenne Déportée</option>
+        </optgroup>
     </select>
 </div>
 
 <div class="card">
-    <h3>📍 Localisation & Technicien</h3>
-    <input type="text" id="val_ot" placeholder="Numéro d'OT (ex: 13063317)">
-    <input type="text" id="val_client" placeholder="Enseigne / Client">
-    <textarea id="val_adresse" rows="2" placeholder="Adresse complète de l'intervention"></textarea>
-    <input type="text" id="val_tech" placeholder="Technicien" value="Emmanuel MAUDET">
-</div>
-
-<div id="sec_antenne" class="card" style="border-top-color: var(--red);">
-    <h3>📡 Étude Antenne Déportée</h3>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <select id="ant_support">
-            <option value="FACADE">Pose en Façade</option>
-            <option value="TOITURE">Pose en Toiture</option>
-            <option value="CERCLAGE">Pose sur Cheminée</option>
-        </select>
-        <input type="number" id="ant_cable" placeholder="Câble Coaxial (m)">
+    <h3>📍 Identification Site</h3>
+    <div class="grid-2">
+        <input type="text" id="ot" placeholder="N° OT">
+        <input type="date" id="date">
     </div>
-
-    <div class="ant-header-label">📍 1. MESURES À L'EMPLACEMENT INITIAL (BAIE)</div>
-    <div class="table-container">
-        <table class="measure-table">
-            <thead>
-                <tr>
-                    <th>#</th><th>EnB</th><th>CELID</th><th>BAND</th><th>RSRP</th><th>RSRQ</th><th>SNR</th><th>DL</th><th>UL</th><th>PING</th>
-                </tr>
-            </thead>
-            <tbody id="tbody_baie">
-                </tbody>
-        </table>
-    </div>
-
-    <div class="ant-header-label">📍 2. MESURES À L'EMPLACEMENT DE L'ANTENNE DÉPORTÉE</div>
-    <div class="table-container">
-        <table class="measure-table">
-            <thead>
-                <tr>
-                    <th>#</th><th>EnB</th><th>CELID</th><th>BAND</th><th>RSRP</th><th>RSRQ</th><th>SNR</th><th>DL</th><th>UL</th><th>PING</th>
-                </tr>
-            </thead>
-            <tbody id="tbody_ant">
-                </tbody>
-        </table>
+    <input type="text" id="client" placeholder="Raison Sociale Client">
+    <textarea id="adresse" placeholder="Adresse de l'intervention"></textarea>
+    <div class="grid-2">
+        <input type="text" id="tech" value="Emmanuel MAUDET">
+        <input type="text" id="contact" placeholder="Contact sur place">
     </div>
 </div>
 
-<div id="sec_cradle" class="card hidden" style="border-top-color: var(--green);">
-    <h3>📊 État Radio Cradlepoint</h3>
-    <div class="table-container">
-        <table class="measure-table">
-            <thead>
-                <tr><th>OPÉRATEUR</th><th>EnB</th><th>CELID</th><th>BAND</th><th>RSRP</th><th>RSRQ</th><th>SNR</th><th>DL</th><th>UL</th><th>PING</th></tr>
-            </thead>
-            <tbody>
-                <tr style="background:#e3f2fd"><td>BYTEL</td><td><input type="text"></td><td><input type="text"></td><td><input type="text" value="n78"></td><td><input type="number" oninput="checkRSRP(this)"></td><td><input type="number"></td><td><input type="number" oninput="checkSNR(this)"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td></tr>
-                <tr style="background:#fff3e0"><td>ORANGE</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="number" oninput="checkRSRP(this)"></td><td><input type="number"></td><td><input type="number" oninput="checkSNR(this)"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td></tr>
-            </tbody>
-        </table>
+<div id="mod_starlink" class="card module">
+    <h3>🛰️ Détails Starlink</h3>
+    <div class="section-label">ÉLIGIBILITÉ & MATÉRIEL</div>
+    <select id="sl_type">
+        <option value="Haute Performance">Antenne Haute Performance (25m)</option>
+        <option value="Entreprise">Antenne Entreprise (50m)</option>
+    </select>
+    <select id="sl_obst">
+        <option value="OK">Zéro obstruction (Ciel dégagé)</option>
+        <option value="KO">Obstructions détectées</option>
+    </select>
+    <input type="text" id="sl_pose" placeholder="Type de pose (Dalle lestée, Mât...)">
+    <input type="number" id="sl_cable" placeholder="Longueur de câble prévue (m)">
+</div>
+
+<div id="mod_info_u_co" class="card module hidden">
+    <h3>🤝 Info U - Co-réalisation</h3>
+    <div class="work-split">
+        <b>✅ PRÉREQUIS CLIENT (Magasin U) :</b>
+        <p>Pose du mât, gaine Ø40mm, percements à la charge du client.</p>
+    </div>
+    <select id="u_pre">
+        <option value="OUI">Prérequis Client : CONFORMES</option>
+        <option value="NON">Prérequis Client : NON PRÊTS</option>
+    </select>
+    <div class="section-label">RADIO COMPARATIVE</div>
+    <div class="grid-2">
+        <input type="number" id="rsrp_bytel" placeholder="RSRP Bytel">
+        <input type="number" id="rsrp_orange" placeholder="RSRP Orange">
     </div>
 </div>
 
-<div id="sec_pico" class="card hidden" style="border-top-color: var(--orange);">
-    <h3>📶 Spécifications PICO</h3>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <input type="text" id="p_imei" placeholder="IMEI">
-        <input type="text" id="p_num" placeholder="N° Pico">
-    </div>
-    <input type="number" id="p_cable" placeholder="Longueur de câble RJ45 (m)" style="margin-top:10px;">
-</div>
-
-<div class="card">
-    <h3>🖼️ Reportage Photos</h3>
-    <div class="photo-grid">
-        <div class="photo-box" onclick="trigger('f1')">📸 Baie (Face/Int.)<input type="file" id="f1" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" onclick="trigger('f2')">📸 Antenne (Ext.)<input type="file" id="f2" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" onclick="trigger('f3')">📸 Cheminement<input type="file" id="f3" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" style="grid-column: span 2;" onclick="trigger('f4')">📍 Plan d'implantation<input type="file" id="f4" class="hidden" accept="image/*" onchange="preview(this)"><div class="pv"></div></div>
-    </div>
+<div id="mod_pico" class="card module hidden">
+    <h3>🏢 Inventaire PICO BTS</h3>
+    <div class="section-label">PICO 1</div>
+    <input type="text" id="p1_imei" placeholder="IMEI">
+    <input type="text" id="p1_sn" placeholder="Numéro de série">
+    <div class="section-label">PICO 2</div>
+    <input type="text" id="p2_imei" placeholder="IMEI">
+    <input type="text" id="p2_sn" placeholder="Numéro de série">
+    <div class="section-label">MESURES FINALES</div>
+    <input type="number" id="p_rsrp" placeholder="RSRP Moyen">
 </div>
 
 <div class="card">
     <h3>✍️ Signature Technicien</h3>
-    <canvas id="signature-pad"></canvas>
-    <button onclick="clearSign()" style="width:100%; border:none; background:none; font-size:10px; color:#999; margin-top:5px;">Effacer la signature</button>
+    <canvas id="sig-canvas"></canvas>
+    <button onclick="clearSig()" style="background:none; border:none; color:var(--red); font-size:11px; margin-top:5px; width:100%;">Effacer la signature</button>
 </div>
 
 <div class="footer-btns">
-    <button class="btn-main" onclick="alert('Export Word en cours de préparation...')">GÉNÉRER WORD</button>
-    <button class="btn-pdf" onclick="window.print()">VERSION PDF</button>
+    <button class="btn-gen" onclick="generateReport()">🚀 GÉNÉRER LE RAPPORT (.DOCX)</button>
 </div>
 
 <script>
-    // --- INITIALISATION DES LIGNES DE TABLEAU (3+3) ---
-    function generateRows(targetId) {
-        const tbody = document.getElementById(targetId);
-        tbody.innerHTML = "";
-        for (let i = 1; i <= 3; i++) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${i}</td>
-                <td><input type="text"></td>
-                <td><input type="text"></td>
-                <td><input type="text"></td>
-                <td><input type="number" oninput="checkRSRP(this)"></td>
-                <td><input type="number"></td>
-                <td><input type="number" oninput="checkSNR(this)"></td>
-                <td><input type="number"></td>
-                <td><input type="number"></td>
-                <td><input type="number"></td>
-            `;
-            tbody.appendChild(tr);
-        }
-    }
+    // --- CONFIGURATION DES TEMPLATES (À remplir avec vos Base64) ---
+    const TEMPLATES_B64 = {
+        AUDIT_STARLINK: "BASE64_ICI",
+        INFO_U_CO: "BASE64_ICI",
+        DOE_PICO: "BASE64_ICI",
+        DOE_ANTENNE: "BASE64_ICI"
+    };
 
-    // --- LOGIQUE D'AFFICHAGE ---
     function updateUI() {
-        const rap = document.getElementById('selectRapport').value;
-        document.getElementById('sec_antenne').classList.toggle('hidden', rap !== 'ANTENNE_DEPORTEE');
-        document.getElementById('sec_cradle').classList.toggle('hidden', !rap.includes('CRADLEPOINT'));
-        document.getElementById('sec_pico').classList.toggle('hidden', !rap.includes('PICO'));
-        document.getElementById('main-title').innerText = rap.replace('_', ' ');
+        const type = document.getElementById('selectRapport').value;
+        document.querySelectorAll('.module').forEach(m => m.classList.add('hidden'));
+        
+        if(type.includes('STARLINK')) document.getElementById('mod_starlink').classList.remove('hidden');
+        if(type === 'INFO_U_CO') document.getElementById('mod_info_u_co').classList.remove('hidden');
+        if(type.includes('PICO')) document.getElementById('mod_pico').classList.remove('hidden');
     }
 
-    // --- ANALYSE SIGNAL (COULEURS & SNR) ---
-    function checkRSRP(el) {
-        const val = parseFloat(el.value);
-        el.parentElement.classList.remove('sig-exc', 'sig-good', 'sig-poor');
-        if (isNaN(val)) return;
-        if (val >= -97) el.parentElement.classList.add('sig-exc');
-        else if (val >= -107) el.parentElement.classList.add('sig-good');
-        else el.parentElement.classList.add('sig-poor');
+    // --- LOGIQUE DE SIGNATURE ---
+    const canvas = document.getElementById('sig-canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    canvas.width = canvas.offsetWidth; canvas.height = 120;
+    
+    canvas.addEventListener('mousedown', () => drawing = true);
+    window.addEventListener('mouseup', () => drawing = false);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchstart', (e) => { drawing = true; draw(e.touches[0]); e.preventDefault(); });
+    canvas.addEventListener('touchend', () => drawing = false);
+    canvas.addEventListener('touchmove', (e) => { draw(e.touches[0]); e.preventDefault(); });
+
+    function draw(e) {
+        if(!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.pageX) - rect.left;
+        const y = (e.clientY || e.pageY) - rect.top;
+        ctx.lineWidth = 2; ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+    }
+    function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.beginPath(); }
+
+    // --- GÉNÉRATION DU RAPPORT ---
+    function base64ToBuffer(b64) {
+        const bin = window.atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+        return bytes.buffer;
     }
 
-    function checkSNR(el) {
-        const val = parseFloat(el.value);
-        el.classList.toggle('snr-valid', val > 10);
-    }
+    function generateReport() {
+        const type = document.getElementById('selectRapport').value;
+        const b64 = TEMPLATES_B64[type];
 
-    // --- GESTION PHOTO ---
-    function trigger(id) { document.getElementById(id).click(); }
-    function preview(input) {
-        if (input.files && input.files[0]) {
-            let reader = new FileReader();
-            reader.onload = (e) => { 
-                input.parentElement.querySelector('.pv').innerHTML = `<img src="${e.target.result}">`; 
-            };
-            reader.readAsDataURL(input.files[0]);
+        const data = {
+            ot: document.getElementById('ot').value,
+            client: document.getElementById('client').value,
+            adresse: document.getElementById('adresse').value,
+            tech: document.getElementById('tech').value,
+            date: document.getElementById('date').value,
+            sl_type: document.getElementById('sl_type').value,
+            sl_obst: document.getElementById('sl_obst').value,
+            sl_pose: document.getElementById('sl_pose').value,
+            sl_cable: document.getElementById('sl_cable').value,
+            u_pre: document.getElementById('u_pre').value,
+            rsrp_bytel: document.getElementById('rsrp_bytel').value,
+            rsrp_orange: document.getElementById('rsrp_orange').value,
+            p1_imei: document.getElementById('p1_imei').value,
+            p1_sn: document.getElementById('p1_sn').value,
+            p_rsrp: document.getElementById('p_rsrp').value
+        };
+
+        if (!b64 || b64 === "BASE64_ICI") {
+            alert("Mode Test : Données collectées avec succès pour " + data.client + ".\n\nNote : Pour télécharger le fichier, vous devez insérer le code Base64 du template dans le script.");
+            console.log("Variables détectées :", data);
+            return;
+        }
+
+        try {
+            const zip = new PizZip(base64ToBuffer(b64));
+            const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+            doc.render(data);
+            const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+            saveAs(out, `Rapport_${type}_${data.ot}.docx`);
+        } catch (e) {
+            alert("Erreur technique lors de la génération.");
         }
     }
 
-    // --- SIGNATURE ---
-    const canvas = document.getElementById('signature-pad');
-    const ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth; canvas.height = 140;
-    let drawing = false;
-    function getPos(e) {
-        const r = canvas.getBoundingClientRect();
-        return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
-    }
-    canvas.onmousedown = canvas.ontouchstart = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
-    window.onmouseup = window.ontouchend = () => drawing = false;
-    canvas.onmousemove = canvas.ontouchmove = (e) => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.touches) e.preventDefault(); };
-    function clearSign() { ctx.clearRect(0,0,canvas.width,canvas.height); }
-
-    // Démarrage
-    generateRows('tbody_baie');
-    generateRows('tbody_ant');
-    updateUI();
+    window.onload = () => { document.getElementById('date').valueAsDate = new Date(); updateUI(); };
 </script>
 </body>
 </html>
