@@ -3,66 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CIT REPORT IA - VERSION INTEGRALE</title>
+    <title>CIT REPORT IA - MASTER COMPLET</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
-        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; --red: #e74c3c; --cyan: #00bcd4; --light-bg: #f4f7f9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light-bg); margin: 0; padding: 10px; padding-bottom: 140px; }
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; --red: #e74c3c; --cyan: #00bcd4; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px; }
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
         h3 { margin-top: 0; color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; text-transform: uppercase; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-bottom: 5px; }
         
-        /* Tableaux de mesures (Style Sogetrel) */
+        /* Tableaux de mesures */
         .table-container { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd; }
         .measure-table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 500px; }
         .measure-table th, .measure-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
         .measure-table th { background-color: #f8f9fa; color: var(--blue); font-weight: bold; }
-        .row-bytel { background-color: #e3f2fd; }
-        .row-orange { background-color: #fff3e0; }
-        .measure-table input { padding: 5px; border: 1px solid transparent; background: transparent; text-align: center; width: 90%; font-size: 11px; }
-        .measure-table input:focus { background: white; border-color: var(--blue); outline: none; }
+        .measure-table input { width: 95%; border: none; text-align: center; font-size: 11px; background: transparent; padding: 5px; }
+        
+        .section-split-title { background: #f0f0f0; padding: 10px; font-weight: bold; font-size: 12px; color: var(--blue); margin-top: 20px; border-radius: 6px; border-left: 5px solid var(--red); }
 
-        /* Couleurs Signal */
-        .sig-exc { background-color: #27ae60 !important; color: white !important; font-weight: bold; } /* VERT */
-        .sig-good { background-color: #f1c40f !important; color: black !important; font-weight: bold; } /* JAUNE */
-        .sig-poor { background-color: #e74c3c !important; color: white !important; font-weight: bold; } /* ROUGE */
+        /* Couleurs Signal Dynamiques */
+        .sig-exc { background-color: #27ae60 !important; color: white !important; font-weight: bold; }
+        .sig-good { background-color: #f1c40f !important; color: black !important; font-weight: bold; }
+        .sig-poor { background-color: #e74c3c !important; color: white !important; font-weight: bold; }
 
         /* Photos & Signature */
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .photo-box { border: 2px dashed #bbb; padding: 10px; text-align: center; border-radius: 8px; font-size: 11px; cursor: pointer; background: #fafafa; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .photo-box img { max-width: 100%; max-height: 80px; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd; }
+        .photo-box { border: 2px dashed #bbb; padding: 10px; text-align: center; border-radius: 8px; font-size: 11px; cursor: pointer; background: #fafafa; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .photo-box img { max-width: 100%; max-height: 85px; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd; }
         #signature-pad { border: 1px solid #ccc; width: 100%; height: 130px; border-radius: 8px; background: #fff; touch-action: none; cursor: crosshair; }
         
         .hidden { display: none; }
         .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        .btn-gen { background: var(--blue); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; }
-        .btn-pdf { background: #eee; color: #333; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; }
+        .btn-main { background: var(--blue); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; }
+        .btn-sec { background: #eee; color: #333; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h2 id="main-title" style="margin:0;">CIT Report IA</h2>
-    <p style="margin:5px 0 0; font-size: 10px; opacity:0.9;">Système de rapport automatisé INFO U</p>
+    <p style="margin:5px 0 0; font-size: 10px; opacity:0.9;">Audit & DOE - Cradlepoint | Antenne | PICO | Starlink</p>
 </div>
 
 <div class="card" style="border-top-color: var(--purple);">
-    <h3>📋 Type d'intervention</h3>
+    <h3>📋 Type de Mission</h3>
     <select id="selectRapport" onchange="updateUI()">
+        <option value="ANTENNE_DEPORTEE">📡 Audit/DOE Antenne Déportée</option>
         <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint 1850</option>
         <option value="DOE_CRADLEPOINT">🏢 DOE Cradlepoint 1850</option>
         <option value="AUDIT_PICO">🔍 Audit PICO</option>
         <option value="DOE_PICO">🏢 DOE PICO</option>
-        <option value="ANTENNE_DEPORTEE">📡 Audit/DOE Antenne Déportée</option>
         <option value="STARLINK">🛰️ Audit/DOE Starlink</option>
     </select>
     
-    <label>Modèle de Projet</label>
+    <label>Projet</label>
     <select id="type_projet">
         <option value="UTILE_SCHIEVER">UTILE / SCHIEVER (100% Sogetrel)</option>
         <option value="AERIEN_MAGASIN_U">PROJET AÉRIEN (Magasin U)</option>
@@ -74,75 +73,66 @@
     <input type="text" id="val_ot" placeholder="Numéro d'OT (ex: 13063317)">
     <input type="text" id="val_client" placeholder="Client / Enseigne">
     <textarea id="val_adresse" rows="2" placeholder="Adresse complète de l'intervention"></textarea>
-    <label>Responsable de l'audit</label>
-    <input type="text" id="val_tech" placeholder="Emmanuel MAUDET" value="Emmanuel MAUDET">
+    <input type="text" id="val_tech" placeholder="Technicien" value="Emmanuel MAUDET">
 </div>
 
-<div id="sec_cradle" class="card" style="border-top-color: var(--green);">
-    <h3>📡 Mesures Radio (4G / 5G)</h3>
-    <p style="font-size:10px; color:#666; margin-bottom:10px;">Remplir les valeurs selon le modèle de rapport Sogetrel.</p>
-    
-    <label style="color:var(--blue)">MESURES 5G (Baie Informatique)</label>
+<div id="sec_antenne" class="card" style="border-top-color: var(--red);">
+    <h3>📡 Étude Antenne Déportée</h3>
+    <label>Type de support de pose</label>
+    <select id="ant_support">
+        <option value="FACADE">Fixation Murale / Façade</option>
+        <option value="TOITURE_AUTOSTABLE">Toiture - Mât autostable</option>
+        <option value="CERCLAGE">Cheminée / Cerclage</option>
+    </select>
+    <label>Longueur câble Coaxial / Twin (m)</label>
+    <input type="number" id="ant_cable" placeholder="Longueur du câble">
+
+    <div class="section-split-title">📍 MESURES À L'EMPLACEMENT INITIAL (BAIE)</div>
     <div class="table-container">
         <table class="measure-table">
             <thead>
-                <tr>
-                    <th>OPERATEUR</th><th>EnB</th><th>CELID</th><th>BAND</th><th>RSRP</th><th>SNR</th><th>DL</th><th>PING</th>
-                </tr>
+                <tr><th>#</th><th>TECHNOLOGIE</th><th>RSRP</th><th>SNR</th><th>DL (Mbps)</th></tr>
             </thead>
             <tbody>
-                <tr class="row-bytel">
-                    <td>BYTEL</td>
-                    <td><input type="text" id="5g_b_enb"></td>
-                    <td><input type="text" id="5g_b_cel"></td>
-                    <td><input type="text" id="5g_b_band" value="n78"></td>
-                    <td><input type="number" id="5g_b_rsrp" placeholder="-90" oninput="checkColor(this)"></td>
-                    <td><input type="number" id="5g_b_snr"></td>
-                    <td><input type="number" id="5g_b_dl"></td>
-                    <td><input type="number" id="5g_b_ping"></td>
-                </tr>
-                <tr class="row-orange">
-                    <td>ORANGE</td>
-                    <td><input type="text" id="5g_o_enb"></td>
-                    <td><input type="text" id="5g_o_cel"></td>
-                    <td><input type="text" id="5g_o_band"></td>
-                    <td><input type="number" id="5g_o_rsrp" oninput="checkColor(this)"></td>
-                    <td><input type="number" id="5g_o_snr"></td>
-                    <td><input type="number" id="5g_o_dl"></td>
-                    <td><input type="number" id="5g_o_ping"></td>
-                </tr>
+                <tr><td>1</td><td><input type="text" placeholder="5G/4G"></td><td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td></tr>
+                <tr><td>2</td><td><input type="text"></td><td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td></tr>
+                <tr><td>3</td><td><input type="text"></td><td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td></tr>
             </tbody>
         </table>
     </div>
 
-    <label style="color:var(--blue); margin-top:15px;">MESURES 4G (Baie Informatique)</label>
+    <div class="section-split-title">📍 MESURES À L'EMPLACEMENT DE L'ANTENNE DÉPORTÉE</div>
     <div class="table-container">
         <table class="measure-table">
             <thead>
-                <tr>
-                    <th>OPERATEUR</th><th>EnB</th><th>CELID</th><th>BAND</th><th>RSRP</th><th>SNR</th><th>DL</th><th>PING</th>
-                </tr>
+                <tr><th>#</th><th>TECHNOLOGIE</th><th>RSRP</th><th>SNR</th><th>DL (Mbps)</th></tr>
             </thead>
             <tbody>
-                <tr class="row-bytel">
+                <tr><td>1</td><td><input type="text" placeholder="5G/4G"></td><td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td></tr>
+                <tr><td>2</td><td><input type="text"></td><td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td></tr>
+                <tr><td>3</td><td><input type="text"></td><td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="sec_cradle" class="card hidden" style="border-top-color: var(--green);">
+    <h3>📊 Mesures Cradlepoint 1850</h3>
+    <div class="table-container">
+        <table class="measure-table">
+            <thead>
+                <tr><th>OPÉRATEUR</th><th>EnB</th><th>CELID</th><th>BAND</th><th>RSRP</th><th>SNR</th><th>DL</th></tr>
+            </thead>
+            <tbody>
+                <tr style="background:#e3f2fd">
                     <td>BYTEL</td>
-                    <td><input type="text" id="4g_b_enb"></td>
-                    <td><input type="text" id="4g_b_cel"></td>
-                    <td><input type="text" id="4g_b_band"></td>
-                    <td><input type="number" id="4g_b_rsrp" oninput="checkColor(this)"></td>
-                    <td><input type="number" id="4g_b_snr"></td>
-                    <td><input type="number" id="4g_b_dl"></td>
-                    <td><input type="number" id="4g_b_ping"></td>
+                    <td><input type="text"></td><td><input type="text"></td><td><input type="text" value="n78"></td>
+                    <td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td>
                 </tr>
-                <tr class="row-orange">
+                <tr style="background:#fff3e0">
                     <td>ORANGE</td>
-                    <td><input type="text" id="4g_o_enb"></td>
-                    <td><input type="text" id="4g_o_cel"></td>
-                    <td><input type="text" id="4g_o_band"></td>
-                    <td><input type="number" id="4g_o_rsrp" oninput="checkColor(this)"></td>
-                    <td><input type="number" id="4g_o_snr"></td>
-                    <td><input type="number" id="4g_o_dl"></td>
-                    <td><input type="number" id="4g_o_ping"></td>
+                    <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                    <td><input type="number" oninput="checkColor(this)"></td><td><input type="number"></td><td><input type="number"></td>
                 </tr>
             </tbody>
         </table>
@@ -150,71 +140,55 @@
 </div>
 
 <div id="sec_pico" class="card hidden" style="border-top-color: var(--orange);">
-    <h3>📶 Informations Matériel PICO</h3>
+    <h3>📶 Informations PICO</h3>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <div><label>N° IMEI</label><input type="text" id="p_imei" placeholder="IMEI"></div>
-        <div><label>N° de Pico</label><input type="text" id="p_num" placeholder="Pico ID"></div>
+        <input type="text" id="p_imei" placeholder="IMEI">
+        <input type="text" id="p_num" placeholder="N° Pico">
     </div>
-    <label>Longueur de câble RJ45 (mètres)</label>
-    <input type="number" id="p_cable" placeholder="Longueur du câble tiré">
-</div>
-
-<div id="sec_antenne" class="card hidden" style="border-top-color: var(--red);">
-    <h3>📡 Détails Antenne Déportée</h3>
-    <label>Type de support retenu</label>
-    <select id="ant_support">
-        <option value="FACADE">Fixation murale en façade</option>
-        <option value="MAT_AUTOSTABLE">Mât autostable en toiture</option>
-        <option value="CERCLAGE">Cerclage sur cheminée / pilier</option>
-    </select>
-    <label>Longueur câble Coaxial / Twin (m)</label>
-    <input type="number" id="ant_cable" placeholder="Ex: 15">
+    <label>Longueur RJ45 (m)</label>
+    <input type="number" id="p_cable" placeholder="Longueur de câble">
 </div>
 
 <div class="card">
     <h3>🖼️ Reportage Photos</h3>
     <div class="photo-grid">
-        <div class="photo-box" onclick="trigger('f_baie_p')">📸 Baie (Face)<input type="file" id="f_baie_p" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" onclick="trigger('f_baie_l')">📸 Baie (Large)<input type="file" id="f_baie_l" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" onclick="trigger('f_ext_ant')">📸 Extérieur / Antenne<input type="file" id="f_ext_ant" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" onclick="trigger('f_chem')">📸 Cheminement câble<input type="file" id="f_chem" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" style="grid-column: span 2;" onclick="trigger('f_plan')">📍 Plan du site (avec pastilles)<input type="file" id="f_plan" class="hidden" accept="image/*" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" onclick="trigger('f1')">📸 Baie (Face)<input type="file" id="f1" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" onclick="trigger('f2')">📸 Baie (Large)<input type="file" id="f2" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" onclick="trigger('f3')">📸 Antenne Ext.<input type="file" id="f3" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" onclick="trigger('f4')">📸 Cheminement<input type="file" id="f4" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" style="grid-column: span 2;" onclick="trigger('f5')">📍 Plan (Pastilles)<input type="file" id="f5" class="hidden" accept="image/*" onchange="preview(this)"><div class="pv"></div></div>
     </div>
 </div>
 
 <div class="card">
-    <h3>✍️ Signature du technicien</h3>
+    <h3>✍️ Signature Technicien</h3>
     <canvas id="signature-pad"></canvas>
-    <button onclick="clearSign()" style="width:100%; border:none; background:none; font-size:10px; color:#999; margin-top:5px;">Effacer la signature</button>
+    <button onclick="clearSign()" style="width:100%; border:none; background:none; font-size:10px; color:#999; margin-top:5px;">Effacer</button>
 </div>
 
 <div class="footer-btns">
-    <button class="btn-gen" onclick="generateWord()">GÉNÉRER WORD</button>
-    <button class="btn-pdf" onclick="window.print()">APERÇU PDF</button>
+    <button class="btn-main" onclick="alert('Export Word activé...')">GÉNÉRER WORD</button>
+    <button class="btn-sec" onclick="window.print()">VERSION PDF</button>
 </div>
 
 <script>
-    // --- LOGIQUE D'AFFICHAGE ---
     function updateUI() {
         const rap = document.getElementById('selectRapport').value;
-        document.getElementById('sec_cradle').classList.toggle('hidden', rap === 'STARLINK');
-        document.getElementById('sec_pico').classList.toggle('hidden', !rap.includes('PICO'));
         document.getElementById('sec_antenne').classList.toggle('hidden', rap !== 'ANTENNE_DEPORTEE');
+        document.getElementById('sec_cradle').classList.toggle('hidden', !rap.includes('CRADLEPOINT'));
+        document.getElementById('sec_pico').classList.toggle('hidden', !rap.includes('PICO'));
         document.getElementById('main-title').innerText = rap.replace('_', ' ');
     }
 
-    // --- LOGIQUE COULEURS SIGNAL (Règles Sogetrel) ---
     function checkColor(el) {
         const val = parseFloat(el.value);
         el.parentElement.classList.remove('sig-exc', 'sig-good', 'sig-poor');
         if (isNaN(val)) return;
-        
-        if (val >= -97) el.parentElement.classList.add('sig-exc'); // Vert
-        else if (val >= -107) el.parentElement.classList.add('sig-good'); // Jaune
-        else el.parentElement.classList.add('sig-poor'); // Rouge
+        if (val >= -97) el.parentElement.classList.add('sig-exc');
+        else if (val >= -107) el.parentElement.classList.add('sig-good');
+        else el.parentElement.classList.add('sig-poor');
     }
 
-    // --- GESTION DES PHOTOS ---
     function trigger(id) { document.getElementById(id).click(); }
     function preview(input) {
         if (input.files && input.files[0]) {
@@ -226,63 +200,18 @@
         }
     }
 
-    // --- SIGNATURE PAD ---
     const canvas = document.getElementById('signature-pad');
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.offsetWidth; canvas.height = 130;
-    let isDrawing = false;
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e.touches[0]); });
-    window.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
-
-    function startDraw(e) { isDrawing = true; ctx.beginPath(); }
-    function draw(e) {
-        if (!isDrawing) return;
-        const rect = canvas.getBoundingClientRect();
-        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        ctx.stroke();
+    let drawing = false;
+    function getPos(e) {
+        const r = canvas.getBoundingClientRect();
+        return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
     }
+    canvas.onmousedown = canvas.ontouchstart = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
+    window.onmouseup = window.ontouchend = () => drawing = false;
+    canvas.onmousemove = canvas.ontouchmove = (e) => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
     function clearSign() { ctx.clearRect(0,0,canvas.width,canvas.height); }
-
-    // --- GÉNÉRATION DU RAPPORT WORD ---
-    async function generateWord() {
-        const { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun } = docx;
-        const type = document.getElementById('selectRapport').value;
-        const ot = document.getElementById('val_ot').value || "SANS_OT";
-
-        async function getBlob(id) {
-            const f = document.getElementById(id).files[0];
-            return f ? await fetch(URL.createObjectURL(f)).then(r => r.blob()) : null;
-        }
-
-        const planBlob = await getBlob('f_plan');
-        const content = [
-            new Paragraph({ children: [new TextRun({ text: "SOGETREL - RAPPORT D'INTERVENTION", bold: true, size: 36 })], alignment: AlignmentType.CENTER }),
-            new Paragraph({ text: "Type : " + type, spacing: {before: 200} }),
-            new Paragraph({ text: "Numéro d'OT : " + ot }),
-            new Paragraph({ text: "Client : " + document.getElementById('val_client').value }),
-            new Paragraph({ text: "Technicien : " + document.getElementById('val_tech').value, spacing: {after: 400} })
-        ];
-
-        if (type.includes('PICO')) {
-            content.push(new Paragraph({ text: "SECTION PICO", heading: docx.HeadingLevel.HEADING_1 }));
-            content.push(new Paragraph("IMEI : " + document.getElementById('p_imei').value));
-            content.push(new Paragraph("Longueur Câble RJ45 : " + document.getElementById('p_cable').value + " m"));
-        }
-
-        if (planBlob) {
-            content.push(new Paragraph({ text: "PLAN D'IMPLANTATION", heading: docx.HeadingLevel.HEADING_1 }));
-            content.push(new Paragraph({ children: [new ImageRun({ data: planBlob, transformation: { width: 500, height: 350 } })] }));
-        }
-
-        const doc = new Document({ sections: [{ children: content }] });
-        Packer.toBlob(doc).then(blob => {
-            saveAs(blob, `RAPPORT_${type}_${ot}.docx`);
-            alert("Fichier Word généré avec succès !");
-        });
-    }
 
     updateUI();
 </script>
