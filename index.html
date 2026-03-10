@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL PRO - GÉNÉRATEUR COMPLET v3</title>
+    <title>SOGETREL AI - EXPERT INFO U</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -11,158 +11,207 @@
 
     <style>
         :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px; user-select: none; }
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
-        .btn-resume { position: absolute; left: 10px; top: 15px; background: var(--orange); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px; }
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
         h3 { margin-top: 0; color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .form-block { display: none; }
-        .btn-gen { background: var(--green); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-ocr { background: var(--purple); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
-        .cp-manager { display: flex; gap: 5px; margin-top: 5px; }
-        .btn-add { background: var(--green); color: white; border: none; padding: 10px; border-radius: 8px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .status-msg { font-size: 12px; text-align: center; font-weight: bold; margin-top: -10px; margin-bottom: 10px; }
+        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
         #signature-pad { border: 2px dashed #bbb; height: 130px; background: #fff; width: 100%; border-radius: 8px; touch-action: none; }
-        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; z-index: 1000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid #ddd; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
 <div class="header">
-    <button class="btn-resume" onclick="chargerBrouillon()">📂 REPRENDRE</button>
     <h2 style="margin:0;">SOGETREL AI</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Gestionnaire de Rapports Intelligent</p>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Moteur Expert INFO U (Cradlepoint & Starlink)</p>
 </div>
 
 <div class="card" style="border-top-color: var(--purple);">
-    <h3>📸 Scan de l'Ordre de Travail</h3>
+    <h3>📸 Scan OT / Capture d'écran</h3>
     <input type="file" id="input_ocr" accept="image/*" style="display:none" onchange="traiterOCR(event)">
-    <button class="btn-ocr" onclick="document.getElementById('input_ocr').click()">⚡ SCANNER CAPTURE D'ÉCRAN</button>
-    <div id="ocr-status" style="font-size:11px; text-align:center; color: #666;">Prêt pour analyse</div>
+    <button class="btn-ocr" onclick="document.getElementById('input_ocr').click()">⚡ ANALYSER L'OT AUTOMATIQUEMENT</button>
+    <div id="ocr-status" class="status-msg">Prêt pour import</div>
 </div>
 
 <div class="card">
-    <h3>📍 Informations Dossier</h3>
+    <h3>📍 Informations Dossier (Tableau de garde)</h3>
     
-    <label>Type de Rapport</label>
-    <select id="selectRapport" onchange="changerFormulaire(); sauvegarderAuto();">
-        <option value="">-- Choisir un modèle --</option>
-        <option value="AUDIT_PICO">🔍 Audit PICO</option>
-        <option value="DOE_PICO">🏢 DOE PICO</option>
-        <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint</option>
-        <option value="DOE_CRADLEPOINT">🏢 DOE Cradlepoint</option>
-        <option value="ANTENNE_DEPORTEE">📡 Antenne Déportée</option>
-        <option value="STARLINK">🛰️ Starlink</option>
+    <label>Type de Travaux (Modèle)</label>
+    <select id="type_projet" onchange="majLogiqueProjet(); sauvegarderAuto();">
+        <option value="SOGETREL_100">UTILE / SCHIEVER (100% Sogetrel)</option>
+        <option value="AERIEN_PARTAGE">PROJET AÉRIEN (Partagé avec Magasin U)</option>
     </select>
 
-    <label>N° OT / Commande</label>
-    <input type="text" id="num_rapport" placeholder="ex: 13063317" oninput="sauvegarderAuto()">
+    <label>N° OT (Dossier)</label>
+    <input type="text" id="val_ot" placeholder="ex: 13063317" oninput="sauvegarderAuto()">
 
-    <label>Chef de Projet (CP)</label>
+    <label>Chef de Projet (CP) en charge</label>
     <select id="liste_cp" onchange="sauvegarderAuto()"></select>
-    <div class="cp-manager">
+    <div class="grid" style="margin-top:5px;">
         <input type="text" id="nouveau_cp" placeholder="Ajouter un CP..." style="margin-bottom:0">
-        <button class="btn-add" onclick="ajouterCP()">＋</button>
+        <button onclick="ajouterCP()" style="background:var(--green); color:white; border:none; border-radius:8px;">＋</button>
     </div>
-    <button onclick="supprimerCP()" style="border:none; color:red; background:none; font-size:11px; margin-bottom:10px;">Supprimer le CP sélectionné</button>
 
-    <label>Client</label>
-    <input type="text" id="client_nom" placeholder="ex: ARPAVIE" oninput="sauvegarderAuto()">
+    <label>Client / Enseigne</label>
+    <input type="text" id="val_client" placeholder="ex: Magasin U - ARPAVIE" oninput="sauvegarderAuto()">
 
-    <label>Adresse & Contact Site</label>
-    <input type="text" id="ville_site" placeholder="Adresse complète" oninput="sauvegarderAuto()">
-    <input type="text" id="contact_nom" placeholder="Nom du contact" oninput="sauvegarderAuto()">
-    <div class="grid">
-        <input type="tel" id="contact_tel" placeholder="Téléphone" oninput="sauvegarderAuto()">
-        <input type="email" id="contact_mail" placeholder="Email" oninput="sauvegarderAuto()">
-    </div>
+    <label>Adresse du site</label>
+    <input type="text" id="val_adresse" placeholder="Adresse complète" oninput="sauvegarderAuto()">
 </div>
 
-<div id="bloc_audit" class="form-block card" style="border-top-color: #00bcd4;">
-    <h3>🔍 Détails Audit</h3>
-    <textarea id="audit_existant" rows="2" placeholder="Analyse de l'existant" oninput="sauvegarderAuto()"></textarea>
+<div class="card" style="border-top-color: var(--orange);">
+    <h3>📡 Audit Signal Cradlepoint</h3>
     <div class="grid">
-        <select id="audit_nacelle" onchange="sauvegarderAuto()"><option>NACELLE : NON</option><option>NACELLE : OUI</option></select>
-        <input type="number" id="audit_hauteur" placeholder="Hauteur (m)" oninput="sauvegarderAuto()">
+        <div>
+            <label>RSRP (dBm)</label>
+            <input type="number" id="val_rsrp" placeholder="-85" oninput="analyserSignal(); sauvegarderAuto();">
+        </div>
+        <div>
+            <label>SINR (dB)</label>
+            <input type="number" id="val_sinr" placeholder="15" oninput="sauvegarderAuto();">
+        </div>
     </div>
-    <input type="text" id="audit_support" placeholder="Support préconisé" style="margin-top:5px;" oninput="sauvegarderAuto()">
-</div>
+    <div id="signal_feedback" style="font-size:12px; padding:8px; border-radius:5px; margin-top:5px; background:#f0f0f0;">
+        Saisissez le RSRP pour la logique auto.
+    </div>
 
-<div id="bloc_doe_cp" class="form-block card" style="border-top-color: #e67e22;">
-    <h3>📊 Mesures Cradlepoint</h3>
-    <div class="grid">
-        <input type="text" id="cp_sn" placeholder="S/N Modem" oninput="sauvegarderAuto()">
-        <input type="text" id="cp_rsrp" placeholder="RSRP (dBm)" oninput="sauvegarderAuto()">
+    <div id="section_magasin_u" style="display:none; margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+        <p style="font-size:12px; color:var(--orange); font-weight:bold;">📋 Travaux Magasin U (Prérequis) :</p>
+        <label><input type="checkbox" id="pre_gaine" checked> Pose gaine de 40mm</label>
+        <label><input type="checkbox" id="pre_percement"> Percement dalle toiture</label>
+        <label><input type="checkbox" id="pre_nacelle"> Mise à disposition nacelle</label>
     </div>
 </div>
 
 <div class="card">
-    <h3>✍️ Validation Technicien</h3>
-    <input type="text" id="nom_tech" placeholder="Votre Nom et Prénom" oninput="sauvegarderAuto()">
+    <h3>✍️ Signature & Technicien</h3>
+    <input type="text" id="val_tech" placeholder="Nom du technicien (ex: Emmanuel MAUDET)" oninput="sauvegarderAuto()">
     <canvas id="signature-pad"></canvas>
-    <button onclick="sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height)" style="width:100%; padding:8px; margin-top:5px; border-radius:5px; border:1px solid #ccc;">Effacer Signature</button>
+    <button onclick="clearSig()" style="width:100%; border:none; background:none; color:#666; font-size:12px; margin-top:5px;">Effacer la signature</button>
 </div>
 
 <div class="footer-btns">
-    <button class="btn-gen" style="background:var(--blue);" onclick="genererWordFinal()">GÉNÉRER WORD</button>
-    <button class="btn-gen" style="background:#666;" onclick="window.print()">IMPRIMER / PDF</button>
+    <button onclick="genererWordFinal()" style="background:var(--blue); color:white; border:none; border-radius:8px; font-weight:bold;">GÉNÉRER WORD</button>
+    <button onclick="window.print()" style="background:#ddd; border:none; border-radius:8px;">PDF / APERÇU</button>
 </div>
 
 <script>
-    /** GESTION DES CHEFS DE PROJET **/
-    let chefsDeProjet = JSON.parse(localStorage.getItem('liste_cp_v3')) || ["Omar ARAOUDIOU"];
+    // --- GESTION CP ---
+    let chefsDeProjet = JSON.parse(localStorage.getItem('cp_info_u')) || ["Emmanuel MAUDET", "Omar ARAOUDIOU"];
     function rafraichirCP() {
-        const sel = document.getElementById('liste_cp'); sel.innerHTML = "";
-        chefsDeProjet.forEach(nom => { let o = document.createElement('option'); o.value = nom; o.text = nom; sel.add(o); });
-        localStorage.setItem('liste_cp_v3', JSON.stringify(chefsDeProjet));
+        const s = document.getElementById('liste_cp'); s.innerHTML = "";
+        chefsDeProjet.forEach(n => { let o = document.createElement('option'); o.value=n; o.text=n; s.add(o); });
     }
     function ajouterCP() {
         let n = document.getElementById('nouveau_cp').value.trim();
-        if(n && !chefsDeProjet.includes(n)) { chefsDeProjet.push(n); document.getElementById('nouveau_cp').value=""; rafraichirCP(); }
-    }
-    function supprimerCP() {
-        chefsDeProjet.splice(document.getElementById('liste_cp').selectedIndex, 1); rafraichirCP();
+        if(n) { chefsDeProjet.push(n); document.getElementById('nouveau_cp').value=""; rafraichirCP(); }
     }
 
-    /** OCR - EXTRACTION AUTO **/
+    // --- LOGIQUE METIER ---
+    function analyserSignal() {
+        const rsrp = parseInt(document.getElementById('val_rsrp').value);
+        const fb = document.getElementById('signal_feedback');
+        if (rsrp >= -90) {
+            fb.innerHTML = "🟢 SIGNAL BON : La partie 'Préconisation Mât/Façade' sera retirée du rapport.";
+            fb.style.color = "green";
+        } else {
+            fb.innerHTML = "🔴 SIGNAL FAIBLE : Préconisation Antenne Déportée maintenue.";
+            fb.style.color = "red";
+        }
+    }
+
+    function majLogiqueProjet() {
+        const type = document.getElementById('type_projet').value;
+        document.getElementById('section_magasin_u').style.display = (type === "AERIEN_PARTAGE") ? "block" : "none";
+    }
+
+    // --- OCR ---
     async function traiterOCR(event) {
         const file = event.target.files[0];
-        const status = document.getElementById('ocr-status');
-        status.innerText = "⏳ Analyse de la capture...";
+        document.getElementById('ocr-status').innerText = "⏳ Lecture...";
         try {
             const { data: { text } } = await Tesseract.recognize(file, 'fra');
-            const otMatch = text.match(/\b\d{8}\b/);
-            if(otMatch) document.getElementById('num_rapport').value = otMatch[0];
-            const telMatch = text.match(/0[67]\s*(\d{2}\s*){4}/);
-            if(telMatch) document.getElementById('contact_tel').value = telMatch[0].replace(/\s/g, '');
-            status.innerText = "✅ Scan réussi !";
+            const ot = text.match(/\b\d{8}\b/);
+            if(ot) document.getElementById('val_ot').value = ot[0];
+            document.getElementById('ocr-status').innerText = "✅ Importé";
             sauvegarderAuto();
-        } catch (e) { status.innerText = "❌ Erreur de lecture."; }
+        } catch (e) { document.getElementById('ocr-status').innerText = "❌ Échec scan"; }
     }
 
-    /** LOGIQUE FORMULAIRE & SAUVEGARDE **/
-    function changerFormulaire() {
-        const v = document.getElementById("selectRapport").value;
-        document.getElementById("bloc_audit").style.display = v.includes("AUDIT") ? "block" : "none";
-        document.getElementById("bloc_doe_cp").style.display = v === "DOE_CRADLEPOINT" ? "block" : "none";
+    // --- WORD GENERATION (BASÉ SUR VOS MODÈLES) ---
+    async function genererWordFinal() {
+        const { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, WidthType, ImageRun } = docx;
+        const ot = document.getElementById('val_ot').value;
+        const rsrp = parseInt(document.getElementById('val_rsrp').value);
+        const type = document.getElementById('type_projet').value;
+
+        // Préparation signature
+        const sigData = sigCanvas.toDataURL("image/png");
+        const resS = await fetch(sigData); const blobS = await resS.blob();
+
+        const content = [
+            new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
+            new Paragraph({ text: "", spacing: { after: 200 } }),
+            new Paragraph({ children: [new TextRun({ text: "AUDIT DE COUVERTURE MOBILE INFO U", bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
+            new Paragraph({ text: "", spacing: { after: 400 } }),
+            
+            // TABLEAU DE GARDE (HIERARCHIE DEMANDÉE)
+            new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                    new TableRow({ children: [
+                        new TableCell({ children: [new Paragraph({ text: "NUMÉRO D’OT", bold: true })], shading: {fill:"f0f0f0"} }),
+                        new TableCell({ children: [new Paragraph(ot)] })
+                    ]}),
+                    new TableRow({ children: [
+                        new TableCell({ children: [new Paragraph({ text: "CHEF DE PROJET", bold: true })], shading: {fill:"f0f0f0"} }),
+                        new TableCell({ children: [new Paragraph(document.getElementById('liste_cp').value)] })
+                    ]}),
+                    new TableRow({ children: [
+                        new TableCell({ children: [new Paragraph({ text: "RAISON SOCIALE", bold: true })], shading: {fill:"f0f0f0"} }),
+                        new TableCell({ children: [new Paragraph(document.getElementById('val_client').value)] })
+                    ]}),
+                    new TableRow({ children: [
+                        new TableCell({ children: [new Paragraph({ text: "ADRESSE DU SITE", bold: true })], shading: {fill:"f0f0f0"} }),
+                        new TableCell({ children: [new Paragraph(document.getElementById('val_adresse').value)] })
+                    ]})
+                ]
+            }),
+
+            new Paragraph({ text: "1. PRÉAMBULE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 600} }),
+            new Paragraph("Dans le cadre de l’amélioration de sa connectivité, INFO U a sollicité Sogetrel pour réaliser un audit de couverture.")
+        ];
+
+        // LOGIQUE CRADLEPOINT (UTech)
+        if (rsrp < -90) {
+            content.push(new Paragraph({ text: "RÉSULTAT SIGNAL : INSATISFAISANT (RSRP " + rsrp + " dBm)", color: "FF0000", bold: true, spacing: {before: 300} }));
+            content.push(new Paragraph("Une antenne déportée est nécessaire pour garantir le débit."));
+        } else {
+            content.push(new Paragraph({ text: "RÉSULTAT SIGNAL : SATISFAISANT (RSRP " + rsrp + " dBm)", color: "27ae60", bold: true, spacing: {before: 300} }));
+            content.push(new Paragraph("Le signal interne est suffisant. Pose du Cradlepoint en intérieur validée sans antenne externe."));
+        }
+
+        // LOGIQUE PREREQUIS AERIEN
+        if (type === "AERIEN_PARTAGE") {
+            content.push(new Paragraph({ text: "2. PREREQUIS À CHARGE DU MAGASIN U", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }));
+            if(document.getElementById('pre_gaine').checked) content.push(new Paragraph("- Pose d’une gaine de 40mm entre l'antenne et la baie informatique."));
+            if(document.getElementById('pre_percement').checked) content.push(new Paragraph("- Percement de la dalle et étanchéité à réaliser par le prestataire du magasin."));
+        }
+
+        content.push(new Paragraph({ text: "SIGNATURE TECHNICIEN :", bold: true, spacing: {before: 600} }));
+        content.push(new Paragraph("Technicien : " + document.getElementById('val_tech').value));
+        content.push(new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] }));
+
+        const doc = new Document({ sections: [{ children: content }] });
+        Packer.toBlob(doc).then(b => saveAs(b, `AUDIT_INFO_U_${ot}.docx`));
     }
 
-    function sauvegarderAuto() {
-        const fields = ["selectRapport","num_rapport","liste_cp","client_nom","ville_site","contact_nom","contact_tel","contact_mail","audit_existant","nom_tech"];
-        let data = {}; fields.forEach(f => data[f] = document.getElementById(f).value);
-        localStorage.setItem("brouillon_v3", JSON.stringify(data));
-    }
-
-    function chargerBrouillon() {
-        let data = JSON.parse(localStorage.getItem("brouillon_v3"));
-        if(!data) return alert("Aucun brouillon.");
-        Object.keys(data).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = data[k]; });
-        changerFormulaire(); rafraichirCP();
-    }
-
-    /** SIGNATURE **/
+    // --- SIGNATURE & STORAGE ---
     const sigCanvas = document.getElementById('signature-pad');
     const sigCtx = sigCanvas.getContext('2d');
     let signing = false;
@@ -176,61 +225,20 @@
         const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
         sigCtx.lineTo(x, y); sigCtx.stroke();
     };
+    function clearSig() { sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); }
 
-    /** GÉNÉRATION WORD FINALE (STRUCTURE DEMANDÉE) **/
-    async function genererWordFinal() {
-        const { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, WidthType } = docx;
-        
-        const ot = document.getElementById("num_rapport").value || "SANS OT";
-        const cp = document.getElementById("liste_cp").value || "NON DÉFINI";
-        const client = document.getElementById("client_nom").value || "CLIENT";
-        const sigData = sigCanvas.toDataURL("image/png");
-        const resS = await fetch(sigData); const blobS = await resS.blob();
-
-        const doc = new Document({
-            sections: [{
-                properties: { page: { margin: { top: 720, right: 720, bottom: 720, left: 720 } } },
-                children: [
-                    new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: "", spacing: { after: 300 } }),
-                    new Paragraph({ children: [new TextRun({ text: document.getElementById("selectRapport").value.replace(/_/g, ' '), bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "", spacing: { after: 400 } }),
-
-                    // TABLEAU : OT > CP > CLIENT
-                    new Table({
-                        width: { size: 100, type: WidthType.PERCENTAGE },
-                        rows: [
-                            new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "N° OT / COMMANDE", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(ot)] })
-                            ]}),
-                            new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "CHEF DE PROJET", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(cp)] })
-                            ]}),
-                            new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "CLIENT", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(client)] })
-                            ]}),
-                            new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "ADRESSE SITE", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(document.getElementById("ville_site").value)] })
-                            ]})
-                        ]
-                    }),
-
-                    new Paragraph({ text: "SIGNATURE :", bold: true, spacing: { before: 800 } }),
-                    new Paragraph({ text: "Technicien : " + document.getElementById("nom_tech").value }),
-                    new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] })
-                ]
-            }]
-        });
-        Packer.toBlob(doc).then(b => saveAs(b, `RAPPORT_${ot}.docx`));
+    function sauvegarderAuto() {
+        const d = { 
+            ot: document.getElementById('val_ot').value,
+            client: document.getElementById('val_client').value,
+            addr: document.getElementById('val_adresse').value,
+            tech: document.getElementById('val_tech').value
+        };
+        localStorage.setItem('brouillon_info_u', JSON.stringify(d));
     }
 
     rafraichirCP();
-    document.onkeydown = (e) => { if(e.keyCode == 123) return false; };
+    majLogiqueProjet();
 </script>
-
 </body>
 </html>
