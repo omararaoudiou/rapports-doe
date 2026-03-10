@@ -3,123 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL EXPERT V31 - FULL REPORTS</title>
+    <title>SOGETREL FIELD EXPERT V32 - FULL INTEGRATION</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.2/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
-        :root { --blue: #002d5b; --orange: #f39c12; --green: #27ae60; --light: #f4f7f9; --red: #c0392b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 10px; padding-bottom: 160px; }
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; }
+        :root { --blue: #002d5b; --orange: #f39c12; --green: #27ae60; --light: #f4f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 10px; padding-bottom: 160px; color: #333; }
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
         h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 0.9em; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
         select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 8px; font-size: 14px; }
         .btn-add { background: var(--blue); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; cursor: pointer; font-weight: bold; }
-        .canvas-container { position: relative; width: 100%; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; margin-top: 10px; }
-        canvas { width: 100%; height: auto; display: block; }
         
-        .pm-block { border-left: 5px solid var(--green); background: #f9f9f9; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
-        .work-section { background: #fff3e0; padding: 10px; border-radius: 8px; border: 1px solid var(--orange); margin-top: 10px; }
+        /* Photo Management */
+        .photo-zone { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 15px; }
+        .canvas-container { position: relative; width: 100%; background: #222; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+        canvas { width: 100%; height: auto; display: block; cursor: crosshair; }
         
+        /* Measurements */
+        .pm-block { border-left: 5px solid var(--green); background: #f9fafb; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.02); }
+        .pm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .pm-full { grid-column: span 2; display: flex; gap: 8px; }
+        .label-pm { font-weight: bold; color: var(--green); display: block; margin-bottom: 5px; font-size: 12px; }
+
         .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        .btn-gen { background: var(--green); color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; }
+        .btn-gen { background: var(--green); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2>SOGETREL EXPERT V31</h2>
-    <p>Audit & DOE : Pico, Starlink, Cradlepoint, Antenne</p>
+    <h2>SOGETREL FIELD EXPERT V32</h2>
+    <p>Audit & DOE : Toutes Missions</p>
 </div>
 
 <div class="card" style="border-top-color: var(--orange);">
-    <h3>📋 Type de Mission & Template</h3>
-    <select id="active_tpl" onchange="toggleCradlepointSection()">
-        <optgroup label="AUDITS (Survey)">
-            <option value="AUDIT_PICO">Audit PICO</option>
-            <option value="AUDIT_STARLINK">Audit STARLINK</option>
+    <h3>📂 Type de Rapport (Template)</h3>
+    <select id="active_tpl" onchange="checkCradlepoint()">
+        <optgroup label="AUDITS (Avant-Vente)">
             <option value="AUDIT_CRADLEPOINT">Audit CRADLEPOINT</option>
+            <option value="AUDIT_STARLINK">Audit STARLINK</option>
+            <option value="AUDIT_PICO">Audit PICO</option>
             <option value="AUDIT_ANTENNE">Audit ANTENNE DÉPORTÉE</option>
         </optgroup>
-        <optgroup label="DOE (Travaux terminés)">
-            <option value="DOE_PICO">DOE PICO</option>
-            <option value="DOE_STARLINK">DOE STARLINK</option>
+        <optgroup label="DOE (Après-Travaux)">
             <option value="DOE_CRADLEPOINT">DOE CRADLEPOINT</option>
+            <option value="DOE_STARLINK">DOE STARLINK</option>
+            <option value="DOE_PICO">DOE PICO</option>
             <option value="DOE_ANTENNE">DOE ANTENNE DÉPORTÉE</option>
         </optgroup>
     </select>
 </div>
 
-<div id="cradlepoint_works" class="card" style="display:none; border-top-color: var(--orange);">
-    <h3>🛠️ Détails Travaux Cradlepoint</h3>
-    <label>Responsabilité des travaux :</label>
-    <select id="work_resp">
-        <option value="SOGETREL">100% SOGETREL (Installation complète)</option>
-        <option value="CLIENT">PRÉREQUIS CLIENT (Attente client)</option>
+<div id="section_travaux" class="card" style="border-top-color: var(--orange);">
+    <h3>🛠️ Section Travaux / Prérequis</h3>
+    <select id="work_type">
+        <option value="SOGETREL">Travaux 100% SOGETREL (Réalisés)</option>
+        <option value="CLIENT">PRÉREQUIS CLIENT (À la charge du client)</option>
     </select>
-    <textarea id="work_desc" placeholder="Description des travaux effectués ou des prérequis manquants..." rows="3"></textarea>
+    <textarea id="travaux_desc" placeholder="Détails des travaux ou liste des prérequis..." rows="3"></textarea>
 </div>
 
 <div class="card">
-    <h3>📍 Informations Site</h3>
+    <h3>📍 Identification Site</h3>
     <input type="text" id="ot" placeholder="Numéro d'OT">
     <input type="text" id="client" placeholder="Client / Enseigne">
     <input type="text" id="tech" value="Emmanuel MAUDET">
 </div>
 
 <div class="card">
-    <h3>🖼️ Reportage Photo & Implantation</h3>
-    <button class="btn-add" onclick="addZone()">➕ Ajouter Photo / Plan</button>
+    <h3>🖼️ Reportage Photo & Marquage</h3>
+    <button class="btn-add" onclick="addPhotoZone()">📷 Prendre une Photo / Charger Plan</button>
     <div id="zones_list"></div>
 </div>
 
 <div class="card">
     <h3>📉 Mesures Radio & Speedtest</h3>
-    <div id="pm_list"></div>
+    <div id="pm_container">
+        <p style="text-align:center; color:#999; font-size:12px;">Appuyez sur une photo pour placer un point de mesure (PM).</p>
+    </div>
 </div>
 
 <div class="footer">
-    <button class="btn-gen" onclick="generateReport()">🚀 GÉNÉRER LE RAPPORT (.DOCX)</button>
+    <button class="btn-gen" onclick="generateFinalReport()">🚀 GÉNÉRER LE RAPPORT COMPLET (.DOCX)</button>
 </div>
 
 <script>
-    // BASE DE DONNÉES DES 8 TEMPLATES
-    const TEMPLATES_DATABASE = {
-        AUDIT_PICO: "BASE64_ICI", DOE_PICO: "BASE64_ICI",
-        AUDIT_STARLINK: "BASE64_ICI", DOE_STARLINK: "BASE64_ICI",
+    // COLLEZ VOS CODES BASE64 ICI
+    const TEMPLATES = {
         AUDIT_CRADLEPOINT: "BASE64_ICI", DOE_CRADLEPOINT: "BASE64_ICI",
+        AUDIT_STARLINK: "BASE64_ICI", DOE_STARLINK: "BASE64_ICI",
+        AUDIT_PICO: "BASE64_ICI", DOE_PICO: "BASE64_ICI",
         AUDIT_ANTENNE: "BASE64_ICI", DOE_ANTENNE: "BASE64_ICI"
     };
 
-    let zones = [];
+    let photoZones = [];
 
-    function toggleCradlepointSection() {
+    function checkCradlepoint() {
         const val = document.getElementById('active_tpl').value;
-        document.getElementById('cradlepoint_works').style.display = val.includes('CRADLEPOINT') ? 'block' : 'none';
+        // La section travaux s'affiche pour Cradlepoint ou pour tous les DOE
+        document.getElementById('section_travaux').style.display = (val.includes('CRADLEPOINT') || val.includes('DOE')) ? 'block' : 'none';
     }
 
-    function addZone() {
+    function addPhotoZone() {
         const id = Date.now();
-        zones.push({ id, img: null, markers: [] });
+        photoZones.push({ id, img: null, markers: [] });
         const div = document.createElement('div');
-        div.className = "canvas-container";
-        div.innerHTML = `<input type="file" accept="image/*" onchange="loadImg(${id}, this)"><canvas id="canvas_${id}" onclick="addPM(${id}, event)"></canvas>`;
+        div.className = "photo-zone";
+        div.innerHTML = `
+            <input type="file" accept="image/*" onchange="handleImage(${id}, this)">
+            <div class="canvas-container">
+                <canvas id="canvas_${id}" onclick="placePM(${id}, event)"></canvas>
+            </div>
+        `;
         document.getElementById('zones_list').appendChild(div);
     }
 
-    function loadImg(id, input) {
+    function handleImage(id, input) {
         if (input.files[0]) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    const z = zones.find(x => x.id === id); z.img = img;
+                    const z = photoZones.find(x => x.id === id);
+                    z.img = img;
                     const cvs = document.getElementById(`canvas_${id}`);
                     cvs.width = img.width; cvs.height = img.height;
-                    redraw(z);
+                    drawCanvas(z);
                 };
                 img.src = e.target.result;
             };
@@ -127,66 +141,97 @@
         }
     }
 
-    function addPM(id, e) {
-        const z = zones.find(x => x.id === id); if(!z.img) return;
+    function placePM(id, e) {
+        const z = photoZones.find(x => x.id === id);
+        if(!z.img) return;
         const cvs = document.getElementById(`canvas_${id}`);
         const rect = cvs.getBoundingClientRect();
-        z.markers.push({ 
-            x: (e.clientX - rect.left) * (cvs.width / rect.width), 
-            y: (e.clientY - rect.top) * (cvs.height / rect.height),
-            label: (zones.reduce((a,b)=>a+b.markers.length,0)+1) 
-        });
-        redraw(z); updatePMUI();
+        const x = (e.clientX - rect.left) * (cvs.width / rect.width);
+        const y = (e.clientY - rect.top) * (cvs.height / rect.height);
+        
+        z.markers.push({ x, y, label: (getTotalPM() + 1) });
+        drawCanvas(z);
+        refreshPMTable();
     }
 
-    function redraw(z) {
+    function drawCanvas(z) {
         const ctx = document.getElementById(`canvas_${z.id}`).getContext('2d');
         ctx.drawImage(z.img, 0, 0);
         z.markers.forEach(m => {
-            ctx.beginPath(); ctx.arc(m.x, m.y, 25, 0, Math.PI*2); ctx.fillStyle="#27ae60"; ctx.fill();
-            ctx.fillStyle="white"; ctx.fillText("M"+m.label, m.x-10, m.y+5);
+            const r = ctx.canvas.width * 0.025;
+            ctx.beginPath(); ctx.arc(m.x, m.y, r, 0, Math.PI*2);
+            ctx.fillStyle = "#27ae60"; ctx.fill();
+            ctx.strokeStyle = "white"; ctx.lineWidth = r*0.2; ctx.stroke();
+            ctx.fillStyle = "white"; ctx.font = `bold ${r}px Arial`; ctx.textAlign="center";
+            ctx.fillText("M"+m.label, m.x, m.y + (r/3));
         });
     }
 
-    function updatePMUI() {
-        const container = document.getElementById('pm_list');
-        const count = zones.reduce((a,b)=>a+b.markers.length,0);
+    function getTotalPM() { return photoZones.reduce((a, b) => a + b.markers.length, 0); }
+
+    function refreshPMTable() {
+        const container = document.getElementById('pm_container');
+        const count = getTotalPM();
         container.innerHTML = "";
-        for(let i=1; i<=count; i++){
-            container.innerHTML += `<div class="pm-block"><b>PM0${i}</b><div style="display:flex;gap:5px"><input type="number" id="rsrp_${i}" placeholder="RSRP"><input type="number" id="dl_${i}" placeholder="DL"><input type="number" id="ul_${i}" placeholder="UL"></div></div>`;
+        for(let i=1; i<=count; i++) {
+            container.innerHTML += `
+                <div class="pm-block">
+                    <span class="label-pm">📍 POINT DE MESURE PM0${i}</span>
+                    <div class="pm-grid">
+                        <input type="number" id="rsrp_${i}" placeholder="RSRP (dBm)">
+                        <input type="number" id="snr_${i}" placeholder="SNR">
+                        <div class="pm-full">
+                            <input type="number" id="dl_${i}" placeholder="Download (Mbps)">
+                            <input type="number" id="ul_${i}" placeholder="Upload">
+                            <input type="number" id="ping_${i}" placeholder="Ping">
+                        </div>
+                    </div>
+                </div>`;
         }
     }
 
-    async function generateReport() {
-        const tpl = TEMPLATES_DATABASE[document.getElementById('active_tpl').value];
-        if(tpl.length < 20) return alert("Veuillez intégrer le code Base64 du template choisi.");
+    async function generateFinalReport() {
+        const tplBase64 = TEMPLATES[document.getElementById('active_tpl').value];
+        if(tplBase64 === "BASE64_ICI") return alert("Erreur : Template non intégré.");
 
-        const zip = new PizZip(uint8Array(tpl));
+        const zip = new PizZip(strToBuffer(tplBase64));
         const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
 
         const data = {
             ot: document.getElementById('ot').value,
             client: document.getElementById('client').value,
             tech: document.getElementById('tech').value,
-            is_sogetrel: document.getElementById('work_resp').value === 'SOGETREL',
-            is_client: document.getElementById('work_resp').value === 'CLIENT',
-            travaux_desc: document.getElementById('work_desc').value,
+            travaux_desc: document.getElementById('travaux_desc').value,
+            is_sogetrel: document.getElementById('work_type').value === 'SOGETREL',
+            is_client: document.getElementById('work_type').value === 'CLIENT',
             mesures: []
         };
 
-        for(let i=1; i<=zones.reduce((a,b)=>a+b.markers.length,0); i++) {
-            data.mesures.push({ num: "PM0"+i, rsrp: document.getElementById(`rsrp_${i}`).value, dl: document.getElementById(`dl_${i}`).value, ul: document.getElementById(`ul_${i}`).value });
+        for(let i=1; i<=getTotalPM(); i++) {
+            data.mesures.push({
+                num: "PM0" + i,
+                rsrp: document.getElementById(`rsrp_${i}`).value,
+                snr: document.getElementById(`snr_${i}`).value,
+                dl: document.getElementById(`dl_${i}`).value,
+                ul: document.getElementById(`ul_${i}`).value,
+                ping: document.getElementById(`ping_${i}`).value
+            });
         }
 
-        doc.render(data);
-        saveAs(doc.getZip().generate({type:"blob"}), `SOGETREL_${data.ot}.docx`);
+        try {
+            doc.render(data);
+            saveAs(doc.getZip().generate({type:"blob"}), `Rapport_SOGETREL_${data.ot}.docx`);
+        } catch(e) { alert("Erreur lors du rendu Word."); }
     }
 
-    function uint8Array(base64) {
-        const s = window.atob(base64); const buf = new Uint8Array(s.length);
+    function strToBuffer(b64) {
+        const s = window.atob(b64);
+        const buf = new Uint8Array(s.length);
         for(let i=0; i<s.length; i++) buf[i] = s.charCodeAt(i);
         return buf;
     }
+
+    checkCradlepoint();
 </script>
 </body>
 </html>
