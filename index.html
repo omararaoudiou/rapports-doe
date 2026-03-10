@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL FIELD MASTER V42</title>
+    <title>SOGETREL FIELD MASTER V44</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.2/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
@@ -12,40 +12,49 @@
 
     <style>
         :root { --blue: #002d5b; --orange: #f39c12; --green: #27ae60; --red: #e74c3c; --light: #f4f7f9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 10px 10px 160px 10px; }
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); position: relative; }
-        h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 0.85em; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 10px 10px 160px 10px; color: #333; }
         
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 8px; font-size: 14px; }
-        .btn-ocr { background: var(--orange); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 15px; cursor: pointer; display: block; text-align: center; }
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .header h2 { margin: 0; font-size: 1.2em; }
+        
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
+        h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 0.85em; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 8px; font-size: 14px; background: #fff; }
+        input:focus { border-color: var(--orange); outline: none; }
+
+        .btn-ocr { background: var(--orange); color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 15px; cursor: pointer; display: block; text-align: center; font-size: 15px; }
         .btn-add { background: var(--blue); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; cursor: pointer; font-weight: bold; }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .photo-item { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 15px; position: relative; }
+        
+        #loader { display: none; color: var(--orange); font-weight: bold; text-align: center; margin-bottom: 10px; padding: 10px; background: #fff3e0; border: 1px solid var(--orange); border-radius: 8px; }
+        
+        .photo-item { background: #fdfdfd; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 15px; position: relative; }
         .canvas-container { position: relative; width: 100%; background: #222; border-radius: 8px; overflow: hidden; margin-top: 10px; }
-        canvas { width: 100%; height: auto; display: block; }
+        canvas { width: 100%; height: auto; display: block; cursor: crosshair; }
         
-        .btn-del { position: absolute; top: 5px; right: 5px; background: var(--red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; z-index: 10; }
-        .btn-undo { background: #666; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; margin-top: 5px; cursor: pointer; }
+        .btn-del { position: absolute; top: -10px; right: -10px; background: var(--red); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-weight: bold; z-index: 10; }
+        .btn-undo { background: #666; color: white; border: none; padding: 6px 12px; border-radius: 5px; font-size: 11px; margin-top: 8px; cursor: pointer; }
         
-        #loader { display: none; color: var(--orange); font-weight: bold; text-align: center; margin-bottom: 10px; padding: 10px; background: #fff3e0; border-radius: 8px; }
+        .pm-block { border-left: 5px solid var(--green); background: #f9fafb; padding: 10px; margin-bottom: 8px; border-radius: 5px; }
+
         .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        .btn-gen { background: var(--green); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; width: 100%; font-size: 16px; }
+        .btn-gen { background: var(--green); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; width: 100%; font-size: 16px; box-shadow: 0 4px 0 #1e8449; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2>SOGETREL FIELD MASTER V42</h2>
-    <p>Extraction stricte & Identification</p>
+    <h2>SOGETREL FIELD MASTER V44</h2>
+    <p>Audit & DOE - Emmanuel MAUDET</p>
 </div>
 
 <div class="card" style="border-top-color: var(--orange);">
-    <h3>📍 1. Identification & Importation</h3>
-    <div id="loader">Analyse Sogetrel en cours... ⏳</div>
+    <h3>📍 1. Identification (Automatisée)</h3>
+    <div id="loader">Initialisation OCR... ⏳</div>
     <label class="btn-ocr">
-        🖼️ Scanner Capture d'Écran
+        📸 SCANNER CAPTURE D'ÉCRAN OT
         <input type="file" accept="image/*" onchange="processOCR(this)" style="display:none">
     </label>
     
@@ -53,7 +62,7 @@
         <input type="text" id="ot" placeholder="Numéro d'OT">
         <input type="text" id="client" placeholder="Client">
     </div>
-    <input type="text" id="adresse" placeholder="Adresse complète">
+    <input type="text" id="adresse" placeholder="Adresse complète (Rue, CP, Ville)">
     
     <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;">
         <label style="font-size:11px; color:var(--blue); font-weight:bold;">ÉQUIPE PROJET (CP)</label>
@@ -61,21 +70,22 @@
         <datalist id="list_cp">
             <option value="Jean DUPONT">
             <option value="Marie MARTIN">
+            <option value="Cédric MOREAU">
         </datalist>
     </div>
 
     <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;">
         <label style="font-size:11px; color:var(--blue); font-weight:bold;">CONTACT SITE (CLIENT)</label>
-        <input type="text" id="contact_nom" placeholder="Nom du contact">
+        <input type="text" id="contact_nom" placeholder="Nom du contact site">
         <div class="grid-2">
             <input type="tel" id="contact_tel" placeholder="Téléphone">
-            <input type="email" id="contact_mail" placeholder="Email (si trouvé)">
+            <input type="email" id="contact_mail" placeholder="Email (si disponible)">
         </div>
     </div>
 </div>
 
 <div class="card">
-    <h3>📂 2. Type de Rapport</h3>
+    <h3>📂 2. Type de Mission</h3>
     <select id="active_tpl" onchange="uiRefresh()">
         <optgroup label="AUDITS">
             <option value="AUDIT_PICO">Audit PICO</option>
@@ -88,102 +98,90 @@
             <option value="DOE_STARLINK">DOE Starlink</option>
         </optgroup>
     </select>
-</div>
-
-<div class="card">
-    <h3>🛠️ 3. Préambules & Travaux</h3>
     <select id="work_type">
         <option value="SOGETREL">Travaux 100% SOGETREL</option>
         <option value="CLIENT">PRÉREQUIS CLIENT (Bloquant)</option>
     </select>
-    <textarea id="travaux_desc" placeholder="Observations techniques..." rows="2"></textarea>
+    <textarea id="travaux_desc" placeholder="Observations techniques et préconisations..." rows="2"></textarea>
 </div>
 
 <div class="card" style="border-top-color: var(--green);">
-    <h3>🗺️ 4. Plan & Photos Dynamiques</h3>
-    <button class="btn-add" onclick="addItem('PLAN')">➕ Ajouter Plan d'implantation</button>
+    <h3>🗺️ 3. Plan d'Implantation & Photos</h3>
+    <button class="btn-add" onclick="addItem('PLAN')">➕ AJOUTER LE PLAN</button>
     <div id="plan_container"></div>
+    
     <div id="controls_dyn" style="margin-top:10px;"></div>
     <div id="photo_container"></div>
 </div>
 
 <div class="card">
-    <h3>📉 Mesures Radio</h3>
+    <h3>📉 Mesures Radio (Points M)</h3>
     <div id="mesures_list"></div>
 </div>
 
 <div class="footer">
-    <button class="btn-gen" onclick="generateReport()">🚀 GÉNÉRER LE RAPPORT FINAL</button>
+    <button class="btn-gen" onclick="generateReport()">🚀 GÉNÉRER LE RAPPORT .DOCX</button>
 </div>
 
 <script>
-    const TEMPLATES = { AUDIT_PICO: "BASE64...", DOE_PICO: "BASE64..." };
     let items = [];
+    const TEMPLATES = { AUDIT_PICO: "BASE64_HERE", DOE_PICO: "BASE64_HERE" };
 
+    // --- MOTEUR OCR V44 CIBLÉ SOGETREL ---
     async function processOCR(input) {
         if (!input.files[0]) return;
         const loader = document.getElementById('loader');
         loader.style.display = "block";
+        loader.innerText = "Analyse de la capture Sogetrel... 🔎";
 
         try {
             const worker = await Tesseract.createWorker('fra');
             const { data: { text } } = await worker.recognize(input.files[0]);
-            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
 
-            // Reset des champs avant analyse
-            document.getElementById('ot').value = "";
-            document.getElementById('client').value = "";
-            document.getElementById('adresse').value = "";
-            document.getElementById('contact_nom').value = "";
-            document.getElementById('contact_tel').value = "";
-            document.getElementById('contact_mail').value = "";
+            // 1. Reset
+            ["ot","client","adresse","contact_nom","contact_tel","contact_mail"].forEach(id => document.getElementById(id).value = "");
 
-            // 1. OT (7 à 8 chiffres)
+            // 2. OT (7-8 chiffres)
             const otMatch = text.match(/\b\d{7,8}\b/);
             if(otMatch) {
                 document.getElementById('ot').value = otMatch[0];
-                // Le client est souvent la ligne juste après l'OT
                 const otIdx = lines.findIndex(l => l.includes(otMatch[0]));
-                if(otIdx !== -1 && lines[otIdx+1]) {
-                    document.getElementById('client').value = lines[otIdx+1].toUpperCase();
-                }
+                if(otIdx !== -1 && lines[otIdx+1]) document.getElementById('client').value = lines[otIdx+1].toUpperCase();
             }
 
-            // 2. Adresse (Code Postal 5 chiffres)
-            const cpMatch = text.match(/\d{5}\s+[A-Z\s\-]+/);
+            // 3. Adresse
+            const cpMatch = text.match(/\d{5}\s+[A-Z\s\-]{3,}/);
             if(cpMatch) {
                 const cpIdx = lines.findIndex(l => l.includes(cpMatch[0]));
                 const rue = (cpIdx > 0) ? lines[cpIdx-1] : "";
                 document.getElementById('adresse').value = (rue + " " + cpMatch[0]).trim();
             }
 
-            // 3. Contact (Nom Propre : Majuscule suivie de minuscules + MAJUSCULES)
-            const contactMatch = text.match(/[A-Z][a-zà-ÿ]+\s+[A-Z\-]{2,}/);
+            // 4. Contact & Tel
+            const contactMatch = text.match(/[A-Z][a-zà-ÿ\-]+\s+[A-Z\-]{2,}/);
             if(contactMatch) document.getElementById('contact_nom').value = contactMatch[0];
 
-            // 4. Téléphone (Format Sogetrel avec parenthèses ou points)
             const telMatch = text.match(/\(?0\d{2}\)?[\s.-]*\d{3}[\s.-]*\d{4}/);
             if(telMatch) {
                 let clean = telMatch[0].replace(/[^\d]/g, '');
-                document.getElementById('contact_tel').value = clean.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5');
+                document.getElementById('contact_tel').value = clean.replace(/(\d{2})/g, '$1 ').trim();
             }
 
-            // 5. Email (Uniquement si présent avec @)
+            // 5. Email (Strict)
             const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
             if(emailMatch) document.getElementById('contact_mail').value = emailMatch[0];
 
             await worker.terminate();
-        } catch (e) { console.error(e); }
+        } catch (e) { alert("Erreur de lecture OCR."); }
         loader.style.display = "none";
     }
 
-    // --- LOGIQUE CORE DYNAMIQUE ---
+    // --- GESTION DE L'INTERFACE DYNAMIQUE ---
     function uiRefresh() {
         const type = document.getElementById('active_tpl').value;
         const ctrls = document.getElementById('controls_dyn');
-        ctrls.innerHTML = type.includes('PICO') ? 
-            `<button class="btn-add" onclick="addItem('PICO')">➕ Ajouter Pico (IMEI/SN)</button>` : 
-            `<button class="btn-add" onclick="addItem('GEN')">➕ Ajouter Photo</button>`;
+        ctrls.innerHTML = `<button class="btn-add" style="background:var(--orange)" onclick="addItem('${type.includes('PICO')?'PICO':'GEN'}')">➕ AJOUTER PHOTO ${type.includes('PICO')?'PICO':'ÉQUIPEMENT'}</button>`;
         render();
     }
 
@@ -198,12 +196,8 @@
     }
 
     function undoMarker(id) {
-        const item = items.find(x => x.id === id);
-        if (item && item.markers.length > 0) {
-            item.markers.pop();
-            draw(item);
-            renderMesures();
-        }
+        const it = items.find(x => x.id === id);
+        if(it && it.markers.length > 0) { it.markers.pop(); draw(it); renderMesures(); }
     }
 
     function render() {
@@ -214,9 +208,15 @@
             div.className = "photo-item";
             let fields = el.type === 'PICO' ? 
                 `<div class="grid-2"><input type="text" placeholder="IMEI" onchange="upd(${el.id},'imei',this.value)"><input type="text" placeholder="SN" onchange="upd(${el.id},'sn',this.value)"></div>` : 
-                `<input type="text" placeholder="Légende" onchange="upd(${el.id},'label',this.value)">`;
+                `<input type="text" placeholder="Légende Photo" onchange="upd(${el.id},'label',this.value)">`;
             
-            div.innerHTML = `<button class="btn-del" onclick="deleteItem(${el.id})">✕</button>${fields}<input type="file" accept="image/*" onchange="loadImg(${el.id},this)"><div class="canvas-container"><canvas id="cvs_${el.id}" onclick="mark(${el.id},event)"></canvas></div><button class="btn-undo" onclick="undoMarker(${el.id})">↺ Annuler point</button>`;
+            div.innerHTML = `
+                <button class="btn-del" onclick="deleteItem(${el.id})">✕</button>
+                ${fields}
+                <input type="file" accept="image/*" onchange="loadImg(${el.id},this)">
+                <div class="canvas-container"><canvas id="cvs_${el.id}" onclick="mark(${el.id},event)"></canvas></div>
+                <button class="btn-undo" onclick="undoMarker(${el.id})">↺ Annuler dernier point</button>
+            `;
             document.getElementById(el.type === 'PLAN' ? 'plan_container' : 'photo_container').appendChild(div);
             if(el.img) draw(el);
         });
@@ -273,15 +273,23 @@
         cont.innerHTML = "";
         let total = items.reduce((a, b) => a + b.markers.length, 0);
         for(let i=1; i<=total; i++) {
-            cont.innerHTML += `<div class="pm-block"><b>POINT M${i}</b><div class="grid-2"><input type="number" id="rsrp_${i}" placeholder="RSRP"><input type="number" id="dl_${i}" placeholder="DL"></div></div>`;
+            cont.innerHTML += `<div class="pm-block"><b>POINT M${i}</b><div class="grid-2"><input type="number" id="rsrp_${i}" placeholder="RSRP (dBm)"><input type="number" id="dl_${i}" placeholder="Débit DL (Mbps)"></div></div>`;
         }
     }
 
     function upd(id, k, v) { items.find(x => x.id === id)[k] = v; }
 
-    async function generateReport() {
-        // Logique docxtemplater identique...
-        alert("Génération lancée...");
+    function generateReport() {
+        const data = {
+            ot: document.getElementById('ot').value,
+            client: document.getElementById('client').value,
+            adresse: document.getElementById('adresse').value,
+            cp: document.getElementById('cp_nom').value,
+            contact: document.getElementById('contact_nom').value,
+            tech: "Emmanuel MAUDET"
+        };
+        console.log("Données prêtes :", data);
+        alert("Rapport en cours de création pour l'OT " + data.ot);
     }
 
     uiRefresh();
