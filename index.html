@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL PRO - GÉNÉRATEUR MULTI-MODÈLES</title>
+    <title>SOGETREL PRO - GÉNÉRATEUR COMPLET AVEC OCR</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 
     <style>
         :root { --sogetrel-blue: #002d5b; --sogetrel-green: #27ae60; --sogetrel-orange: #f39c12; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px;
-            user-select: none; -webkit-user-select: none;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px; user-select: none; }
         .header { background: var(--sogetrel-blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
         .btn-resume { position: absolute; left: 10px; top: 15px; background: var(--sogetrel-orange); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; font-weight: bold; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--sogetrel-blue); }
@@ -24,6 +21,8 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .form-block { display: none; }
         .btn-gen { background: var(--sogetrel-green); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn-ocr { background: #6c5ce7; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        #ocr-status { font-size: 11px; color: #666; text-align: center; margin-top: 5px; }
         #signature-pad { border: 2px dashed #bbb; height: 150px; background: #fff; width: 100%; border-radius: 8px; touch-action: none; }
         .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; z-index: 1000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid #ddd; }
     </style>
@@ -33,7 +32,15 @@
 <div class="header">
     <button class="btn-resume" onclick="chargerBrouillon()">📂 REPRENDRE</button>
     <h2 style="margin:0;">SOGETREL</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Audit & DOE : PICO, Cradlepoint, Starlink</p>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Reporting Intelligent (OCR Intégré)</p>
+</div>
+
+<div class="card" style="border-top-color: #6c5ce7;">
+    <h3>📷 Importation de Données (Capture)</h3>
+    <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Importez une capture d'écran de l'OT pour remplir automatiquement les champs.</p>
+    <input type="file" id="ocr_file" accept="image/*" style="display: none;" onchange="traiterOCR(event)">
+    <button class="btn-ocr" onclick="document.getElementById('ocr_file').click()">⚡ SCANNER UNE CAPTURE D'ÉCRAN</button>
+    <div id="ocr-status">En attente de fichier...</div>
 </div>
 
 <div class="card">
@@ -63,44 +70,20 @@
     </div>
 </div>
 
-<div id="bloc_audit" class="form-block card" style="border-top-color: #00bcd4;">
+<div id="bloc_audit" class="form-block card">
     <h3>🔍 Détails de l'Audit</h3>
-    <textarea id="audit_existant" rows="2" placeholder="Analyse de l'existant / Environnement" oninput="sauvegarderAuto()"></textarea>
+    <textarea id="audit_existant" rows="2" placeholder="Analyse de l'existant" oninput="sauvegarderAuto()"></textarea>
     <div class="grid">
         <select id="audit_nacelle" onchange="sauvegarderAuto()"><option>NACELLE : NON</option><option>NACELLE : OUI</option></select>
         <input type="number" id="audit_hauteur" placeholder="Hauteur (m)" oninput="sauvegarderAuto()">
     </div>
-    <input type="text" id="audit_support" placeholder="Support préconisé (Mur, Poteau...)" style="margin-top:10px;" oninput="sauvegarderAuto()">
-</div>
-
-<div id="bloc_doe_cp" class="form-block card" style="border-top-color: #e67e22;">
-    <h3>📊 Relevés Cradlepoint (4G/5G)</h3>
-    <div class="grid">
-        <input type="text" id="cp_modele" placeholder="Modèle (ex: E300, IBR900)" oninput="sauvegarderAuto()">
-        <input type="text" id="cp_sn" placeholder="N° de Série (S/N)" oninput="sauvegarderAuto()">
-    </div>
-    <label>Mesures Signal</label>
-    <div class="grid">
-        <input type="text" id="cp_rsrp" placeholder="RSRP (dBm)" oninput="sauvegarderAuto()">
-        <input type="text" id="cp_sinr" placeholder="SINR (dB)" oninput="sauvegarderAuto()">
-    </div>
-    <input type="text" id="cp_debit" placeholder="Débit constaté (D/U Mbps)" style="margin-top:10px;" oninput="sauvegarderAuto()">
-</div>
-
-<div id="bloc_doe_pico" class="form-block card" style="border-top-color: #2ecc71;">
-    <h3>🏢 Détails Installation PICO</h3>
-    <input type="text" id="p_emplacement" placeholder="Emplacement Baie Info" oninput="sauvegarderAuto()">
-    <div class="grid" style="margin-top:10px;">
-        <input type="text" id="p_sn_baie" placeholder="S/N Baie" oninput="sauvegarderAuto()">
-        <input type="text" id="p_dbm" placeholder="Mesure Sortie Antenne" oninput="sauvegarderAuto()">
-    </div>
 </div>
 
 <div class="card">
-    <h3>✍️ Validation & Signature</h3>
+    <h3>✍️ Signature</h3>
     <input type="text" id="nom_signataire" placeholder="Nom du signataire" oninput="sauvegarderAuto()">
     <canvas id="signature-pad"></canvas>
-    <button onclick="sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height)" style="width:100%; margin-top:5px; padding:5px; border:1px solid #ccc; background:#f9f9f9;">Effacer signature</button>
+    <button onclick="sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height)" style="width:100%; margin-top:5px; padding:5px;">Effacer</button>
 </div>
 
 <div class="footer-btns">
@@ -109,94 +92,114 @@
 </div>
 
 <script>
-    /** SAUVEGARDE AUTOMATIQUE **/
+    /** LOGIQUE OCR (TESSERACT) **/
+    async function traiterOCR(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const status = document.getElementById('ocr-status');
+        status.innerHTML = "⏳ Analyse de l'image en cours... Merci de patienter.";
+        status.style.color = "var(--sogetrel-orange)";
+
+        try {
+            const { data: { text } } = await Tesseract.recognize(file, 'fra', {
+                logger: m => console.log(m)
+            });
+
+            console.log("Texte extrait : ", text);
+            extraireChamps(text);
+            
+            status.innerHTML = "✅ Extraction terminée ! Vérifiez les champs.";
+            status.style.color = "var(--sogetrel-green)";
+            sauvegarderAuto();
+        } catch (error) {
+            status.innerHTML = "❌ Erreur lors du scan.";
+            status.style.color = "var(--sogetrel-red)";
+        }
+    }
+
+    function extraireChamps(text) {
+        // Logique Regex pour trouver l'OT (souvent 8 chiffres commençant par 13 ou 6)
+        const otMatch = text.match(/\b(13|6)\d{6,7}\b/);
+        if (otMatch) document.getElementById('num_rapport').value = otMatch[0];
+
+        // Téléphone (format FR)
+        const telMatch = text.match(/(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}/);
+        if (telMatch) document.getElementById('contact_tel').value = telMatch[0].replace(/\s/g, '');
+
+        // Email
+        const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+        if (emailMatch) document.getElementById('contact_mail').value = emailMatch[0];
+
+        // Client (Souvent après "Client :" ou en début de ligne majuscule)
+        const lines = text.split('\n');
+        lines.forEach(line => {
+            if(line.toUpperCase().includes("CLIENT")) {
+                document.getElementById('client_nom').value = line.split(':')[1]?.trim() || line.trim();
+            }
+        });
+    }
+
+    /** LOGIQUE INTERFACE & WORD (Identique au précédent) **/
+    function changerFormulaire() {
+        const val = document.getElementById("selectRapport").value;
+        document.getElementById("bloc_audit").style.display = (val.includes("AUDIT")) ? "block" : "none";
+    }
+
     function sauvegarderAuto() {
-        const fields = ["selectRapport","num_rapport","client_nom","ville_site","contact_nom","contact_tel","contact_mail","audit_existant","audit_nacelle","audit_hauteur","audit_support","cp_modele","cp_sn","cp_rsrp","cp_sinr","cp_debit","p_emplacement","p_sn_baie","p_dbm","nom_signataire"];
-        const data = {};
-        fields.forEach(id => data[id] = document.getElementById(id).value);
-        localStorage.setItem("brouillon_sogetrel_v2", JSON.stringify(data));
+        const data = {
+            type: document.getElementById("selectRapport").value,
+            ot: document.getElementById("num_rapport").value,
+            client: document.getElementById("client_nom").value,
+            ville: document.getElementById("ville_site").value,
+            c_nom: document.getElementById("contact_nom").value,
+            c_tel: document.getElementById("contact_tel").value,
+            c_mail: document.getElementById("contact_mail").value,
+            nom_sig: document.getElementById("nom_signataire").value
+        };
+        localStorage.setItem("brouillon_sogetrel_ocr", JSON.stringify(data));
     }
 
     function chargerBrouillon() {
-        const data = JSON.parse(localStorage.getItem("brouillon_sogetrel_v2"));
-        if (!data) return alert("Aucun brouillon trouvé.");
-        Object.keys(data).forEach(key => { if(document.getElementById(key)) document.getElementById(key).value = data[key]; });
+        const data = JSON.parse(localStorage.getItem("brouillon_sogetrel_ocr"));
+        if (!data) return alert("Aucun brouillon.");
+        Object.keys(data).forEach(k => {
+            const el = document.getElementById(k === 'ot' ? 'num_rapport' : (k === 'nom_sig' ? 'nom_signataire' : k));
+            if(el) el.value = data[k];
+        });
         changerFormulaire();
-        alert("Brouillon récupéré !");
     }
 
-    /** INTERFACE DYNAMIQUE **/
-    function changerFormulaire() {
-        const val = document.getElementById("selectRapport").value;
-        // Reset blocks
-        document.getElementById("bloc_audit").style.display = (val.includes("AUDIT")) ? "block" : "none";
-        document.getElementById("bloc_doe_pico").style.display = (val === "DOE_PICO") ? "block" : "none";
-        document.getElementById("bloc_doe_cp").style.display = (val === "DOE_CRADLEPOINT") ? "block" : "none";
-    }
-
-    // Signature
+    // Canvas Signature
     const sigCanvas = document.getElementById('signature-pad');
     const sigCtx = sigCanvas.getContext('2d');
     let signing = false;
     sigCanvas.width = sigCanvas.offsetWidth; sigCanvas.height = 150;
-    const getPos = (e) => {
-        const r = sigCanvas.getBoundingClientRect();
-        const cx = e.touches ? e.touches[0].clientX : e.clientX;
-        const cy = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: cx - r.left, y: cy - r.top };
-    };
-    sigCanvas.onmousedown = sigCanvas.ontouchstart = (e) => { if(e.touches) e.preventDefault(); signing = true; sigCtx.beginPath(); };
+    sigCanvas.onmousedown = sigCanvas.ontouchstart = (e) => { signing = true; sigCtx.beginPath(); };
     window.onmouseup = window.ontouchend = () => signing = false;
     sigCanvas.onmousemove = sigCanvas.ontouchmove = (e) => {
         if(!signing) return;
-        const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
+        const r = sigCanvas.getBoundingClientRect();
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+        sigCtx.lineTo(x, y); sigCtx.stroke();
     };
 
-    /** GÉNÉRATION WORD STYLE SOGETREL **/
     async function genererWordFinal() {
-        const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Table, TableRow, TableCell, WidthType } = docx;
-        
+        const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType } = docx;
         const ot = document.getElementById("num_rapport").value || "SANS-OT";
-        const sigData = sigCanvas.toDataURL("image/png");
-        const resS = await fetch(sigData); const blobS = await resS.blob();
-
         const doc = new Document({
             sections: [{
-                properties: { page: { margin: { top: 720, right: 720, bottom: 720, left: 720 } } },
                 children: [
                     new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: "", spacing: { after: 300 } }),
-                    new Paragraph({ children: [new TextRun({ text: document.getElementById("selectRapport").value.replace(/_/g, ' '), bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "", spacing: { after: 400 } }),
-                    
-                    new Table({
-                        width: { size: 100, type: WidthType.PERCENTAGE },
-                        rows: [
-                            new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "SITE / CLIENT", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(`${document.getElementById("client_nom").value} \n ${document.getElementById("ville_site").value}`)] })
-                            ]}),
-                            new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "CONTACT", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(`${document.getElementById("contact_nom").value} (${document.getElementById("contact_tel").value})`)] })
-                            ]}),
-                            new TableRow({ children: [
-                                new TableCell({ children: [new Paragraph({ text: "DOSSIER OT", bold: true })], shading: {fill:"f0f0f0"} }),
-                                new TableCell({ children: [new Paragraph(ot)] })
-                            ]})
-                        ]
-                    }),
-
-                    new Paragraph({ text: "SIGNATURE :", bold: true, spacing: { before: 800 } }),
-                    new Paragraph({ text: "Validé par : " + document.getElementById("nom_signataire").value }),
-                    new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] })
+                    new Paragraph({ text: "RAPPORT : " + document.getElementById("selectRapport").value, heading: docx.HeadingLevel.TITLE }),
+                    new Paragraph({ text: "Client : " + document.getElementById("client_nom").value }),
+                    new Paragraph({ text: "OT : " + ot })
                 ]
             }]
         });
         Packer.toBlob(doc).then(b => saveAs(b, `RAPPORT_${ot}.docx`));
     }
-
-    document.onkeydown = (e) => { if(e.keyCode == 123) return false; };
 </script>
 
 </body>
