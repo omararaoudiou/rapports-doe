@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL FIELD MASTER V38</title>
+    <title>SOGETREL FIELD MASTER V39</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.2/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
@@ -21,6 +21,7 @@
         .btn-ocr { background: var(--orange); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 15px; cursor: pointer; display: block; text-align: center; }
         .btn-add { background: var(--blue); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; cursor: pointer; font-weight: bold; }
         
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .photo-item { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 15px; position: relative; }
         .canvas-container { position: relative; width: 100%; background: #222; border-radius: 8px; overflow: hidden; margin-top: 10px; }
         canvas { width: 100%; height: auto; display: block; }
@@ -36,21 +37,42 @@
 <body>
 
 <div class="header">
-    <h2>SOGETREL FIELD MASTER V38</h2>
-    <p>OCR Avancé & Identification Prioritaire</p>
+    <h2>SOGETREL FIELD MASTER V39</h2>
+    <p>OCR Avancé & Gestion Équipe Projet</p>
 </div>
 
 <div class="card" style="border-top-color: var(--orange);">
-    <h3>📍 1. Identification du Site</h3>
-    <div id="loader">Analyse de la photo en cours... ⏳</div>
+    <h3>📍 1. Identification & Importation</h3>
+    <div id="loader">Lecture de l'image... ⏳</div>
     <label class="btn-ocr">
-        🖼️ Remplir via Photo / Screenshot
+        🖼️ Remplir tout via Photo / Screenshot
         <input type="file" accept="image/*" onchange="processOCR(this)" style="display:none">
     </label>
-    <input type="text" id="ot" placeholder="Numéro d'OT (ex: OT123456)">
-    <input type="text" id="client" placeholder="Nom du Client / Enseigne">
+    <div class="grid-2">
+        <input type="text" id="ot" placeholder="Numéro d'OT">
+        <input type="text" id="client" placeholder="Nom du Client">
+    </div>
     <input type="text" id="adresse" placeholder="Adresse complète du site">
-    <input type="text" id="tech" value="Emmanuel MAUDET">
+    
+    <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;">
+        <label style="font-size:11px; color:var(--blue); font-weight:bold;">CHEF DE PROJET SOGETREL</label>
+        <input type="text" id="cp_nom" list="list_cp" placeholder="Sélectionner ou saisir un CP">
+        <datalist id="list_cp">
+            <option value="Jean DUPONT">
+            <option value="Marie MARTIN">
+            <option value="Chef de projet 3">
+        </datalist>
+    </div>
+
+    <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;">
+        <label style="font-size:11px; color:var(--blue); font-weight:bold;">CONTACT SUR SITE (CLIENT)</label>
+        <input type="text" id="contact_nom" placeholder="Nom du contact">
+        <div class="grid-2">
+            <input type="tel" id="contact_tel" placeholder="Téléphone">
+            <input type="email" id="contact_mail" placeholder="Email">
+        </div>
+    </div>
+    <input type="hidden" id="tech" value="Emmanuel MAUDET">
 </div>
 
 <div class="card">
@@ -72,12 +94,7 @@
 </div>
 
 <div class="card">
-    <h3>👥 3. Préambules & Contacts</h3>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-        <input type="text" id="cp_nom" placeholder="CP Sogetrel">
-        <input type="text" id="contact_nom" placeholder="Contact Site">
-    </div>
-    <input type="text" id="contact_tel" placeholder="Tél. Contact Site">
+    <h3>🛠️ 3. Préambules & Travaux</h3>
     <select id="work_type">
         <option value="SOGETREL">Travaux 100% SOGETREL</option>
         <option value="CLIENT">PRÉREQUIS CLIENT (Bloquant)</option>
@@ -86,31 +103,27 @@
 </div>
 
 <div class="card" style="border-top-color: var(--green);">
-    <h3>🗺️ 4. Plan du Site & Mesures</h3>
+    <h3>🗺️ 4. Plan & Photos</h3>
     <button class="btn-add" onclick="addItem('PLAN')">➕ Ajouter Plan d'implantation</button>
     <div id="plan_container"></div>
-</div>
-
-<div class="card">
-    <h3 id="photo_title">🖼️ 5. Photos des Éléments</h3>
-    <div id="controls_dyn"></div>
+    <div id="controls_dyn" style="margin-top:10px;"></div>
     <div id="photo_container"></div>
 </div>
 
 <div class="card">
-    <h3>📉 Récapitulatif des Mesures</h3>
+    <h3>📉 Tableau des Mesures</h3>
     <div id="mesures_list"></div>
 </div>
 
 <div class="footer">
-    <button class="btn-gen" onclick="generateReport()">🚀 GÉNÉRER LE RAPPORT FINAL (.DOCX)</button>
+    <button class="btn-gen" onclick="generateReport()">🚀 GÉNÉRER LE RAPPORT (.DOCX)</button>
 </div>
 
 <script>
-    const TEMPLATES = { AUDIT_PICO: "BASE64...", DOE_PICO: "BASE64..." }; // A remplir
+    const TEMPLATES = { AUDIT_PICO: "BASE64...", DOE_PICO: "BASE64..." };
     let items = [];
 
-    // --- LOGIQUE OCR AMÉLIORÉE ---
+    // --- OCR AVANCÉ (EXTRACT MULTI-CHAMPS) ---
     async function processOCR(input) {
         if (!input.files[0]) return;
         const loader = document.getElementById('loader');
@@ -120,33 +133,41 @@
             const worker = await Tesseract.createWorker('fra');
             const { data: { text } } = await worker.recognize(input.files[0]);
             
-            // Extraction Intelligente
-            // Cherche OT suivi de chiffres
+            // 1. OT
             const otMatch = text.match(/OT\s*[:\s]*(\d+)/i);
             if(otMatch) document.getElementById('ot').value = otMatch[1];
 
-            // Cherche le nom du client (souvent après "Client" ou "Site")
-            const clientMatch = text.match(/(?:Client|Site|Nom)\s*[:\s]*([^\n\r]+)/i);
+            // 2. Client
+            const clientMatch = text.match(/(?:Client|Site|Enseigne)\s*[:\s]*([^\n\r]+)/i);
             if(clientMatch) document.getElementById('client').value = clientMatch[1].trim();
 
-            // Cherche l'adresse (détection basique code postal + ville)
-            const addrMatch = text.match(/\d{5}\s+[A-Z\s]+/);
-            if(addrMatch) document.getElementById('adresse').value = addrMatch[0];
+            // 3. Téléphone (Format FR)
+            const telMatch = text.match(/(?:0|\+33|33)\s*[1-9](?:[\s.-]*\d{2}){4}/);
+            if(telMatch) document.getElementById('contact_tel').value = telMatch[0].replace(/\s/g, '');
+
+            // 4. Email
+            const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            if(emailMatch) document.getElementById('contact_mail').value = emailMatch[0];
+
+            // 5. Adresse (Si CP 5 chiffres suivi d'une ville)
+            const addrMatch = text.match(/\d{1,4}\s+[^0-9\n]+[0-9]{5}\s+[^0-9\n]+/);
+            if(addrMatch) document.getElementById('adresse').value = addrMatch[0].trim();
 
             await worker.terminate();
-            alert("Informations extraites avec succès !");
+            alert("Analyse terminée !");
         } catch (e) {
-            alert("Erreur lors de la lecture de l'image.");
+            alert("Erreur OCR.");
         }
         loader.style.display = "none";
     }
 
+    // --- RESTE DE LA LOGIQUE DYNAMIQUE (V38) ---
     function uiRefresh() {
         const type = document.getElementById('active_tpl').value;
         const ctrls = document.getElementById('controls_dyn');
         ctrls.innerHTML = type.includes('PICO') ? 
             `<button class="btn-add" onclick="addItem('PICO')">➕ Ajouter Photo Pico (IMEI/SN)</button>` : 
-            `<button class="btn-add" onclick="addItem('GEN')">➕ Ajouter une Photo Équipement</button>`;
+            `<button class="btn-add" onclick="addItem('GEN')">➕ Ajouter Photo Équipement</button>`;
         render();
     }
 
@@ -172,12 +193,11 @@
     function render() {
         document.getElementById('plan_container').innerHTML = "";
         document.getElementById('photo_container').innerHTML = "";
-        
         items.forEach(el => {
             const div = document.createElement('div');
             div.className = "photo-item";
             let fields = el.type === 'PICO' ? 
-                `<div style="display:flex;gap:5px;margin-bottom:8px;"><input type="text" placeholder="IMEI" onchange="upd(${el.id},'imei',this.value)"><input type="text" placeholder="SN" onchange="upd(${el.id},'sn',this.value)"></div>` : 
+                `<div class="grid-2"><input type="text" placeholder="IMEI" onchange="upd(${el.id},'imei',this.value)"><input type="text" placeholder="SN" onchange="upd(${el.id},'sn',this.value)"></div>` : 
                 `<input type="text" placeholder="Légende" onchange="upd(${el.id},'label',this.value)">`;
             
             div.innerHTML = `
@@ -215,31 +235,26 @@
         const el = items.find(x => x.id === id); if(!el.img) return;
         const c = document.getElementById(`cvs_${id}`);
         const r = c.getBoundingClientRect();
-        el.markers.push({ 
-            x: (e.clientX - r.left) * (c.width / r.width), 
-            y: (e.clientY - r.top) * (c.height / r.height) 
-        });
+        el.markers.push({ x: (e.clientX - r.left) * (c.width / r.width), y: (e.clientY - r.top) * (c.height / r.height) });
         draw(el); renderMesures();
     }
 
     function draw(el) {
         const ctx = document.getElementById(`cvs_${el.id}`).getContext('2d');
         ctx.drawImage(el.img, 0, 0);
-        let globalIdx = 1;
-        // Pour recalculer le bon index global de M1, M2...
-        let currentIdx = 1;
+        let currentTotal = 1;
         for(let item of items) {
             if(item.id === el.id) {
                 el.markers.forEach((m) => {
                     const rad = ctx.canvas.width * 0.025;
                     ctx.beginPath(); ctx.arc(m.x, m.y, rad, 0, Math.PI*2); ctx.fillStyle = "#27ae60"; ctx.fill();
                     ctx.fillStyle = "white"; ctx.font = `bold ${rad}px Arial`; ctx.textAlign="center";
-                    ctx.fillText("M"+(globalIdx), m.x, m.y + (rad/3));
-                    globalIdx++;
+                    ctx.fillText("M"+(currentTotal), m.x, m.y + (rad/3));
+                    currentTotal++;
                 });
                 break;
             }
-            globalIdx += item.markers.length;
+            currentTotal += item.markers.length;
         }
     }
 
@@ -248,32 +263,30 @@
         cont.innerHTML = "";
         let total = items.reduce((a, b) => a + b.markers.length, 0);
         for(let i=1; i<=total; i++) {
-            cont.innerHTML += `<div class="pm-block"><b>POINT M${i}</b><div style="display:flex;gap:5px;margin-top:5px;"><input type="number" id="rsrp_${i}" placeholder="RSRP"><input type="number" id="dl_${i}" placeholder="DL"></div></div>`;
+            cont.innerHTML += `<div class="pm-block"><b>POINT M${i}</b><div class="grid-2"><input type="number" id="rsrp_${i}" placeholder="RSRP"><input type="number" id="dl_${i}" placeholder="DL"></div></div>`;
         }
     }
 
     function upd(id, k, v) { items.find(x => x.id === id)[k] = v; }
 
-    function b64ToBuf(b64) {
-        const s = window.atob(b64); const b = new Uint8Array(s.length);
-        for(let i=0; i<s.length; i++) b[i] = s.charCodeAt(i);
-        return b;
-    }
-
     async function generateReport() {
         const tpl = TEMPLATES[document.getElementById('active_tpl').value];
-        const zip = new PizZip(b64ToBuf(tpl));
+        const zip = new PizZip(strToBuf(window.atob(tpl)));
         const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
         
         const data = {
             ot: document.getElementById('ot').value, client: document.getElementById('client').value, 
-            adresse: document.getElementById('adresse').value, tech: document.getElementById('tech').value,
+            adresse: document.getElementById('adresse').value, cp_nom: document.getElementById('cp_nom').value,
+            contact_nom: document.getElementById('contact_nom').value, contact_tel: document.getElementById('contact_tel').value,
+            contact_mail: document.getElementById('contact_mail').value, travaux_desc: document.getElementById('travaux_desc').value,
             mesures: []
         };
         // Logique de remplissage mesures...
         doc.render(data);
         saveAs(doc.getZip().generate({type:"blob"}), `SOGETREL_${data.ot}.docx`);
     }
+
+    function strToBuf(s) { const b = new Uint8Array(s.length); for(let i=0; i<s.length; i++) b[i]=s.charCodeAt(i); return b; }
 
     uiRefresh();
 </script>
