@@ -3,224 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL - EXPERT REPORT V19</title>
+    <title>SOGETREL EXPERT V31 - FULL REPORTS</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.2/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
-        :root { --blue: #002d5b; --green: #27ae60; --orange: #f39c12; --light: #f4f7f9; --red: #e74c3c; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 10px; padding-bottom: 140px; color: #333; }
-        
-        /* Header */
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .header h2 { margin: 0; font-size: 1.2em; }
-
-        /* Cards */
+        :root { --blue: #002d5b; --orange: #f39c12; --green: #27ae60; --light: #f4f7f9; --red: #c0392b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 10px; padding-bottom: 160px; }
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
-        h3 { margin-top: 0; color: var(--blue); font-size: 1em; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 0.9em; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
-        /* Form elements */
-        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 5px; font-size: 14px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .hidden { display: none; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 8px; font-size: 14px; }
+        .btn-add { background: var(--blue); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; cursor: pointer; font-weight: bold; }
+        .canvas-container { position: relative; width: 100%; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; margin-top: 10px; }
+        canvas { width: 100%; height: auto; display: block; }
         
-        /* Section styling */
-        .section-label { background: #e3f2fd; padding: 8px; font-weight: bold; font-size: 11px; color: var(--blue); margin: 15px 0 10px 0; border-radius: 4px; border-left: 4px solid var(--orange); }
-        .work-split { background: #fff9c4; padding: 10px; border-radius: 8px; border: 1px solid #fbc02d; margin-bottom: 10px; font-size: 12px; }
-
-        /* Floating Footer */
-        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        .btn-gen { background: var(--green); color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+        .pm-block { border-left: 5px solid var(--green); background: #f9f9f9; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+        .work-section { background: #fff3e0; padding: 10px; border-radius: 8px; border: 1px solid var(--orange); margin-top: 10px; }
         
-        /* Signature */
-        #sig-canvas { border: 1px solid #ccc; background: #fff; width: 100%; height: 120px; border-radius: 8px; touch-action: none; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
+        .btn-gen { background: var(--green); color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2>SOGETREL CIT FIELD</h2>
-    <p>Générateur de Rapports Multi-Missions</p>
+    <h2>SOGETREL EXPERT V31</h2>
+    <p>Audit & DOE : Pico, Starlink, Cradlepoint, Antenne</p>
 </div>
 
 <div class="card" style="border-top-color: var(--orange);">
-    <h3>📋 Type de Mission</h3>
-    <select id="selectRapport" onchange="updateUI()">
-        <optgroup label="STARLINK & CRADLEPOINT">
-            <option value="AUDIT_STARLINK">🛰️ Audit STARLINK Pur</option>
-            <option value="INFO_U_CO">🤝 INFO U (Co-réalisation)</option>
-            <option value="INFO_U_100">🏗️ INFO U (100% Sogetrel)</option>
+    <h3>📋 Type de Mission & Template</h3>
+    <select id="active_tpl" onchange="toggleCradlepointSection()">
+        <optgroup label="AUDITS (Survey)">
+            <option value="AUDIT_PICO">Audit PICO</option>
+            <option value="AUDIT_STARLINK">Audit STARLINK</option>
+            <option value="AUDIT_CRADLEPOINT">Audit CRADLEPOINT</option>
+            <option value="AUDIT_ANTENNE">Audit ANTENNE DÉPORTÉE</option>
         </optgroup>
-        <optgroup label="PICO BTS">
-            <option value="DOE_PICO">🏢 DOE PICO (Fin de chantier)</option>
-            <option value="AUDIT_PICO">📶 Audit PICO BTS</option>
-        </optgroup>
-        <optgroup label="ANTENNE DÉPORTÉE">
-            <option value="DOE_ANTENNE">📡 DOE Antenne Déportée</option>
-            <option value="AUDIT_ANTENNE">📡 Audit Antenne Déportée</option>
+        <optgroup label="DOE (Travaux terminés)">
+            <option value="DOE_PICO">DOE PICO</option>
+            <option value="DOE_STARLINK">DOE STARLINK</option>
+            <option value="DOE_CRADLEPOINT">DOE CRADLEPOINT</option>
+            <option value="DOE_ANTENNE">DOE ANTENNE DÉPORTÉE</option>
         </optgroup>
     </select>
+</div>
+
+<div id="cradlepoint_works" class="card" style="display:none; border-top-color: var(--orange);">
+    <h3>🛠️ Détails Travaux Cradlepoint</h3>
+    <label>Responsabilité des travaux :</label>
+    <select id="work_resp">
+        <option value="SOGETREL">100% SOGETREL (Installation complète)</option>
+        <option value="CLIENT">PRÉREQUIS CLIENT (Attente client)</option>
+    </select>
+    <textarea id="work_desc" placeholder="Description des travaux effectués ou des prérequis manquants..." rows="3"></textarea>
 </div>
 
 <div class="card">
-    <h3>📍 Identification Site</h3>
-    <div class="grid-2">
-        <input type="text" id="ot" placeholder="N° OT">
-        <input type="date" id="date">
-    </div>
-    <input type="text" id="client" placeholder="Raison Sociale Client">
-    <textarea id="adresse" placeholder="Adresse de l'intervention"></textarea>
-    <div class="grid-2">
-        <input type="text" id="tech" value="Emmanuel MAUDET">
-        <input type="text" id="contact" placeholder="Contact sur place">
-    </div>
-</div>
-
-<div id="mod_starlink" class="card module">
-    <h3>🛰️ Détails Starlink</h3>
-    <div class="section-label">ÉLIGIBILITÉ & MATÉRIEL</div>
-    <select id="sl_type">
-        <option value="Haute Performance">Antenne Haute Performance (25m)</option>
-        <option value="Entreprise">Antenne Entreprise (50m)</option>
-    </select>
-    <select id="sl_obst">
-        <option value="OK">Zéro obstruction (Ciel dégagé)</option>
-        <option value="KO">Obstructions détectées</option>
-    </select>
-    <input type="text" id="sl_pose" placeholder="Type de pose (Dalle lestée, Mât...)">
-    <input type="number" id="sl_cable" placeholder="Longueur de câble prévue (m)">
-</div>
-
-<div id="mod_info_u_co" class="card module hidden">
-    <h3>🤝 Info U - Co-réalisation</h3>
-    <div class="work-split">
-        <b>✅ PRÉREQUIS CLIENT (Magasin U) :</b>
-        <p>Pose du mât, gaine Ø40mm, percements à la charge du client.</p>
-    </div>
-    <select id="u_pre">
-        <option value="OUI">Prérequis Client : CONFORMES</option>
-        <option value="NON">Prérequis Client : NON PRÊTS</option>
-    </select>
-    <div class="section-label">RADIO COMPARATIVE</div>
-    <div class="grid-2">
-        <input type="number" id="rsrp_bytel" placeholder="RSRP Bytel">
-        <input type="number" id="rsrp_orange" placeholder="RSRP Orange">
-    </div>
-</div>
-
-<div id="mod_pico" class="card module hidden">
-    <h3>🏢 Inventaire PICO BTS</h3>
-    <div class="section-label">PICO 1</div>
-    <input type="text" id="p1_imei" placeholder="IMEI">
-    <input type="text" id="p1_sn" placeholder="Numéro de série">
-    <div class="section-label">PICO 2</div>
-    <input type="text" id="p2_imei" placeholder="IMEI">
-    <input type="text" id="p2_sn" placeholder="Numéro de série">
-    <div class="section-label">MESURES FINALES</div>
-    <input type="number" id="p_rsrp" placeholder="RSRP Moyen">
+    <h3>📍 Informations Site</h3>
+    <input type="text" id="ot" placeholder="Numéro d'OT">
+    <input type="text" id="client" placeholder="Client / Enseigne">
+    <input type="text" id="tech" value="Emmanuel MAUDET">
 </div>
 
 <div class="card">
-    <h3>✍️ Signature Technicien</h3>
-    <canvas id="sig-canvas"></canvas>
-    <button onclick="clearSig()" style="background:none; border:none; color:var(--red); font-size:11px; margin-top:5px; width:100%;">Effacer la signature</button>
+    <h3>🖼️ Reportage Photo & Implantation</h3>
+    <button class="btn-add" onclick="addZone()">➕ Ajouter Photo / Plan</button>
+    <div id="zones_list"></div>
 </div>
 
-<div class="footer-btns">
+<div class="card">
+    <h3>📉 Mesures Radio & Speedtest</h3>
+    <div id="pm_list"></div>
+</div>
+
+<div class="footer">
     <button class="btn-gen" onclick="generateReport()">🚀 GÉNÉRER LE RAPPORT (.DOCX)</button>
 </div>
 
 <script>
-    // --- CONFIGURATION DES TEMPLATES (À remplir avec vos Base64) ---
-    const TEMPLATES_B64 = {
-        AUDIT_STARLINK: "BASE64_ICI",
-        INFO_U_CO: "BASE64_ICI",
-        DOE_PICO: "BASE64_ICI",
-        DOE_ANTENNE: "BASE64_ICI"
+    // BASE DE DONNÉES DES 8 TEMPLATES
+    const TEMPLATES_DATABASE = {
+        AUDIT_PICO: "BASE64_ICI", DOE_PICO: "BASE64_ICI",
+        AUDIT_STARLINK: "BASE64_ICI", DOE_STARLINK: "BASE64_ICI",
+        AUDIT_CRADLEPOINT: "BASE64_ICI", DOE_CRADLEPOINT: "BASE64_ICI",
+        AUDIT_ANTENNE: "BASE64_ICI", DOE_ANTENNE: "BASE64_ICI"
     };
 
-    function updateUI() {
-        const type = document.getElementById('selectRapport').value;
-        document.querySelectorAll('.module').forEach(m => m.classList.add('hidden'));
-        
-        if(type.includes('STARLINK')) document.getElementById('mod_starlink').classList.remove('hidden');
-        if(type === 'INFO_U_CO') document.getElementById('mod_info_u_co').classList.remove('hidden');
-        if(type.includes('PICO')) document.getElementById('mod_pico').classList.remove('hidden');
+    let zones = [];
+
+    function toggleCradlepointSection() {
+        const val = document.getElementById('active_tpl').value;
+        document.getElementById('cradlepoint_works').style.display = val.includes('CRADLEPOINT') ? 'block' : 'none';
     }
 
-    // --- LOGIQUE DE SIGNATURE ---
-    const canvas = document.getElementById('sig-canvas');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-    canvas.width = canvas.offsetWidth; canvas.height = 120;
-    
-    canvas.addEventListener('mousedown', () => drawing = true);
-    window.addEventListener('mouseup', () => drawing = false);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('touchstart', (e) => { drawing = true; draw(e.touches[0]); e.preventDefault(); });
-    canvas.addEventListener('touchend', () => drawing = false);
-    canvas.addEventListener('touchmove', (e) => { draw(e.touches[0]); e.preventDefault(); });
-
-    function draw(e) {
-        if(!drawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.pageX) - rect.left;
-        const y = (e.clientY || e.pageY) - rect.top;
-        ctx.lineWidth = 2; ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
-    }
-    function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.beginPath(); }
-
-    // --- GÉNÉRATION DU RAPPORT ---
-    function base64ToBuffer(b64) {
-        const bin = window.atob(b64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
-        return bytes.buffer;
+    function addZone() {
+        const id = Date.now();
+        zones.push({ id, img: null, markers: [] });
+        const div = document.createElement('div');
+        div.className = "canvas-container";
+        div.innerHTML = `<input type="file" accept="image/*" onchange="loadImg(${id}, this)"><canvas id="canvas_${id}" onclick="addPM(${id}, event)"></canvas>`;
+        document.getElementById('zones_list').appendChild(div);
     }
 
-    function generateReport() {
-        const type = document.getElementById('selectRapport').value;
-        const b64 = TEMPLATES_B64[type];
+    function loadImg(id, input) {
+        if (input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const z = zones.find(x => x.id === id); z.img = img;
+                    const cvs = document.getElementById(`canvas_${id}`);
+                    cvs.width = img.width; cvs.height = img.height;
+                    redraw(z);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function addPM(id, e) {
+        const z = zones.find(x => x.id === id); if(!z.img) return;
+        const cvs = document.getElementById(`canvas_${id}`);
+        const rect = cvs.getBoundingClientRect();
+        z.markers.push({ 
+            x: (e.clientX - rect.left) * (cvs.width / rect.width), 
+            y: (e.clientY - rect.top) * (cvs.height / rect.height),
+            label: (zones.reduce((a,b)=>a+b.markers.length,0)+1) 
+        });
+        redraw(z); updatePMUI();
+    }
+
+    function redraw(z) {
+        const ctx = document.getElementById(`canvas_${z.id}`).getContext('2d');
+        ctx.drawImage(z.img, 0, 0);
+        z.markers.forEach(m => {
+            ctx.beginPath(); ctx.arc(m.x, m.y, 25, 0, Math.PI*2); ctx.fillStyle="#27ae60"; ctx.fill();
+            ctx.fillStyle="white"; ctx.fillText("M"+m.label, m.x-10, m.y+5);
+        });
+    }
+
+    function updatePMUI() {
+        const container = document.getElementById('pm_list');
+        const count = zones.reduce((a,b)=>a+b.markers.length,0);
+        container.innerHTML = "";
+        for(let i=1; i<=count; i++){
+            container.innerHTML += `<div class="pm-block"><b>PM0${i}</b><div style="display:flex;gap:5px"><input type="number" id="rsrp_${i}" placeholder="RSRP"><input type="number" id="dl_${i}" placeholder="DL"><input type="number" id="ul_${i}" placeholder="UL"></div></div>`;
+        }
+    }
+
+    async function generateReport() {
+        const tpl = TEMPLATES_DATABASE[document.getElementById('active_tpl').value];
+        if(tpl.length < 20) return alert("Veuillez intégrer le code Base64 du template choisi.");
+
+        const zip = new PizZip(uint8Array(tpl));
+        const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
 
         const data = {
             ot: document.getElementById('ot').value,
             client: document.getElementById('client').value,
-            adresse: document.getElementById('adresse').value,
             tech: document.getElementById('tech').value,
-            date: document.getElementById('date').value,
-            sl_type: document.getElementById('sl_type').value,
-            sl_obst: document.getElementById('sl_obst').value,
-            sl_pose: document.getElementById('sl_pose').value,
-            sl_cable: document.getElementById('sl_cable').value,
-            u_pre: document.getElementById('u_pre').value,
-            rsrp_bytel: document.getElementById('rsrp_bytel').value,
-            rsrp_orange: document.getElementById('rsrp_orange').value,
-            p1_imei: document.getElementById('p1_imei').value,
-            p1_sn: document.getElementById('p1_sn').value,
-            p_rsrp: document.getElementById('p_rsrp').value
+            is_sogetrel: document.getElementById('work_resp').value === 'SOGETREL',
+            is_client: document.getElementById('work_resp').value === 'CLIENT',
+            travaux_desc: document.getElementById('work_desc').value,
+            mesures: []
         };
 
-        if (!b64 || b64 === "BASE64_ICI") {
-            alert("Mode Test : Données collectées avec succès pour " + data.client + ".\n\nNote : Pour télécharger le fichier, vous devez insérer le code Base64 du template dans le script.");
-            console.log("Variables détectées :", data);
-            return;
+        for(let i=1; i<=zones.reduce((a,b)=>a+b.markers.length,0); i++) {
+            data.mesures.push({ num: "PM0"+i, rsrp: document.getElementById(`rsrp_${i}`).value, dl: document.getElementById(`dl_${i}`).value, ul: document.getElementById(`ul_${i}`).value });
         }
 
-        try {
-            const zip = new PizZip(base64ToBuffer(b64));
-            const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-            doc.render(data);
-            const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-            saveAs(out, `Rapport_${type}_${data.ot}.docx`);
-        } catch (e) {
-            alert("Erreur technique lors de la génération.");
-        }
+        doc.render(data);
+        saveAs(doc.getZip().generate({type:"blob"}), `SOGETREL_${data.ot}.docx`);
     }
 
-    window.onload = () => { document.getElementById('date').valueAsDate = new Date(); updateUI(); };
+    function uint8Array(base64) {
+        const s = window.atob(base64); const buf = new Uint8Array(s.length);
+        for(let i=0; i<s.length; i++) buf[i] = s.charCodeAt(i);
+        return buf;
+    }
 </script>
 </body>
 </html>
