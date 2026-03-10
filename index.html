@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CIT REPORT IA - MASTER COMPLET</title>
+    <title>CIT REPORT IA - VERSION FINALE INTEGRALE</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -17,14 +17,15 @@
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-bottom: 5px; }
         
-        /* Tableaux de mesures */
+        /* Tableaux de mesures Sogetrel Style */
         .table-container { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd; }
         .measure-table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 500px; }
-        .measure-table th, .measure-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+        .measure-table th, .measure-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         .measure-table th { background-color: #f8f9fa; color: var(--blue); font-weight: bold; }
         .measure-table input { width: 95%; border: none; text-align: center; font-size: 11px; background: transparent; padding: 5px; }
         
-        .section-split-title { background: #f0f0f0; padding: 10px; font-weight: bold; font-size: 12px; color: var(--blue); margin-top: 20px; border-radius: 6px; border-left: 5px solid var(--red); }
+        /* Titres de sous-sections pour Antenne Déportée */
+        .ant-section-header { background: #f0f0f0; padding: 10px; font-weight: bold; font-size: 12px; color: var(--blue); margin: 15px 0 5px 0; border-radius: 6px; border-left: 5px solid var(--red); }
 
         /* Couleurs Signal Dynamiques */
         .sig-exc { background-color: #27ae60 !important; color: white !important; font-weight: bold; }
@@ -47,11 +48,11 @@
 
 <div class="header">
     <h2 id="main-title" style="margin:0;">CIT Report IA</h2>
-    <p style="margin:5px 0 0; font-size: 10px; opacity:0.9;">Audit & DOE - Cradlepoint | Antenne | PICO | Starlink</p>
+    <p style="margin:5px 0 0; font-size: 10px; opacity:0.9;">Master Report : Cradlepoint | Antenne | PICO | Starlink</p>
 </div>
 
 <div class="card" style="border-top-color: var(--purple);">
-    <h3>📋 Type de Mission</h3>
+    <h3>📋 Type d'intervention</h3>
     <select id="selectRapport" onchange="updateUI()">
         <option value="ANTENNE_DEPORTEE">📡 Audit/DOE Antenne Déportée</option>
         <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint 1850</option>
@@ -61,7 +62,7 @@
         <option value="STARLINK">🛰️ Audit/DOE Starlink</option>
     </select>
     
-    <label>Projet</label>
+    <label>Modèle de Projet</label>
     <select id="type_projet">
         <option value="UTILE_SCHIEVER">UTILE / SCHIEVER (100% Sogetrel)</option>
         <option value="AERIEN_MAGASIN_U">PROJET AÉRIEN (Magasin U)</option>
@@ -70,10 +71,10 @@
 
 <div class="card">
     <h3>📍 Informations Site</h3>
-    <input type="text" id="val_ot" placeholder="Numéro d'OT (ex: 13063317)">
+    <input type="text" id="val_ot" placeholder="Numéro d'OT">
     <input type="text" id="val_client" placeholder="Client / Enseigne">
-    <textarea id="val_adresse" rows="2" placeholder="Adresse complète de l'intervention"></textarea>
-    <input type="text" id="val_tech" placeholder="Technicien" value="Emmanuel MAUDET">
+    <textarea id="val_adresse" rows="2" placeholder="Adresse de l'intervention"></textarea>
+    <input type="text" id="val_tech" placeholder="Technicien Responsable" value="Emmanuel MAUDET">
 </div>
 
 <div id="sec_antenne" class="card" style="border-top-color: var(--red);">
@@ -84,10 +85,9 @@
         <option value="TOITURE_AUTOSTABLE">Toiture - Mât autostable</option>
         <option value="CERCLAGE">Cheminée / Cerclage</option>
     </select>
-    <label>Longueur câble Coaxial / Twin (m)</label>
-    <input type="number" id="ant_cable" placeholder="Longueur du câble">
+    <input type="number" id="ant_cable" placeholder="Longueur câble Coaxial / Twin (m)">
 
-    <div class="section-split-title">📍 MESURES À L'EMPLACEMENT INITIAL (BAIE)</div>
+    <div class="ant-section-header">📍 MESURES À L'EMPLACEMENT INITIAL (BAIE)</div>
     <div class="table-container">
         <table class="measure-table">
             <thead>
@@ -101,7 +101,7 @@
         </table>
     </div>
 
-    <div class="section-split-title">📍 MESURES À L'EMPLACEMENT DE L'ANTENNE DÉPORTÉE</div>
+    <div class="ant-section-header">📍 MESURES À L'EMPLACEMENT DE L'ANTENNE DÉPORTÉE</div>
     <div class="table-container">
         <table class="measure-table">
             <thead>
@@ -117,7 +117,7 @@
 </div>
 
 <div id="sec_cradle" class="card hidden" style="border-top-color: var(--green);">
-    <h3>📊 Mesures Cradlepoint 1850</h3>
+    <h3>📊 État Couverture Radio Cradlepoint</h3>
     <div class="table-container">
         <table class="measure-table">
             <thead>
@@ -140,38 +140,38 @@
 </div>
 
 <div id="sec_pico" class="card hidden" style="border-top-color: var(--orange);">
-    <h3>📶 Informations PICO</h3>
+    <h3>📶 Spécifications PICO</h3>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
         <input type="text" id="p_imei" placeholder="IMEI">
         <input type="text" id="p_num" placeholder="N° Pico">
     </div>
-    <label>Longueur RJ45 (m)</label>
-    <input type="number" id="p_cable" placeholder="Longueur de câble">
+    <input type="number" id="p_cable" placeholder="Longueur RJ45 (m)" style="margin-top:10px;">
 </div>
 
 <div class="card">
     <h3>🖼️ Reportage Photos</h3>
     <div class="photo-grid">
-        <div class="photo-box" onclick="trigger('f1')">📸 Baie (Face)<input type="file" id="f1" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" onclick="trigger('f1')">📸 Baie (Proche)<input type="file" id="f1" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
         <div class="photo-box" onclick="trigger('f2')">📸 Baie (Large)<input type="file" id="f2" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" onclick="trigger('f3')">📸 Antenne Ext.<input type="file" id="f3" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" onclick="trigger('f4')">📸 Cheminement<input type="file" id="f4" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
-        <div class="photo-box" style="grid-column: span 2;" onclick="trigger('f5')">📍 Plan (Pastilles)<input type="file" id="f5" class="hidden" accept="image/*" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" onclick="trigger('f3')">📸 Emplacement Antenne<input type="file" id="f3" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" onclick="trigger('f4')">📸 Cheminement Câble<input type="file" id="f4" class="hidden" accept="image/*" capture="environment" onchange="preview(this)"><div class="pv"></div></div>
+        <div class="photo-box" style="grid-column: span 2;" onclick="trigger('f5')">📍 Plan (Pastilles Implantation)<input type="file" id="f5" class="hidden" accept="image/*" onchange="preview(this)"><div class="pv"></div></div>
     </div>
 </div>
 
 <div class="card">
     <h3>✍️ Signature Technicien</h3>
     <canvas id="signature-pad"></canvas>
-    <button onclick="clearSign()" style="width:100%; border:none; background:none; font-size:10px; color:#999; margin-top:5px;">Effacer</button>
+    <button onclick="clearSign()" style="width:100%; border:none; background:none; font-size:10px; color:#999; margin-top:5px;">Effacer la signature</button>
 </div>
 
 <div class="footer-btns">
-    <button class="btn-main" onclick="alert('Export Word activé...')">GÉNÉRER WORD</button>
+    <button class="btn-main" onclick="alert('Génération Word en cours...')">GÉNÉRER RAPPORT</button>
     <button class="btn-sec" onclick="window.print()">VERSION PDF</button>
 </div>
 
 <script>
+    // NAVIGATION
     function updateUI() {
         const rap = document.getElementById('selectRapport').value;
         document.getElementById('sec_antenne').classList.toggle('hidden', rap !== 'ANTENNE_DEPORTEE');
@@ -180,15 +180,17 @@
         document.getElementById('main-title').innerText = rap.replace('_', ' ');
     }
 
+    // LOGIQUE COULEURS RSRP (Règles Sogetrel)
     function checkColor(el) {
         const val = parseFloat(el.value);
         el.parentElement.classList.remove('sig-exc', 'sig-good', 'sig-poor');
         if (isNaN(val)) return;
-        if (val >= -97) el.parentElement.classList.add('sig-exc');
-        else if (val >= -107) el.parentElement.classList.add('sig-good');
-        else el.parentElement.classList.add('sig-poor');
+        if (val >= -97) el.parentElement.classList.add('sig-exc'); // Vert
+        else if (val >= -107) el.parentElement.classList.add('sig-good'); // Jaune
+        else el.parentElement.classList.add('sig-poor'); // Rouge
     }
 
+    // PHOTOS
     function trigger(id) { document.getElementById(id).click(); }
     function preview(input) {
         if (input.files && input.files[0]) {
@@ -200,6 +202,7 @@
         }
     }
 
+    // SIGNATURE PAD
     const canvas = document.getElementById('signature-pad');
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.offsetWidth; canvas.height = 130;
@@ -208,9 +211,9 @@
         const r = canvas.getBoundingClientRect();
         return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
     }
-    canvas.onmousedown = canvas.ontouchstart = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
+    canvas.onmousedown = canvas.ontouchstart = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); e.preventDefault(); };
     window.onmouseup = window.ontouchend = () => drawing = false;
-    canvas.onmousemove = canvas.ontouchmove = (e) => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+    canvas.onmousemove = canvas.ontouchmove = (e) => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); };
     function clearSign() { ctx.clearRect(0,0,canvas.width,canvas.height); }
 
     updateUI();
