@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOGETREL AI - EXPERT INFO U</title>
+    <title>CIT Report IA</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -27,8 +27,8 @@
 <body>
 
 <div class="header">
-    <h2 style="margin:0;">SOGETREL AI</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Moteur Expert INFO U (Cradlepoint & Starlink)</p>
+    <h2 style="margin:0;">CIT Report IA</h2>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Expertise INFO U & Cradlepoint</p>
 </div>
 
 <div class="card" style="border-top-color: var(--purple);">
@@ -41,10 +41,10 @@
 <div class="card">
     <h3>📍 Informations Dossier (Tableau de garde)</h3>
     
-    <label>Type de Travaux (Modèle)</label>
+    <label>Modèle de Travaux</label>
     <select id="type_projet" onchange="majLogiqueProjet(); sauvegarderAuto();">
         <option value="SOGETREL_100">UTILE / SCHIEVER (100% Sogetrel)</option>
-        <option value="AERIEN_PARTAGE">PROJET AÉRIEN (Partagé avec Magasin U)</option>
+        <option value="AERIEN_PARTAGE">PROJET AÉRIEN (Partagé Magasin U)</option>
     </select>
 
     <label>N° OT (Dossier)</label>
@@ -58,14 +58,14 @@
     </div>
 
     <label>Client / Enseigne</label>
-    <input type="text" id="val_client" placeholder="ex: Magasin U - ARPAVIE" oninput="sauvegarderAuto()">
+    <input type="text" id="val_client" placeholder="ex: Magasin U" oninput="sauvegarderAuto()">
 
     <label>Adresse du site</label>
     <input type="text" id="val_adresse" placeholder="Adresse complète" oninput="sauvegarderAuto()">
 </div>
 
 <div class="card" style="border-top-color: var(--orange);">
-    <h3>📡 Audit Signal Cradlepoint</h3>
+    <h3>📡 Mesures Signal Cradlepoint</h3>
     <div class="grid">
         <div>
             <label>RSRP (dBm)</label>
@@ -77,11 +77,11 @@
         </div>
     </div>
     <div id="signal_feedback" style="font-size:12px; padding:8px; border-radius:5px; margin-top:5px; background:#f0f0f0;">
-        Saisissez le RSRP pour la logique auto.
+        Logique auto basée sur le RSRP.
     </div>
 
     <div id="section_magasin_u" style="display:none; margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
-        <p style="font-size:12px; color:var(--orange); font-weight:bold;">📋 Travaux Magasin U (Prérequis) :</p>
+        <p style="font-size:12px; color:var(--orange); font-weight:bold;">📋 Prérequis Magasin U :</p>
         <label><input type="checkbox" id="pre_gaine" checked> Pose gaine de 40mm</label>
         <label><input type="checkbox" id="pre_percement"> Percement dalle toiture</label>
         <label><input type="checkbox" id="pre_nacelle"> Mise à disposition nacelle</label>
@@ -90,7 +90,7 @@
 
 <div class="card">
     <h3>✍️ Signature & Technicien</h3>
-    <input type="text" id="val_tech" placeholder="Nom du technicien (ex: Emmanuel MAUDET)" oninput="sauvegarderAuto()">
+    <input type="text" id="val_tech" placeholder="Nom du technicien" oninput="sauvegarderAuto()">
     <canvas id="signature-pad"></canvas>
     <button onclick="clearSig()" style="width:100%; border:none; background:none; color:#666; font-size:12px; margin-top:5px;">Effacer la signature</button>
 </div>
@@ -102,7 +102,7 @@
 
 <script>
     // --- GESTION CP ---
-    let chefsDeProjet = JSON.parse(localStorage.getItem('cp_info_u')) || ["Emmanuel MAUDET", "Omar ARAOUDIOU"];
+    let chefsDeProjet = JSON.parse(localStorage.getItem('cp_cit_ia')) || ["Emmanuel MAUDET", "Omar ARAOUDIOU"];
     function rafraichirCP() {
         const s = document.getElementById('liste_cp'); s.innerHTML = "";
         chefsDeProjet.forEach(n => { let o = document.createElement('option'); o.value=n; o.text=n; s.add(o); });
@@ -112,15 +112,15 @@
         if(n) { chefsDeProjet.push(n); document.getElementById('nouveau_cp').value=""; rafraichirCP(); }
     }
 
-    // --- LOGIQUE METIER ---
+    // --- LOGIQUE SIGNAL ---
     function analyserSignal() {
         const rsrp = parseInt(document.getElementById('val_rsrp').value);
         const fb = document.getElementById('signal_feedback');
         if (rsrp >= -90) {
-            fb.innerHTML = "🟢 SIGNAL BON : La partie 'Préconisation Mât/Façade' sera retirée du rapport.";
+            fb.innerHTML = "🟢 SIGNAL BON : La partie 'Antenne Externe' sera retirée.";
             fb.style.color = "green";
         } else {
-            fb.innerHTML = "🔴 SIGNAL FAIBLE : Préconisation Antenne Déportée maintenue.";
+            fb.innerHTML = "🔴 SIGNAL FAIBLE : Antenne Déportée nécessaire.";
             fb.style.color = "red";
         }
     }
@@ -143,24 +143,21 @@
         } catch (e) { document.getElementById('ocr-status').innerText = "❌ Échec scan"; }
     }
 
-    // --- WORD GENERATION (BASÉ SUR VOS MODÈLES) ---
+    // --- GÉNÉRATION WORD ---
     async function genererWordFinal() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, WidthType, ImageRun } = docx;
-        const ot = document.getElementById('val_ot').value;
+        const ot = document.getElementById('val_ot').value || "SANS_OT";
         const rsrp = parseInt(document.getElementById('val_rsrp').value);
         const type = document.getElementById('type_projet').value;
-
-        // Préparation signature
         const sigData = sigCanvas.toDataURL("image/png");
         const resS = await fetch(sigData); const blobS = await resS.blob();
 
         const content = [
             new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
             new Paragraph({ text: "", spacing: { after: 200 } }),
-            new Paragraph({ children: [new TextRun({ text: "AUDIT DE COUVERTURE MOBILE INFO U", bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
+            new Paragraph({ children: [new TextRun({ text: "CIT REPORT IA - AUDIT INFO U", bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
             new Paragraph({ text: "", spacing: { after: 400 } }),
             
-            // TABLEAU DE GARDE (HIERARCHIE DEMANDÉE)
             new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: [
@@ -173,42 +170,40 @@
                         new TableCell({ children: [new Paragraph(document.getElementById('liste_cp').value)] })
                     ]}),
                     new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({ text: "RAISON SOCIALE", bold: true })], shading: {fill:"f0f0f0"} }),
+                        new TableCell({ children: [new Paragraph({ text: "CLIENT", bold: true })], shading: {fill:"f0f0f0"} }),
                         new TableCell({ children: [new Paragraph(document.getElementById('val_client').value)] })
                     ]}),
                     new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({ text: "ADRESSE DU SITE", bold: true })], shading: {fill:"f0f0f0"} }),
+                        new TableCell({ children: [new Paragraph({ text: "ADRESSE", bold: true })], shading: {fill:"f0f0f0"} }),
                         new TableCell({ children: [new Paragraph(document.getElementById('val_adresse').value)] })
                     ]})
                 ]
             }),
 
             new Paragraph({ text: "1. PRÉAMBULE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 600} }),
-            new Paragraph("Dans le cadre de l’amélioration de sa connectivité, INFO U a sollicité Sogetrel pour réaliser un audit de couverture.")
+            new Paragraph("Audit réalisé dans le cadre de l'optimisation de connectivité INFO U."),
+            
+            new Paragraph({ text: "2. ANALYSE CRADLEPOINT", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} })
         ];
 
-        // LOGIQUE CRADLEPOINT (UTech)
         if (rsrp < -90) {
-            content.push(new Paragraph({ text: "RÉSULTAT SIGNAL : INSATISFAISANT (RSRP " + rsrp + " dBm)", color: "FF0000", bold: true, spacing: {before: 300} }));
-            content.push(new Paragraph("Une antenne déportée est nécessaire pour garantir le débit."));
+            content.push(new Paragraph({ text: "PRÉCONISATION : Pose antenne déportée nécessaire (Signal faible).", color: "FF0000", bold: true }));
         } else {
-            content.push(new Paragraph({ text: "RÉSULTAT SIGNAL : SATISFAISANT (RSRP " + rsrp + " dBm)", color: "27ae60", bold: true, spacing: {before: 300} }));
-            content.push(new Paragraph("Le signal interne est suffisant. Pose du Cradlepoint en intérieur validée sans antenne externe."));
+            content.push(new Paragraph({ text: "CONSTAT : Signal interne suffisant. Installation intérieure standard.", color: "27ae60", bold: true }));
         }
 
-        // LOGIQUE PREREQUIS AERIEN
         if (type === "AERIEN_PARTAGE") {
-            content.push(new Paragraph({ text: "2. PREREQUIS À CHARGE DU MAGASIN U", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }));
-            if(document.getElementById('pre_gaine').checked) content.push(new Paragraph("- Pose d’une gaine de 40mm entre l'antenne et la baie informatique."));
-            if(document.getElementById('pre_percement').checked) content.push(new Paragraph("- Percement de la dalle et étanchéité à réaliser par le prestataire du magasin."));
+            content.push(new Paragraph({ text: "3. PREREQUIS CLIENT (MAGASIN U)", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }));
+            if(document.getElementById('pre_gaine').checked) content.push(new Paragraph("- Gaine 40mm à poser par le client."));
+            if(document.getElementById('pre_percement').checked) content.push(new Paragraph("- Percement dalle client à réaliser."));
         }
 
-        content.push(new Paragraph({ text: "SIGNATURE TECHNICIEN :", bold: true, spacing: {before: 600} }));
+        content.push(new Paragraph({ text: "SIGNATURE :", bold: true, spacing: {before: 600} }));
         content.push(new Paragraph("Technicien : " + document.getElementById('val_tech').value));
         content.push(new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] }));
 
         const doc = new Document({ sections: [{ children: content }] });
-        Packer.toBlob(doc).then(b => saveAs(b, `AUDIT_INFO_U_${ot}.docx`));
+        Packer.toBlob(doc).then(b => saveAs(b, `CIT_REPORT_${ot}.docx`));
     }
 
     // --- SIGNATURE & STORAGE ---
@@ -228,13 +223,8 @@
     function clearSig() { sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); }
 
     function sauvegarderAuto() {
-        const d = { 
-            ot: document.getElementById('val_ot').value,
-            client: document.getElementById('val_client').value,
-            addr: document.getElementById('val_adresse').value,
-            tech: document.getElementById('val_tech').value
-        };
-        localStorage.setItem('brouillon_info_u', JSON.stringify(d));
+        const d = { ot: document.getElementById('val_ot').value, client: document.getElementById('val_client').value, tech: document.getElementById('val_tech').value };
+        localStorage.setItem('brouillon_cit', JSON.stringify(d));
     }
 
     rafraichirCP();
