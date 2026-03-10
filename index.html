@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,144 +7,210 @@
     <title>GÉNÉRATEUR DOE PRO - SOGETREL</title>
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+    
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; padding-bottom: 100px; }
-        .header { background: #002d5b; color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; padding-bottom: 120px; }
+        .header { background: #002d5b; color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
+        .btn-reset { position: absolute; right: 10px; top: 15px; background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 11px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid #007bff; }
         .form-block { display: none; }
-        h3 { color: #002d5b; margin-top: 0; font-size: 1.1em; text-transform: uppercase; border-bottom: 2px solid #f0f4f8; padding-bottom: 8px; }
+        h3 { color: #002d5b; margin: 0 0 10px 0; font-size: 1.1em; text-transform: uppercase; border-bottom: 2px solid #f0f4f8; padding-bottom: 5px; }
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.85em; color: #555; }
         input, select, textarea { width: 100%; padding: 12px; margin: 5px 0 10px 0; border: 1px solid #ccd; border-radius: 8px; box-sizing: border-box; background: #f9f9ff; font-size: 14px; }
         .btn-gen { position: fixed; bottom: 10px; left: 10px; right: 10px; background: #28a745; color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; font-size: 16px; box-shadow: 0 5px 15px rgba(40,167,69,0.4); z-index: 1000; }
+        .btn-save { background: #f39c12; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 10px; }
         .btn-add { background: #007bff; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 10px; }
+        .btn-del { background: #dc3545; color: white; border: none; padding: 8px; border-radius: 5px; width: 100%; font-weight: bold; margin-top: 5px; }
+        .ocr-zone { background: #eef2f7; padding: 10px; border-radius: 8px; border: 2px dashed #007bff; margin-bottom: 15px; text-align: center; }
         canvas { width: 100%; border-radius: 8px; display: none; margin-top: 10px; border: 2px solid #002d5b; touch-action: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .photo-container { border: 1px dashed #ccc; padding: 10px; margin-top: 10px; border-radius: 8px; position: relative; }
-        .delete-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; margin-top: 5px; }
+        .brouillon-item { background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
 <script>
-    const CODE_ACCES = "TECHNICIEN2026"; 
     if (sessionStorage.getItem("auth") !== "true") {
         let essai = prompt("Code d'accès requis :");
-        if (essai === CODE_ACCES) { sessionStorage.setItem("auth", "true"); } 
-        else { document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Accès refusé</h2>"; window.stop(); }
+        if (essai === "TECHNICIEN2026") { sessionStorage.setItem("auth", "true"); } 
+        else { document.body.innerHTML = "Accès refusé"; window.stop(); }
     }
 </script>
 
 <div class="header">
-    <strong>GÉNÉRATEUR DOE & AUDIT</strong><br>
-    <small>Sogetrel / Expertise Terrain</small> </div>
+    <strong>GÉNÉRATEUR DOE PRO</strong>
+    <button class="btn-reset" onclick="viderCache()">RESET 🗑️</button><br>
+    <small>Sogetrel / Multi-Rapports</small> </div>
+
+<div class="card" style="border-top-color: #f39c12;">
+    <h3>📂 Rapports en cours (Brouillons)</h3>
+    <div id="liste_brouillons"></div>
+    <button class="btn-save" onclick="sauvegarderBrouillon()">💾 SAUVEGARDER CE RAPPORT</button> </div>
 
 <div class="card" style="border-top-color: #343a40;">
-    <h3>🏠 Page de Garde & Site</h3>
-    <input type="text" id="ot" placeholder="Numéro d'OT">
-    <input type="text" id="client_nom" placeholder="Nom du Client / Site">
-    <label>Photo de la façade (Page de garde)</label>
-    <input type="file" id="photo_garde" accept="image/*" capture="camera" onchange="apercuGarde(event)">
-    <img id="view_garde" style="width:100%; display:none; border-radius:8px; margin-top:10px;"> </div>
+    <h3>⚡ Infos & Scan</h3>
+    <div class="ocr-zone">
+        <input type="file" id="scan_ocr" accept="image/*" onchange="scannerCapture(event)">
+        <span id="ocr_status" style="font-size:12px; color:#007bff;">Scanner une capture DI</span>
+    </div>
+    <div class="grid">
+        <input type="text" id="num_rapport" class="clearable" placeholder="N° Rapport / OT">
+        <input type="text" id="ville_site" class="clearable" placeholder="Ville">
+    </div>
+    <input type="text" id="client_nom" class="clearable" placeholder="Nom du Client"> </div>
 
 <div class="card">
-    <h3>👤 Contact Site</h3>
+    <h3>👤 Contact & Façade</h3>
     <div class="grid">
-        <input type="text" id="nom_contact" placeholder="Nom">
-        <input type="text" id="prenom_contact" placeholder="Prénom">
+        <input type="text" id="nom_contact" class="clearable" placeholder="Nom Contact">
+        <input type="tel" id="tel_contact" class="clearable" placeholder="Téléphone">
     </div>
-    <input type="email" id="mail_contact" placeholder="Email">
-    <input type="tel" id="tel_contact" placeholder="Téléphone"> </div>
+    <input type="file" id="photo_garde" accept="image/*" onchange="apercuGarde(event)">
+    <img id="view_garde" style="width:100%; display:none; border-radius:8px; margin-top:10px;"> </div>
 
 <div class="card">
     <h3>📋 Type de Rapport</h3>
     <select id="selectRapport" onchange="changerFormulaire()">
-        <option value="">-- Sélectionner le formulaire --</option>
+        <option value="">-- Sélectionner --</option>
         <option value="AUDIT">🛠️ Audit Travaux</option>
-        <option value="STARLINK">📡 DOE Starlink</option>
+        <option value="ANTENNE_DEPORTEE">📡 Audit Antenne Déportée</option>
+        <option value="STARLINK">🛰️ DOE Starlink</option>
         <option value="PICO">🏢 DOE PICO</option>
-        <option value="MIMO">📶 DOE Antenne MIMO</option>
-        <option value="CRADLEPOINT">⚙️ DOE Cradlepoint / Routeur</option>
     </select>
 </div>
 
-<div id="bloc_audit" class="form-block card">
-    <h3>🛠️ Détails Audit</h3>
-    <label>Temps estimé</label><input type="text" id="audit_temps" placeholder="ex: 2 jours">
-    <label>Matériel nécessaire</label>
-    <textarea id="audit_materiel" rows="3" placeholder="Tube PVC, Nacelle, etc..."></textarea> </div>
-
-<div id="bloc_starlink" class="form-block card">
-    <h3>📡 Spécifications Starlink</h3>
-    <input type="text" id="sl_kit" placeholder="N° de Kit Starlink">
-    <label>Obstructions</label>
-    <select id="sl_obs"><option>Aucune (OK)</option><option>Faible</option><option>Bloquant</option></select>
-    <label>Logistique</label>
-    <textarea id="sl_log" rows="2" placeholder="Support, dalles, etc."></textarea> </div>
-
-<div id="bloc_pico" class="form-block card">
-    <h3>🏢 Détails PICO</h3>
-    <input type="text" id="pico_etage" placeholder="Étage">
-    <textarea id="pico_inv" rows="3" placeholder="Inventaire S/N et MAC"></textarea>
+<div id="bloc_antenne_deportee" class="form-block card">
+    <h3>📡 Signaux</h3>
     <div class="grid">
-        <input type="text" id="pico_rsrp" placeholder="RSRP">
-        <input type="text" id="pico_snr" placeholder="SNR">
+        <input type="text" id="ad_rsrp_ext" class="clearable" placeholder="RSRP Ext">
+        <input type="text" id="ad_rsrp_int" class="clearable" placeholder="RSRP Int">
     </div>
+    <textarea id="ad_log" class="clearable" rows="2" placeholder="Commentaires..."></textarea>
 </div>
-
-<div id="bloc_mimo" class="form-block card">
-    <h3>📶 Signal MIMO Avant/Après</h3>
-    <label>Capture AVANT POSE</label>
-    <input type="file" id="mimo_img_av" accept="image/*" capture="camera">
-    <div class="grid">
-        <input type="text" id="mimo_rsrp_av" placeholder="RSRP Avant">
-        <input type="text" id="mimo_rsrp_ap" placeholder="RSRP Après">
-    </div>
-    <label>Capture APRÈS POSE</label>
-    <input type="file" id="mimo_img_ap" accept="image/*" capture="camera"> </div>
-
-<div id="bloc_cradlepoint" class="form-block card">
-    <h3>⚙️ Cradlepoint & Dépose</h3>
-    <input type="text" id="cp_modem" placeholder="Modèle & Emplacement">
-    <label>Signal Orange (RSRP)</label><input type="text" id="cp_orange" placeholder="-80">
-    <label>Signal Bouygues (RSRP)</label><input type="text" id="cp_bytel" placeholder="-75">
-    <label>♻️ Matériel Déposé (Décommissionnement)</label>
-    <textarea id="cp_depose" rows="2" placeholder="Modèle et S/N du matériel retiré"></textarea> </div>
-
 <div class="card">
-    <h3>📸 Reportage Photo Annoté</h3>
+    <h3>📸 Photos Annotées</h3>
     <div id="container_photos"></div>
-    <button type="button" class="btn-add" onclick="ajouterPhoto()">+ AJOUTER UNE PHOTO (Cheminement/Dépose)</button> </div>
+    <button type="button" class="btn-add" onclick="ajouterPhoto()">➕ AJOUTER UNE PHOTO</button> </div>
 
-<button class="btn-gen" onclick="genererWordFinal()">📥 GÉNÉRER LE RAPPORT (.DOCX)</button>
+<button class="btn-gen" onclick="genererWordFinal()">📥 GÉNÉRER LE RAPPORT FINAL</button>
 
 <script>
     let listePhotos = [];
 
+    // --- LOGIQUE BROUILLONS ---
+    function sauvegarderBrouillon() {
+        const id = document.getElementById('num_rapport').value || "SANS-TITRE-" + Date.now();
+        const data = {
+            num_rapport: document.getElementById('num_rapport').value,
+            ville: document.getElementById('ville_site').value,
+            client: document.getElementById('client_nom').value,
+            nom_contact: document.getElementById('nom_contact').value,
+            tel_contact: document.getElementById('tel_contact').value,
+            type: document.getElementById('selectRapport').value,
+            ad_rsrp_ext: document.getElementById('ad_rsrp_ext').value,
+            ad_rsrp_int: document.getElementById('ad_rsrp_int').value,
+            ad_log: document.getElementById('ad_log').value,
+            view_garde: document.getElementById('view_garde').src,
+            photos: listePhotos.map(p => ({
+                imgData: p.canvas.toDataURL("image/jpeg", 0.5),
+                pastilles: p.pastilles
+            }))
+        };
+        localStorage.setItem('DOE_' + id, JSON.stringify(data));
+        alert("Brouillon sauvegardé !");
+        afficherBrouillons();
+    }
+
+    function afficherBrouillons() {
+        const container = document.getElementById('liste_brouillons');
+        container.innerHTML = "";
+        Object.keys(localStorage).filter(k => k.startsWith('DOE_')).forEach(key => {
+            const d = JSON.parse(localStorage.getItem(key));
+            const div = document.createElement('div');
+            div.className = 'brouillon-item';
+            div.innerHTML = `<span><strong>${d.num_rapport || 'N/A'}</strong> - ${d.client || 'Client'}</span>
+                <div>
+                    <button onclick="chargerBrouillon('${key}')" style="background:#28a745; color:white; border:none; padding:5px 10px; border-radius:5px;">REPRENDRE</button>
+                    <button onclick="supprimerBrouillon('${key}')" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:5px;">X</button>
+                </div>`;
+            container.appendChild(div);
+        });
+    }
+
+    async function chargerBrouillon(key) {
+        const d = JSON.parse(localStorage.getItem(key));
+        document.getElementById('num_rapport').value = d.num_rapport;
+        document.getElementById('ville_site').value = d.ville;
+        document.getElementById('client_nom').value = d.client;
+        document.getElementById('nom_contact').value = d.nom_contact;
+        document.getElementById('tel_contact').value = d.tel_contact;
+        document.getElementById('selectRapport').value = d.type;
+        document.getElementById('ad_rsrp_ext').value = d.ad_rsrp_ext;
+        document.getElementById('ad_rsrp_int').value = d.ad_rsrp_int;
+        document.getElementById('ad_log').value = d.ad_log;
+        
+        if(d.view_garde && d.view_garde.startsWith('data')) {
+            document.getElementById('view_garde').src = d.view_garde;
+            document.getElementById('view_garde').style.display = 'block';
+        }
+
+        changerFormulaire();
+        document.getElementById('container_photos').innerHTML = "";
+        listePhotos = [];
+
+        for(let pData of d.photos) {
+            await restaurerPhoto(pData);
+        }
+    }
+
+    function restaurerPhoto(pData) {
+        return new Promise(res => {
+            const id = Date.now() + Math.random();
+            const html = `<div class="card" id="card_${id}" style="border: 1px dashed #ccc;">
+                <canvas id="canvas_${id}"></canvas>
+                <div id="legende_${id}" style="margin-top:5px; font-weight:bold; color:#002d5b;"></div>
+                <button class="btn-del" onclick="supprimerPhoto(${id})">Supprimer</button>
+            </div>`;
+            document.getElementById('container_photos').insertAdjacentHTML('beforeend', html);
+            
+            const img = new Image();
+            img.src = pData.imgData;
+            img.onload = () => {
+                const canvas = document.getElementById(`canvas_${id}`);
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width; canvas.height = img.height;
+                canvas.style.display = 'block';
+                const obj = { id, canvas, ctx, img, pastilles: pData.pastilles };
+                listePhotos.push(obj);
+                draw(obj);
+                res();
+            };
+        });
+    }
+
+    function supprimerBrouillon(key) {
+        if(confirm("Supprimer définitivement ce brouillon ?")) {
+            localStorage.removeItem(key);
+            afficherBrouillons();
+        }
+    }
+
+    // --- LOGIQUE CLASSIQUE ---
     function changerFormulaire() {
         const type = document.getElementById("selectRapport").value;
         document.querySelectorAll(".form-block").forEach(b => b.style.display = "none");
         if(type) document.getElementById("bloc_" + type.toLowerCase()).style.display = "block";
     }
 
-    function apercuGarde(event) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.getElementById('view_garde');
-            img.src = e.target.result;
-            img.style.display = 'block';
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
     function ajouterPhoto() {
         const id = Date.now();
-        const html = `
-            <div class="photo-container" id="card_${id}">
-                <input type="file" accept="image/*" capture="camera" onchange="chargerImage(event, ${id})">
-                <canvas id="canvas_${id}"></canvas>
-                <div id="legende_${id}" style="margin-top:5px; font-weight:bold; color:#002d5b;"></div>
-                <button class="delete-btn" onclick="supprimerPhoto(${id})">Supprimer</button>
-            </div>`;
+        const html = `<div class="card" id="card_${id}" style="border: 1px dashed #ccc;">
+            <input type="file" accept="image/*" onchange="chargerImage(event, ${id})">
+            <canvas id="canvas_${id}"></canvas>
+            <div id="legende_${id}" style="margin-top:5px; font-weight:bold; color:#002d5b;"></div>
+            <button class="btn-del" onclick="supprimerPhoto(${id})">Supprimer</button>
+        </div>`;
         document.getElementById('container_photos').insertAdjacentHTML('beforeend', html);
     }
 
@@ -156,17 +223,19 @@
             img.onload = () => {
                 const canvas = document.getElementById(`canvas_${id}`);
                 const ctx = canvas.getContext('2d');
-                canvas.width = 1000;
-                canvas.height = 1000 * (img.height / img.width);
+                const MAX_W = 1000;
+                let w = img.width; let h = img.height;
+                if (w > MAX_W) { h *= MAX_W / w; w = MAX_W; }
+                canvas.width = w; canvas.height = h;
                 canvas.style.display = 'block';
                 const obj = { id, canvas, ctx, img, pastilles: [] };
                 listePhotos.push(obj);
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, w, h);
                 canvas.onclick = (ev) => {
                     const rect = canvas.getBoundingClientRect();
                     const x = (ev.clientX - rect.left) * (canvas.width / rect.width);
                     const y = (ev.clientY - rect.top) * (canvas.height / rect.height);
-                    const txt = prompt("Légende du point :");
+                    const txt = prompt("Légende :");
                     if(txt) { obj.pastilles.push({x, y, txt}); draw(obj); }
                 };
             };
@@ -189,55 +258,15 @@
         listePhotos = listePhotos.filter(p => p.id !== id);
     }
 
-    const toBase64 = file => new Promise((res) => {
-        const r = new FileReader(); r.readAsDataURL(file); r.onload = () => res(r.result);
-    });
-
-    async function genererWordFinal() {
-        const { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel, AlignmentType } = docx;
-        const type = document.getElementById("selectRapport").value;
-        if(!type) return alert("Choisis un type de rapport");
-
-        let content = [
-            new Paragraph({ text: `RAPPORT D'INTERVENTION : ${type}`, heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER }),
-        ];
-
-        // Photo de garde
-        const fGarde = document.getElementById('photo_garde').files[0];
-        if(fGarde) {
-            const bGarde = await toBase64(fGarde);
-            content.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: bGarde.split(',')[1], transformation: { width: 500, height: 350 }, type: "png" })] }));
-        }
-
-        content.push(new Paragraph({ text: `OT : ${document.getElementById('ot').value}`, alignment: AlignmentType.CENTER }));
-        content.push(new Paragraph({ text: `CLIENT : ${document.getElementById('client_nom').value}`, alignment: AlignmentType.CENTER }));
-        content.push(new Paragraph({ text: "----------------------------------------------------" }));
-        
-        // Coordonnées
-        content.push(new Paragraph({ text: "CONTACT SITE", heading: HeadingLevel.HEADING_1 }));
-        content.push(new Paragraph({ text: `Nom : ${document.getElementById('nom_contact').value} ${document.getElementById('prenom_contact').value}` }));
-        content.push(new Paragraph({ text: `Email : ${document.getElementById('mail_contact').value} | Tel : ${document.getElementById('tel_contact').value}` }));
-
-        // Modules spécifiques (Exemple simplifié pour le bloc)
-        if(type === "CRADLEPOINT") {
-            content.push(new Paragraph({ text: "DÉTAILS TECHNIQUES & DÉPOSE", heading: HeadingLevel.HEADING_1 }));
-            content.push(new Paragraph({ text: `Modem : ${document.getElementById('cp_modem').value}` }));
-            content.push(new Paragraph({ text: `Signal Orange : ${document.getElementById('cp_orange').value} | Bouygues : ${document.getElementById('cp_bytel').value}` }));
-            content.push(new Paragraph({ text: `MATÉRIEL DÉPOSÉ : ${document.getElementById('cp_depose').value}`, bold: true }));
-        }
-        // ... (Les autres blocs suivent la même logique d'insertion)
-
-        // Photos Cheminement
-        content.push(new Paragraph({ text: "REPORTAGE PHOTOS ANNOTÉ", heading: HeadingLevel.HEADING_1 }));
-        for(let p of listePhotos) {
-            const b64 = p.canvas.toDataURL("image/png").split(',')[1];
-            content.push(new Paragraph({ children: [new ImageRun({ data: b64, transformation: { width: 550, height: 550*(p.canvas.height/p.canvas.width) }, type: "png" })] }));
-            p.pastilles.forEach((past, i) => content.push(new Paragraph({ text: `Point ${i+1} : ${past.txt}`, bullet: {level:0} })));
-        }
-
-        const doc = new Document({ sections: [{ children: content }] });
-        Packer.toBlob(doc).then(blob => saveAs(blob, `DOE_${type}_${document.getElementById('ot').value}.docx`));
+    function viderCache() { if(confirm("Tout effacer ?")) location.reload(); }
+    function apercuGarde(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.getElementById('view_garde');
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
     }
-</script>
-</body>
-</html>
+
+    afficherBrouillons(); // Charger la liste au démarrage </script> </body> </html>
