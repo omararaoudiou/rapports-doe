@@ -1,272 +1,284 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GÉNÉRATEUR DOE PRO - SOGETREL</title>
+    <title>SOGETREL PRO - GÉNÉRATEUR OFFICIEL</title>
+    
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; padding-bottom: 120px; }
-        .header { background: #002d5b; color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
-        .btn-reset { position: absolute; right: 10px; top: 15px; background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 11px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 4px solid #007bff; }
-        .form-block { display: none; }
-        h3 { color: #002d5b; margin: 0 0 10px 0; font-size: 1.1em; text-transform: uppercase; border-bottom: 2px solid #f0f4f8; padding-bottom: 5px; }
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.85em; color: #555; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 5px 0 10px 0; border: 1px solid #ccd; border-radius: 8px; box-sizing: border-box; background: #f9f9ff; font-size: 14px; }
-        .btn-gen { position: fixed; bottom: 10px; left: 10px; right: 10px; background: #28a745; color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; font-size: 16px; box-shadow: 0 5px 15px rgba(40,167,69,0.4); z-index: 1000; }
-        .btn-save { background: #f39c12; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 10px; }
-        .btn-add { background: #007bff; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 10px; }
-        .btn-del { background: #dc3545; color: white; border: none; padding: 8px; border-radius: 5px; width: 100%; font-weight: bold; margin-top: 5px; }
-        .ocr-zone { background: #eef2f7; padding: 10px; border-radius: 8px; border: 2px dashed #007bff; margin-bottom: 15px; text-align: center; }
-        canvas { width: 100%; border-radius: 8px; display: none; margin-top: 10px; border: 2px solid #002d5b; touch-action: none; }
+        :root { --sogetrel-blue: #002d5b; --sogetrel-green: #27ae60; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px;
+            user-select: none; -webkit-user-select: none;
+        }
+        .header { background: var(--sogetrel-blue); color: white; padding: 20px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--sogetrel-blue); }
+        h3 { margin-top: 0; color: var(--sogetrel-blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .brouillon-item { background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ddd; }
+        .form-block { display: none; }
+        .btn-gen { background: var(--sogetrel-green); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
+        .photo-item { background: #eee; padding: 10px; border-radius: 10px; margin-bottom: 10px; position: relative; }
+        canvas { max-width: 100%; border-radius: 5px; background: #fff; touch-action: none; }
+        #signature-pad { border: 2px dashed #bbb; height: 150px; }
+        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
+
+<div class="header">
+    <h2 style="margin:0;">SOGETREL</h2>
+    <p style="margin:5px 0 0; opacity:0.8;">Reporting Technique & DOE</p>
+</div>
+
+<div class="card">
+    <h3>📍 Informations Dossier</h3>
+    <label>Type de Rapport</label>
+    <select id="selectRapport" onchange="changerFormulaire()">
+        <option value="">-- Choisir un modèle --</option>
+        <option value="AUDIT_PICO">🔍 Audit PICO (Relevé)</option>
+        <option value="PICO">🏢 DOE PICO (Installation)</option>
+        <option value="ANTENNE_DEPORTEE">📡 Antenne Déportée</option>
+        <option value="STARLINK">🛰️ Starlink</option>
+    </select>
+    <div class="grid">
+        <div><label>N° OT</label><input type="text" id="num_rapport" placeholder="ex: 13063317"></div>
+        <div><label>Client</label><input type="text" id="client_nom" placeholder="ex: ARPAVIE"></div>
+    </div>
+    <label>Ville / Site</label>
+    <input type="text" id="ville_site" placeholder="ex: Paris (75)">
+</div>
+
+<div class="card">
+    <h3>📸 Photo de Garde</h3>
+    <input type="file" accept="image/*" capture="camera" onchange="apercuGarde(event)">
+    <img id="view_garde" style="display:none; width:100%; margin-top:10px; border-radius:8px; border:1px solid #ddd;">
+</div>
+
+<div id="bloc_audit_pico" class="form-block card" style="border-top-color: #00bcd4;">
+    <h3>🔍 Détails Audit PICO</h3>
+    <label>État de l'existant</label>
+    <textarea id="ap_existant" rows="2" placeholder="Accès, environnement..."></textarea>
+    <div class="grid">
+        <div><label>Nacelle ?</label><select id="ap_nacelle"><option>NON</option><option>OUI</option></select></div>
+        <div><label>Hauteur (m)</label><input type="number" id="ap_hauteur"></div>
+    </div>
+    <label>Support préconisé</label>
+    <input type="text" id="ap_support" placeholder="Mur, Toiture...">
+</div>
+
+<div id="bloc_pico" class="form-block card" style="border-top-color: #2ecc71;">
+    <h3>🏢 Détails DOE PICO</h3>
+    <label>Emplacement Baie</label>
+    <input type="text" id="p_emplacement" placeholder="Local technique">
+    <div class="grid">
+        <div><label>S/N Baie</label><input type="text" id="p_sn_baie"></div>
+        <div><label>Modèle Antenne</label><input type="text" id="p_modele"></div>
+    </div>
+    <div class="grid">
+        <div><label>Mesure Sortie 1</label><input type="text" id="p_dbm_1"></div>
+        <div><label>Mesure Sortie 2</label><input type="text" id="p_dbm_2"></div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>🖼️ Reportage Photos (Annotations)</h3>
+    <input type="file" accept="image/*" capture="camera" multiple onchange="ajouterPhotos(event)">
+    <div id="container_photos" style="margin-top:10px;"></div>
+</div>
+
+<div class="card" style="border-top-color: #6c757d;">
+    <h3>✍️ Validation & Signature</h3>
+    <label>Nom du signataire</label>
+    <input type="text" id="nom_signataire" placeholder="Nom Prénom">
+    <label>Signature (Tactile)</label>
+    <canvas id="signature-pad"></canvas>
+    <button type="button" onclick="effacerSignature()" style="margin-top:10px; width:100%; background:#95a5a6; color:white; border:none; padding:8px; border-radius:5px;">Effacer signature</button>
+</div>
+
+<div class="footer-btns">
+    <button class="btn-gen" style="background:#007bff;" onclick="genererWordFinal()">GÉNÉRER WORD</button>
+    <button class="btn-gen" onclick="window.print()">IMPRIMER PDF</button>
+</div>
 
 <script>
-    if (sessionStorage.getItem("auth") !== "true") {
-        let essai = prompt("Code d'accès requis :");
-        if (essai === "TECHNICIEN2026") { sessionStorage.setItem("auth", "true"); } 
-        else { document.body.innerHTML = "Accès refusé"; window.stop(); }
+    /** SÉCURITÉ **/
+    document.onkeydown = function(e) {
+        if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
+    };
+
+    /** GESTION INTERFACE **/
+    let listePhotos = [];
+
+    function changerFormulaire() {
+        const val = document.getElementById("selectRapport").value;
+        document.querySelectorAll('.form-block').forEach(b => b.style.display = 'none');
+        if(val === "AUDIT_PICO") document.getElementById("bloc_audit_pico").style.display = "block";
+        if(val === "PICO") document.getElementById("bloc_pico").style.display = "block";
+    }
+
+    function apercuGarde(e) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = document.getElementById('view_garde');
+            img.src = reader.result;
+            img.style.display = "block";
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    /** SYSTÈME DE PHOTOS ANNOTÉES **/
+    function ajouterPhotos(event) {
+        const files = event.target.files;
+        for (let file of files) {
+            const id = Date.now() + Math.random();
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 800; canvas.height = 600;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 800, 600);
+                    
+                    const obj = { id, canvas, ctx, img, pastilles: [] };
+                    listePhotos.push(obj);
+                    renderPhotoList(obj);
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function renderPhotoList(obj) {
+        const div = document.createElement('div');
+        div.className = "photo-item";
+        div.id = `photo_${obj.id}`;
+        div.innerHTML = `<p style='font-size:12px; margin:0 0 5px;'>Cliquez sur l'image pour annoter</p>`;
+        
+        obj.canvas.onclick = (e) => {
+            const rect = obj.canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (obj.canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (obj.canvas.height / rect.height);
+            const txt = prompt("Légende de la pastille :");
+            if(txt) {
+                obj.pastilles.push({x, y, txt});
+                redessinerPhoto(obj);
+            }
+        };
+
+        div.appendChild(obj.canvas);
+        const legende = document.createElement('div');
+        legende.id = `leg_${obj.id}`;
+        legende.style.fontSize = "12px";
+        div.appendChild(legende);
+        
+        const btnSup = document.createElement('button');
+        btnSup.innerText = "Supprimer";
+        btnSup.onclick = () => { div.remove(); listePhotos = listePhotos.filter(p => p.id !== obj.id); };
+        div.appendChild(btnSup);
+
+        document.getElementById('container_photos').appendChild(div);
+    }
+
+    function redessinerPhoto(obj) {
+        obj.ctx.drawImage(obj.img, 0, 0, 800, 600);
+        obj.pastilles.forEach((p, i) => {
+            obj.ctx.fillStyle = "red"; obj.ctx.beginPath(); obj.ctx.arc(p.x, p.y, 20, 0, 7); obj.ctx.fill();
+            obj.ctx.fillStyle = "white"; obj.ctx.font = "bold 20px Arial"; obj.ctx.textAlign="center";
+            obj.ctx.fillText(i+1, p.x, p.y+7);
+        });
+        document.getElementById(`leg_${obj.id}`).innerHTML = obj.pastilles.map((p,i) => `<b>(${i+1})</b> ${p.txt}`).join(' | ');
+    }
+
+    /** SIGNATURE **/
+    const sigCanvas = document.getElementById('signature-pad');
+    const sigCtx = sigCanvas.getContext('2d');
+    let signing = false;
+    sigCanvas.width = sigCanvas.offsetWidth; sigCanvas.height = 150;
+
+    function getSigPos(e) {
+        const r = sigCanvas.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: cx - r.left, y: cy - r.top };
+    }
+    sigCanvas.addEventListener('mousedown', () => { signing = true; sigCtx.beginPath(); });
+    sigCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); signing = true; sigCtx.beginPath(); });
+    window.addEventListener('mouseup', () => signing = false);
+    sigCanvas.addEventListener('mousemove', (e) => {
+        if(!signing) return;
+        const p = getSigPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
+    });
+    sigCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault(); if(!signing) return;
+        const p = getSigPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
+    });
+    function effacerSignature() { sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
+
+    /** GÉNÉRATION WORD SOGETREL **/
+    async function genererWordFinal() {
+        const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Table, TableRow, TableCell, WidthType } = docx;
+        const type = document.getElementById("selectRapport").value;
+        const ot = document.getElementById("num_rapport").value || "SANS-OT";
+
+        // Image Garde
+        let imgG = [];
+        const viewG = document.getElementById('view_garde');
+        if(viewG.src.startsWith('data')) {
+            const res = await fetch(viewG.src); const b = await res.blob();
+            imgG = [new ImageRun({ data: b, transformation: { width: 450, height: 300 } })];
+        }
+
+        // Photos Annotées
+        const photosWord = [];
+        for (let pObj of listePhotos) {
+            const dataP = pObj.canvas.toDataURL("image/jpeg", 0.7);
+            const resP = await fetch(dataP); const blobP = await resP.blob();
+            photosWord.push(new Paragraph({ text: `Rapport Photo - Légendes : ${document.getElementById(`leg_${pObj.id}`).innerText}`, bold: true, spacing: {before: 400} }));
+            photosWord.push(new Paragraph({ children: [new ImageRun({ data: blobP, transformation: { width: 550, height: 400 } })], alignment: AlignmentType.CENTER }));
+        }
+
+        // Signature
+        const sigData = sigCanvas.toDataURL("image/png");
+        const resS = await fetch(sigData); const blobS = await resS.blob();
+
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
+                    new Paragraph({ text: type.replace('_', ' '), heading: docx.HeadingLevel.TITLE, alignment: AlignmentType.CENTER }),
+                    new Paragraph({ children: imgG, alignment: AlignmentType.CENTER, spacing: {after: 400} }),
+                    
+                    new Table({
+                        width: { size: 100, type: WidthType.PERCENTAGE },
+                        rows: [
+                            new TableRow({ children: [new TableCell({ children: [new Paragraph("N° OT")], shading: {fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(ot)] })] }),
+                            new TableRow({ children: [new TableCell({ children: [new Paragraph("CLIENT")], shading: {fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(document.getElementById('client_nom').value)] })] })
+                        ]
+                    }),
+
+                    new Paragraph({ text: "REPORTAGE PHOTOGRAPHIQUE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 500} }),
+                    ...photosWord,
+
+                    new Paragraph({ text: "SIGNATURE ET VALIDATION", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 500}, pageBreakBefore: true }),
+                    new Paragraph({ text: "Signataire : " + document.getElementById('nom_signataire').value, bold: true }),
+                    new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 200, height: 80 } })] })
+                ]
+            }]
+        });
+
+        Packer.toBlob(doc).then(blob => saveAs(blob, `RAPPORT_${ot}.docx`));
     }
 </script>
 
-<div class="header">
-    <strong>GÉNÉRATEUR DOE PRO</strong>
-    <button class="btn-reset" onclick="viderCache()">RESET 🗑️</button><br>
-    <small>Sogetrel / Multi-Rapports</small> </div>
-
-<div class="card" style="border-top-color: #f39c12;">
-    <h3>📂 Rapports en cours (Brouillons)</h3>
-    <div id="liste_brouillons"></div>
-    <button class="btn-save" onclick="sauvegarderBrouillon()">💾 SAUVEGARDER CE RAPPORT</button> </div>
-
-<div class="card" style="border-top-color: #343a40;">
-    <h3>⚡ Infos & Scan</h3>
-    <div class="ocr-zone">
-        <input type="file" id="scan_ocr" accept="image/*" onchange="scannerCapture(event)">
-        <span id="ocr_status" style="font-size:12px; color:#007bff;">Scanner une capture DI</span>
-    </div>
-    <div class="grid">
-        <input type="text" id="num_rapport" class="clearable" placeholder="N° Rapport / OT">
-        <input type="text" id="ville_site" class="clearable" placeholder="Ville">
-    </div>
-    <input type="text" id="client_nom" class="clearable" placeholder="Nom du Client"> </div>
-
-<div class="card">
-    <h3>👤 Contact & Façade</h3>
-    <div class="grid">
-        <input type="text" id="nom_contact" class="clearable" placeholder="Nom Contact">
-        <input type="tel" id="tel_contact" class="clearable" placeholder="Téléphone">
-    </div>
-    <input type="file" id="photo_garde" accept="image/*" onchange="apercuGarde(event)">
-    <img id="view_garde" style="width:100%; display:none; border-radius:8px; margin-top:10px;"> </div>
-
-<div class="card">
-    <h3>📋 Type de Rapport</h3>
-    <select id="selectRapport" onchange="changerFormulaire()">
-        <option value="">-- Sélectionner --</option>
-        <option value="AUDIT">🛠️ Audit Travaux</option>
-        <option value="ANTENNE_DEPORTEE">📡 Audit Antenne Déportée</option>
-        <option value="STARLINK">🛰️ DOE Starlink</option>
-        <option value="PICO">🏢 DOE PICO</option>
-    </select>
-</div>
-
-<div id="bloc_antenne_deportee" class="form-block card">
-    <h3>📡 Signaux</h3>
-    <div class="grid">
-        <input type="text" id="ad_rsrp_ext" class="clearable" placeholder="RSRP Ext">
-        <input type="text" id="ad_rsrp_int" class="clearable" placeholder="RSRP Int">
-    </div>
-    <textarea id="ad_log" class="clearable" rows="2" placeholder="Commentaires..."></textarea>
-</div>
-<div class="card">
-    <h3>📸 Photos Annotées</h3>
-    <div id="container_photos"></div>
-    <button type="button" class="btn-add" onclick="ajouterPhoto()">➕ AJOUTER UNE PHOTO</button> </div>
-
-<button class="btn-gen" onclick="genererWordFinal()">📥 GÉNÉRER LE RAPPORT FINAL</button>
-
-<script>
-    let listePhotos = [];
-
-    // --- LOGIQUE BROUILLONS ---
-    function sauvegarderBrouillon() {
-        const id = document.getElementById('num_rapport').value || "SANS-TITRE-" + Date.now();
-        const data = {
-            num_rapport: document.getElementById('num_rapport').value,
-            ville: document.getElementById('ville_site').value,
-            client: document.getElementById('client_nom').value,
-            nom_contact: document.getElementById('nom_contact').value,
-            tel_contact: document.getElementById('tel_contact').value,
-            type: document.getElementById('selectRapport').value,
-            ad_rsrp_ext: document.getElementById('ad_rsrp_ext').value,
-            ad_rsrp_int: document.getElementById('ad_rsrp_int').value,
-            ad_log: document.getElementById('ad_log').value,
-            view_garde: document.getElementById('view_garde').src,
-            photos: listePhotos.map(p => ({
-                imgData: p.canvas.toDataURL("image/jpeg", 0.5),
-                pastilles: p.pastilles
-            }))
-        };
-        localStorage.setItem('DOE_' + id, JSON.stringify(data));
-        alert("Brouillon sauvegardé !");
-        afficherBrouillons();
-    }
-
-    function afficherBrouillons() {
-        const container = document.getElementById('liste_brouillons');
-        container.innerHTML = "";
-        Object.keys(localStorage).filter(k => k.startsWith('DOE_')).forEach(key => {
-            const d = JSON.parse(localStorage.getItem(key));
-            const div = document.createElement('div');
-            div.className = 'brouillon-item';
-            div.innerHTML = `<span><strong>${d.num_rapport || 'N/A'}</strong> - ${d.client || 'Client'}</span>
-                <div>
-                    <button onclick="chargerBrouillon('${key}')" style="background:#28a745; color:white; border:none; padding:5px 10px; border-radius:5px;">REPRENDRE</button>
-                    <button onclick="supprimerBrouillon('${key}')" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:5px;">X</button>
-                </div>`;
-            container.appendChild(div);
-        });
-    }
-
-    async function chargerBrouillon(key) {
-        const d = JSON.parse(localStorage.getItem(key));
-        document.getElementById('num_rapport').value = d.num_rapport;
-        document.getElementById('ville_site').value = d.ville;
-        document.getElementById('client_nom').value = d.client;
-        document.getElementById('nom_contact').value = d.nom_contact;
-        document.getElementById('tel_contact').value = d.tel_contact;
-        document.getElementById('selectRapport').value = d.type;
-        document.getElementById('ad_rsrp_ext').value = d.ad_rsrp_ext;
-        document.getElementById('ad_rsrp_int').value = d.ad_rsrp_int;
-        document.getElementById('ad_log').value = d.ad_log;
-        
-        if(d.view_garde && d.view_garde.startsWith('data')) {
-            document.getElementById('view_garde').src = d.view_garde;
-            document.getElementById('view_garde').style.display = 'block';
-        }
-
-        changerFormulaire();
-        document.getElementById('container_photos').innerHTML = "";
-        listePhotos = [];
-
-        for(let pData of d.photos) {
-            await restaurerPhoto(pData);
-        }
-    }
-
-    function restaurerPhoto(pData) {
-        return new Promise(res => {
-            const id = Date.now() + Math.random();
-            const html = `<div class="card" id="card_${id}" style="border: 1px dashed #ccc;">
-                <canvas id="canvas_${id}"></canvas>
-                <div id="legende_${id}" style="margin-top:5px; font-weight:bold; color:#002d5b;"></div>
-                <button class="btn-del" onclick="supprimerPhoto(${id})">Supprimer</button>
-            </div>`;
-            document.getElementById('container_photos').insertAdjacentHTML('beforeend', html);
-            
-            const img = new Image();
-            img.src = pData.imgData;
-            img.onload = () => {
-                const canvas = document.getElementById(`canvas_${id}`);
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width; canvas.height = img.height;
-                canvas.style.display = 'block';
-                const obj = { id, canvas, ctx, img, pastilles: pData.pastilles };
-                listePhotos.push(obj);
-                draw(obj);
-                res();
-            };
-        });
-    }
-
-    function supprimerBrouillon(key) {
-        if(confirm("Supprimer définitivement ce brouillon ?")) {
-            localStorage.removeItem(key);
-            afficherBrouillons();
-        }
-    }
-
-    // --- LOGIQUE CLASSIQUE ---
-    function changerFormulaire() {
-        const type = document.getElementById("selectRapport").value;
-        document.querySelectorAll(".form-block").forEach(b => b.style.display = "none");
-        if(type) document.getElementById("bloc_" + type.toLowerCase()).style.display = "block";
-    }
-
-    function ajouterPhoto() {
-        const id = Date.now();
-        const html = `<div class="card" id="card_${id}" style="border: 1px dashed #ccc;">
-            <input type="file" accept="image/*" onchange="chargerImage(event, ${id})">
-            <canvas id="canvas_${id}"></canvas>
-            <div id="legende_${id}" style="margin-top:5px; font-weight:bold; color:#002d5b;"></div>
-            <button class="btn-del" onclick="supprimerPhoto(${id})">Supprimer</button>
-        </div>`;
-        document.getElementById('container_photos').insertAdjacentHTML('beforeend', html);
-    }
-
-    function chargerImage(event, id) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.getElementById(`canvas_${id}`);
-                const ctx = canvas.getContext('2d');
-                const MAX_W = 1000;
-                let w = img.width; let h = img.height;
-                if (w > MAX_W) { h *= MAX_W / w; w = MAX_W; }
-                canvas.width = w; canvas.height = h;
-                canvas.style.display = 'block';
-                const obj = { id, canvas, ctx, img, pastilles: [] };
-                listePhotos.push(obj);
-                ctx.drawImage(img, 0, 0, w, h);
-                canvas.onclick = (ev) => {
-                    const rect = canvas.getBoundingClientRect();
-                    const x = (ev.clientX - rect.left) * (canvas.width / rect.width);
-                    const y = (ev.clientY - rect.top) * (canvas.height / rect.height);
-                    const txt = prompt("Légende :");
-                    if(txt) { obj.pastilles.push({x, y, txt}); draw(obj); }
-                };
-            };
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function draw(obj) {
-        obj.ctx.drawImage(obj.img, 0, 0, obj.canvas.width, obj.canvas.height);
-        obj.pastilles.forEach((p, i) => {
-            obj.ctx.fillStyle = "red"; obj.ctx.beginPath(); obj.ctx.arc(p.x, p.y, 25, 0, 7); obj.ctx.fill();
-            obj.ctx.fillStyle = "white"; obj.ctx.font = "bold 25px Arial"; obj.ctx.textAlign="center";
-            obj.ctx.fillText(i+1, p.x, p.y+10);
-        });
-        document.getElementById(`legende_${obj.id}`).innerHTML = obj.pastilles.map((p,i) => `(${i+1}) ${p.txt}`).join(' | ');
-    }
-
-    function supprimerPhoto(id) {
-        document.getElementById(`card_${id}`).remove();
-        listePhotos = listePhotos.filter(p => p.id !== id);
-    }
-
-    function viderCache() { if(confirm("Tout effacer ?")) location.reload(); }
-    function apercuGarde(event) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.getElementById('view_garde');
-            img.src = e.target.result;
-            img.style.display = 'block';
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    afficherBrouillons(); // Charger la liste au démarrage </script> </body> </html>
+</body>
+</html>
