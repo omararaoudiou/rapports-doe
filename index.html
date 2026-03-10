@@ -3,311 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CIT Report IA</title>
+    <title>CIT Report IA - Système Intégral</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 
     <style>
-        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; --red: #e74c3c; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 10px; padding-bottom: 140px; }
-        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; position: relative; }
-        .btn-load { position: absolute; left: 10px; top: 15px; background: var(--orange); border: none; color: white; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold; }
+        :root { --blue: #002d5b; --green: #27ae60; --purple: #6c5ce7; --orange: #f39c12; --red: #e74c3c; --gray: #f4f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--gray); margin: 0; padding: 10px; padding-bottom: 140px; }
+        .header { background: var(--blue); color: white; padding: 15px; text-align: center; border-radius: 0 0 20px 20px; margin: -10px -10px 20px -10px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid var(--blue); }
         h3 { margin-top: 0; color: var(--blue); font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.85em; color: #444; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; transition: background 0.3s; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-ocr { background: var(--purple); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        #signature-pad { border: 2px dashed #bbb; height: 130px; background: #fff; width: 100%; border-radius: 8px; touch-action: none; }
-        .cp-manager { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-        .status-msg { font-size: 12px; text-align: center; font-weight: bold; color: var(--green); }
+        
+        /* Photos */
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .photo-box { border: 2px dashed #bbb; padding: 10px; text-align: center; border-radius: 8px; font-size: 11px; cursor: pointer; background: #fafafa; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .photo-box img { max-width: 100%; max-height: 70px; border-radius: 4px; }
         .hidden { display: none; }
+
+        /* Qualité Signal Colors */
+        .sig-excellent { background-color: #2ecc71 !important; color: white !important; }
+        .sig-good { background-color: #f1c40f !important; color: black !important; }
+        .sig-fair { background-color: #e67e22 !important; color: white !important; }
+        .sig-poor { background-color: #e74c3c !important; color: white !important; }
+
+        .btn-ocr { background: var(--purple); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
+        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
+        #signature-pad { border: 2px dashed #bbb; height: 120px; background: #fff; width: 100%; border-radius: 8px; touch-action: none; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <button class="btn-load" onclick="chargerBrouillon()">📂 REPRENDRE</button>
     <h2 style="margin:0;">CIT Report IA</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Audit & DOE : Cradlepoint, Starlink, PICO</p>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Expertise Radio & Starlink complète</p>
 </div>
 
 <div class="card" style="border-top-color: var(--purple);">
-    <h3>📸 Scan de l'OT</h3>
+    <h3>📸 Scan OT Automatique</h3>
     <input type="file" id="input_ocr" accept="image/*" style="display:none" onchange="traiterOCR(event)">
-    <button class="btn-ocr" onclick="document.getElementById('input_ocr').click()">⚡ ANALYSER CAPTURE D'ÉCRAN</button>
-    <div id="ocr-status" class="status-msg"></div>
+    <button class="btn-ocr" onclick="document.getElementById('input_ocr').click()">⚡ ANALYSER CAPTURE OT</button>
 </div>
 
 <div class="card">
-    <h3>📍 Informations Dossier</h3>
-    
-    <label>Type de Rapport</label>
-    <select id="selectRapport" onchange="majInterface(); sauvegarderAuto();">
-        <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint</option>
-        <option value="DOE_CRADLEPOINT">🏢 DOE Cradlepoint</option>
-        <option value="AUDIT_STARLINK">🛰️ Audit Starlink</option>
-        <option value="DOE_STARLINK">🛰️ DOE Starlink</option>
-        <option value="AUDIT_PICO">🔍 Audit PICO</option>
-        <option value="DOE_PICO">🏢 DOE PICO</option>
-        <option value="ANTENNE_DEPORTEE">📡 Antenne Déportée</option>
-    </select>
-
-    <label>Modèle de Travaux (Info U)</label>
-    <select id="type_projet" onchange="majInterface(); sauvegarderAuto();">
+    <h3>📍 Tableau de garde</h3>
+    <label>Modèle INFO U</label>
+    <select id="type_projet">
         <option value="SOGETREL_100">UTILE / SCHIEVER (100% Sogetrel)</option>
-        <option value="AERIEN_PARTAGE">PROJET AÉRIEN (Partagé Magasin U)</option>
+        <option value="AERIEN_PARTAGE">PROJET AÉRIEN (Magasin U)</option>
     </select>
+    <input type="text" id="val_ot" placeholder="Numéro d'OT">
+    <select id="liste_cp"></select>
+    <input type="text" id="val_client" placeholder="Client">
+    <input type="text" id="val_adresse" placeholder="Adresse du site">
+</div>
 
-    <label>Numéro d'OT</label>
-    <input type="text" id="val_ot" placeholder="ex: 13063317" oninput="sauvegarderAuto()">
-
-    <label>Chef de Projet (CP)</label>
-    <select id="liste_cp" onchange="sauvegarderAuto()"></select>
-    <div class="cp-manager grid">
-        <input type="text" id="nouveau_cp" placeholder="Ajouter un CP..." style="margin-bottom:0">
-        <button onclick="ajouterCP()" style="background:var(--green); color:white; border:none; border-radius:8px;">＋</button>
+<div class="card">
+    <h3>🖼️ Reportage Photos Audit</h3>
+    <div class="photo-grid">
+        <div class="photo-box" onclick="triggerImg('img_baie_p')">Baie (Proche)<input type="file" id="img_baie_p" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" onclick="triggerImg('img_baie_l')">Baie (Large)<input type="file" id="img_baie_l" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" onclick="triggerImg('img_ant')">Antenne Ext.<input type="file" id="img_ant" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" onclick="triggerImg('img_chem')">Cheminement<input type="file" id="img_chem" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div></div>
+        <div class="photo-box" style="grid-column: span 2;" onclick="triggerImg('img_plan')">Plan avec Pastilles<input type="file" id="img_plan" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div></div>
     </div>
-    <button onclick="supprimerCP()" style="color:red; background:none; border:none; font-size:11px; cursor:pointer;">Supprimer le CP sélectionné</button>
+</div>
 
-    <label>Raison Sociale (Client)</label>
-    <input type="text" id="val_client" oninput="sauvegarderAuto()">
-
-    <label>Adresse du Site</label>
-    <input type="text" id="val_adresse" oninput="sauvegarderAuto()">
-
+<div class="card" id="box_radio" style="border-top-color: var(--green);">
+    <h3>📡 Prise de mesures Radio (Cradlepoint)</h3>
     <div class="grid">
         <div>
-            <label>Contact Site</label>
-            <input type="text" id="val_contact" oninput="sauvegarderAuto()">
+            <label>RSRP (dBm)</label>
+            <input type="number" id="v_rsrp" placeholder="-85" oninput="updateQual('rsrp')">
         </div>
         <div>
-            <label>Téléphone</label>
-            <input type="tel" id="val_tel" oninput="sauvegarderAuto()">
+            <label>RSRQ (dB)</label>
+            <input type="number" id="v_rsrq" placeholder="-12" oninput="updateQual('rsrq')">
+        </div>
+        <div>
+            <label>SNR / SINR (dB)</label>
+            <input type="number" id="v_snr" placeholder="15" oninput="updateQual('snr')">
+        </div>
+        <div>
+            <label>Ping (ms)</label>
+            <input type="number" id="v_ping" placeholder="30" oninput="updateQual('ping')">
+        </div>
+        <div>
+            <label>Download (Mbps)</label>
+            <input type="number" id="v_dl" placeholder="100" oninput="updateQual('dl')">
+        </div>
+        <div>
+            <label>Upload (Mbps)</label>
+            <input type="number" id="v_ul" placeholder="40" oninput="updateQual('ul')">
         </div>
     </div>
 </div>
 
-<div class="card" id="card_technique" style="border-top-color: var(--orange);">
-    <h3>📊 Données Techniques</h3>
-    
-    <div id="section_signal">
-        <div class="grid">
-            <div>
-                <label>RSRP (dBm)</label>
-                <input type="number" id="val_rsrp" placeholder="-85" oninput="analyserSignal(); sauvegarderAuto();">
-            </div>
-            <div>
-                <label>SINR (dB)</label>
-                <input type="number" id="val_sinr" placeholder="15" oninput="sauvegarderAuto();">
-            </div>
-        </div>
-        <div id="signal_feedback" style="font-size:12px; margin:5px 0; font-style:italic;"></div>
-    </div>
-
-    <div id="section_doe" class="hidden">
-        <label>Numéro de Série (S/N)</label>
-        <input type="text" id="val_sn" placeholder="Ex: IMEI ou SN" oninput="sauvegarderAuto()">
-    </div>
-
-    <div id="section_prerequis" class="hidden" style="background:#fff3e0; padding:10px; border-radius:8px; border:1px solid #ffe0b2;">
-        <p style="font-size:12px; color:#e65100; font-weight:bold; margin-top:0;">⚠️ PRÉREQUIS CLIENT (À CHARGE MAGASIN) :</p>
-        <label style="font-weight:normal;"><input type="checkbox" id="pre_gaine" checked> Pose gaine de 40mm</label>
-        <label style="font-weight:normal;"><input type="checkbox" id="pre_percement"> Percement dalle / étanchéité</label>
-        <label style="font-weight:normal;"><input type="checkbox" id="pre_nacelle"> Nacelle à disposition</label>
+<div class="card" style="border-top-color: #00bcd4;">
+    <h3>🛰️ Starlink (Application)</h3>
+    <div class="photo-box" onclick="triggerImg('img_star')" style="height:120px;">
+        📲 Capture Obstruction App Starlink
+        <input type="file" id="img_star" class="hidden" accept="image/*" onchange="preview(this)"><div class="prev"></div>
     </div>
 </div>
 
 <div class="card">
-    <h3>✍️ Validation Technicien</h3>
-    <input type="text" id="val_tech" placeholder="Nom et Prénom du technicien" oninput="sauvegarderAuto()">
+    <h3>✍️ Technicien & Signature</h3>
+    <input type="text" id="val_tech" placeholder="Nom du technicien">
     <canvas id="signature-pad"></canvas>
-    <button onclick="clearSig()" style="width:100%; border:none; background:none; color:#666; font-size:12px; margin-top:5px;">Effacer la signature</button>
 </div>
 
 <div class="footer-btns">
-    <button onclick="genererWordFinal()" style="background:var(--blue); color:white; border:none; border-radius:8px; font-weight:bold;">GÉNÉRER WORD</button>
-    <button onclick="window.print()" style="background:#ddd; border:none; border-radius:8px; font-weight:bold;">PDF</button>
+    <button onclick="genererWord()" style="background:var(--blue); color:white; font-weight:bold; border-radius:8px; border:none;">GÉNÉRER WORD</button>
+    <button onclick="window.print()" style="background:#ddd; border-radius:8px; border:none;">PDF</button>
 </div>
 
 <script>
-    // --- GESTION DES CHEFS DE PROJET (CP) ---
-    let chefsDeProjet = JSON.parse(localStorage.getItem('cp_cit_ia')) || ["Emmanuel MAUDET", "Omar ARAOUDIOU"];
-    function rafraichirCP() {
-        const s = document.getElementById('liste_cp'); s.innerHTML = "";
-        chefsDeProjet.forEach(n => { let o = document.createElement('option'); o.value=n; o.text=n; s.add(o); });
-        localStorage.setItem('cp_cit_ia', JSON.stringify(chefsDeProjet));
-    }
-    function ajouterCP() {
-        let n = document.getElementById('nouveau_cp').value.trim();
-        if(n && !chefsDeProjet.includes(n)) { chefsDeProjet.push(n); document.getElementById('nouveau_cp').value=""; rafraichirCP(); }
-    }
-    function supprimerCP() {
-        chefsDeProjet.splice(document.getElementById('liste_cp').selectedIndex, 1); rafraichirCP();
-    }
+    // --- LOGIQUE QUALITÉ SIGNAL (COULEURS) ---
+    function updateQual(type) {
+        const val = parseFloat(document.getElementById('v_' + type).value);
+        const el = document.getElementById('v_' + type);
+        el.className = ""; // Reset
 
-    // --- INTERFACE DYNAMIQUE ---
-    function majInterface() {
-        const r = document.getElementById('selectRapport').value;
-        const p = document.getElementById('type_projet').value;
-
-        // Affichage des sections techniques
-        document.getElementById('section_signal').style.display = (r.includes("AUDIT") || r.includes("CRADLEPOINT")) ? "block" : "none";
-        document.getElementById('section_doe').style.display = (r.includes("DOE")) ? "block" : "none";
-        document.getElementById('section_prerequis').style.display = (p === "AERIEN_PARTAGE") ? "block" : "none";
-    }
-
-    function analyserSignal() {
-        const rsrp = parseInt(document.getElementById('val_rsrp').value);
-        const fb = document.getElementById('signal_feedback');
-        if (rsrp >= -90) {
-            fb.innerHTML = "🟢 Signal suffisant. Les notes d'antenne déportée seront retirées.";
-            fb.style.color = "green";
-        } else if (rsrp < -90) {
-            fb.innerHTML = "🔴 Signal faible. Préconisation antenne déportée active.";
-            fb.style.color = "red";
+        if (type === 'rsrp') {
+            if (val >= -80) el.classList.add('sig-excellent');
+            else if (val >= -90) el.classList.add('sig-good');
+            else if (val >= -100) el.classList.add('sig-fair');
+            else el.classList.add('sig-poor');
+        } 
+        else if (type === 'snr') {
+            if (val >= 20) el.classList.add('sig-excellent');
+            else if (val >= 13) el.classList.add('sig-good');
+            else if (val >= 0) el.classList.add('sig-fair');
+            else el.classList.add('sig-poor');
+        }
+        else if (type === 'rsrq') {
+            if (val >= -10) el.classList.add('sig-excellent');
+            else if (val >= -15) el.classList.add('sig-good');
+            else if (val >= -20) el.classList.add('sig-fair');
+            else el.classList.add('sig-poor');
+        }
+        else if (type === 'dl') {
+            if (val >= 100) el.classList.add('sig-excellent');
+            else if (val >= 50) el.classList.add('sig-good');
+            else el.classList.add('sig-fair');
         }
     }
 
-    // --- OCR SCANNER ---
-    async function traiterOCR(event) {
-        const file = event.target.files[0];
-        const status = document.getElementById('ocr-status');
-        status.innerText = "⏳ Analyse en cours...";
-        try {
-            const { data: { text } } = await Tesseract.recognize(file, 'fra');
-            const otMatch = text.match(/\b\d{8}\b/);
-            if(otMatch) document.getElementById('val_ot').value = otMatch[0];
-            const telMatch = text.match(/0[67]\s*(\d{2}\s*){4}/);
-            if(telMatch) document.getElementById('val_tel').value = telMatch[0].replace(/\s/g, '');
-            status.innerText = "✅ Importation réussie !";
-            sauvegarderAuto();
-        } catch (e) { status.innerText = "❌ Erreur de lecture"; }
+    // --- PHOTOS ---
+    function triggerImg(id) { document.getElementById(id).click(); }
+    function preview(input) {
+        if (input.files && input.files[0]) {
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                input.parentElement.querySelector('.prev').innerHTML = `<img src="${e.target.result}">`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
-    // --- GÉNÉRATION WORD (TOUS MODÈLES) ---
-    async function genererWordFinal() {
-        const { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, WidthType, ImageRun } = docx;
-        
-        const rapport = document.getElementById('selectRapport').value;
-        const projet = document.getElementById('type_projet').value;
+    // --- WORD GENERATION ---
+    async function genererWord() {
+        const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, ImageRun, AlignmentType } = docx;
         const ot = document.getElementById('val_ot').value || "SANS_OT";
-        const rsrp = parseInt(document.getElementById('val_rsrp').value);
 
-        // Titre dynamique intelligent
-        let titreDoc = rapport.replace(/_/g, ' ');
-        if(rapport === "AUDIT_CRADLEPOINT") {
-            titreDoc = (projet === "SOGETREL_100") ? "AUDIT CRADLEPOINT 100% SOGETREL" : "AUDIT CRADLEPOINT AÉRIEN";
+        // Collecte images
+        async function getB(id) {
+            const f = document.getElementById(id).files[0];
+            return f ? await fetch(URL.createObjectURL(f)).then(r => r.blob()) : null;
         }
+        const bPlan = await getB('img_plan');
 
-        const sigData = sigCanvas.toDataURL("image/png");
-        const resS = await fetch(sigData); const blobS = await resS.blob();
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({ children: [new TextRun({ text: "CIT REPORT IA - SOGETREL", bold: true, size: 32 })], alignment: AlignmentType.CENTER }),
+                    new Paragraph({ text: "Audit de connectivité INFO U", alignment: AlignmentType.CENTER }),
+                    
+                    new Paragraph({ text: "1. MESURES RADIO", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }),
+                    new Table({
+                        width: { size: 100, type: WidthType.PERCENTAGE },
+                        rows: [
+                            new TableRow({ children: [new TableCell({ children: [new Paragraph("RSRP")] }), new TableCell({ children: [new Paragraph(document.getElementById('v_rsrp').value + " dBm")] }) ]}),
+                            new TableRow({ children: [new TableCell({ children: [new Paragraph("SNR")] }), new TableCell({ children: [new Paragraph(document.getElementById('v_snr').value + " dB")] }) ]}),
+                            new TableRow({ children: [new TableCell({ children: [new Paragraph("Débit Down")] }), new TableCell({ children: [new Paragraph(document.getElementById('v_dl').value + " Mbps")] }) ]})
+                        ]
+                    }),
 
-        const content = [
-            new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
-            new Paragraph({ text: "", spacing: { after: 200 } }),
-            new Paragraph({ children: [new TextRun({ text: titreDoc, bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
-            new Paragraph({ text: "", spacing: { after: 400 } }),
-            
-            // TABLEAU DE GARDE (OT > CP > CLIENT)
-            new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({text:"NUMÉRO D'OT", bold:true})], shading:{fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(ot)] })
-                    ]}),
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({text:"CHEF DE PROJET", bold:true})], shading:{fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(document.getElementById('liste_cp').value)] })
-                    ]}),
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({text:"CLIENT", bold:true})], shading:{fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(document.getElementById('val_client').value)] })
-                    ]}),
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({text:"ADRESSE DU SITE", bold:true})], shading:{fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(document.getElementById('val_adresse').value)] })
-                    ]})
+                    new Paragraph({ text: "2. PLAN D'IMPLANTATION", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }),
+                    ...(bPlan ? [new Paragraph({ children: [new ImageRun({ data: bPlan, transformation: { width: 450, height: 300 } })] })] : [new Paragraph("Aucun plan fourni")])
                 ]
-            }),
+            }]
+        });
 
-            new Paragraph({ text: "1. PRÉAMBULE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 600} }),
-            new Paragraph("Dans le cadre de l’amélioration de sa connectivité, INFO U a sollicité Sogetrel pour réaliser une expertise technique sur site.")
-        ];
-
-        // LOGIQUE SIGNAL (Cradlepoint / PICO)
-        if(rapport.includes("AUDIT") || rapport.includes("CRADLEPOINT")) {
-            content.push(new Paragraph({ text: "2. ANALYSE DU SIGNAL RADIO", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }));
-            if (rsrp >= -90) {
-                content.push(new Paragraph({ text: "RÉSULTAT : SIGNAL SATISFAISANT (RSRP " + rsrp + "dBm).", color: "27ae60", bold: true }));
-                content.push(new Paragraph("Le signal mesuré en intérieur permet une installation sans antenne déportée."));
-            } else {
-                content.push(new Paragraph({ text: "RÉSULTAT : SIGNAL INSUFFISANT (RSRP " + rsrp + "dBm).", color: "FF0000", bold: true }));
-                content.push(new Paragraph("Une antenne déportée en façade ou toiture est obligatoire pour cette installation."));
-            }
-        }
-
-        // LOGIQUE PRÉREQUIS CLIENT (Aérien)
-        if (projet === "AERIEN_PARTAGE") {
-            content.push(new Paragraph({ text: "3. PRÉREQUIS À CHARGE DU MAGASIN U", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }));
-            if(document.getElementById('pre_gaine').checked) content.push(new Paragraph("- Fourniture et pose d'une gaine de 40mm."));
-            if(document.getElementById('pre_percement').checked) content.push(new Paragraph("- Percement et étanchéité de la dalle toiture."));
-            if(document.getElementById('pre_nacelle').checked) content.push(new Paragraph("- Mise à disposition d'une nacelle pour le jour J."));
-        }
-
-        content.push(new Paragraph({ text: "SIGNATURE :", bold: true, spacing: {before: 600} }));
-        content.push(new Paragraph("Technicien : " + document.getElementById('val_tech').value));
-        content.push(new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] }));
-
-        const doc = new Document({ sections: [{ children: content }] });
-        Packer.toBlob(doc).then(b => saveAs(b, `CIT_REPORT_${ot}.docx`));
+        Packer.toBlob(doc).then(blob => saveAs(blob, `AUDIT_${ot}.docx`));
     }
 
-    // --- SIGNATURE PAD ---
-    const sigCanvas = document.getElementById('signature-pad');
-    const sigCtx = sigCanvas.getContext('2d');
-    let signing = false;
-    sigCanvas.width = sigCanvas.offsetWidth; sigCanvas.height = 130;
-    sigCanvas.onmousedown = sigCanvas.ontouchstart = (e) => { signing = true; sigCtx.beginPath(); };
-    window.onmouseup = window.ontouchend = () => signing = false;
-    sigCanvas.onmousemove = sigCanvas.ontouchmove = (e) => {
-        if(!signing) return;
-        const r = sigCanvas.getBoundingClientRect();
+    // --- OCR & SIGNATURE ---
+    async function traiterOCR(e) {
+        const file = e.target.files[0];
+        const { data: { text } } = await Tesseract.recognize(file, 'fra');
+        const ot = text.match(/\b\d{8}\b/);
+        if(ot) document.getElementById('val_ot').value = ot[0];
+    }
+
+    const canvas = document.getElementById('signature-pad');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth; canvas.height = 120;
+    let drawing = false;
+    canvas.onmousedown = canvas.ontouchstart = () => { drawing = true; ctx.beginPath(); };
+    window.onmouseup = window.ontouchend = () => drawing = false;
+    canvas.onmousemove = canvas.ontouchmove = (e) => {
+        if(!drawing) return;
+        const r = canvas.getBoundingClientRect();
         const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
         const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
-        sigCtx.lineTo(x, y); sigCtx.stroke();
+        ctx.lineTo(x, y); ctx.stroke();
     };
-    function clearSig() { sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); }
 
-    // --- PERSISTENCE ---
-    function sauvegarderAuto() {
-        const d = { 
-            r: document.getElementById('selectRapport').value,
-            ot: document.getElementById('val_ot').value,
-            client: document.getElementById('val_client').value,
-            tech: document.getElementById('val_tech').value
-        };
-        localStorage.setItem('brouillon_cit', JSON.stringify(d));
-    }
-
-    function chargerBrouillon() {
-        let d = JSON.parse(localStorage.getItem('brouillon_cit'));
-        if(d) {
-            document.getElementById('selectRapport').value = d.r;
-            document.getElementById('val_ot').value = d.ot;
-            document.getElementById('val_client').value = d.client;
-            document.getElementById('val_tech').value = d.tech;
-            majInterface();
-        }
-    }
-
-    // Initialisation
-    rafraichirCP();
-    majInterface();
+    // Initialisation CP
+    ["Emmanuel MAUDET", "Omar ARAOUDIOU"].forEach(n => document.getElementById('liste_cp').add(new Option(n,n)));
 </script>
 </body>
 </html>
