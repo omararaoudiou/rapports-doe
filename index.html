@@ -19,53 +19,64 @@
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; }
         .btn-ocr { background: var(--purple); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .status-msg { font-size: 12px; text-align: center; font-weight: bold; margin-top: -10px; margin-bottom: 10px; }
+        .form-block { display: none; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; }
         .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: white; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
         #signature-pad { border: 2px dashed #bbb; height: 130px; background: #fff; width: 100%; border-radius: 8px; touch-action: none; }
+        .status-msg { font-size: 12px; text-align: center; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h2 style="margin:0;">CIT Report IA</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Expertise INFO U & Cradlepoint</p>
+    <p style="margin:5px 0 0; opacity:0.8; font-size: 11px;">Générateur Expert Multimodal</p>
 </div>
 
 <div class="card" style="border-top-color: var(--purple);">
-    <h3>📸 Scan OT / Capture d'écran</h3>
+    <h3>📷 Importation Automatique</h3>
     <input type="file" id="input_ocr" accept="image/*" style="display:none" onchange="traiterOCR(event)">
-    <button class="btn-ocr" onclick="document.getElementById('input_ocr').click()">⚡ ANALYSER L'OT AUTOMATIQUEMENT</button>
-    <div id="ocr-status" class="status-msg">Prêt pour import</div>
+    <button class="btn-ocr" onclick="document.getElementById('input_ocr').click()">⚡ SCANNER CAPTURE OT</button>
+    <div id="ocr-status" class="status-msg">Prêt</div>
 </div>
 
 <div class="card">
-    <h3>📍 Informations Dossier (Tableau de garde)</h3>
+    <h3>📍 Informations Dossier</h3>
     
-    <label>Modèle de Travaux</label>
-    <select id="type_projet" onchange="majLogiqueProjet(); sauvegarderAuto();">
-        <option value="SOGETREL_100">UTILE / SCHIEVER (100% Sogetrel)</option>
+    <label>Type de Rapport</label>
+    <select id="selectRapport" onchange="majInterface(); sauvegarderAuto();">
+        <option value="AUDIT_CRADLEPOINT">🔍 Audit Cradlepoint</option>
+        <option value="DOE_CRADLEPOINT">🏢 DOE Cradlepoint</option>
+        <option value="AUDIT_STARLINK">🛰️ Audit Starlink</option>
+        <option value="DOE_STARLINK">🛰️ DOE Starlink</option>
+        <option value="AUDIT_PICO">🔍 Audit PICO</option>
+        <option value="ANTENNE_DEPORTEE">📡 Antenne Déportée</option>
+    </select>
+
+    <label>Responsabilité Travaux</label>
+    <select id="type_projet" onchange="majInterface(); sauvegarderAuto();">
+        <option value="SOGETREL_100">100% SOGETREL (UTILE / SCHIEVER)</option>
         <option value="AERIEN_PARTAGE">PROJET AÉRIEN (Partagé Magasin U)</option>
     </select>
 
-    <label>N° OT (Dossier)</label>
-    <input type="text" id="val_ot" placeholder="ex: 13063317" oninput="sauvegarderAuto()">
+    <label>N° OT</label>
+    <input type="text" id="val_ot" oninput="sauvegarderAuto()">
 
-    <label>Chef de Projet (CP) en charge</label>
+    <label>Chef de Projet (CP)</label>
     <select id="liste_cp" onchange="sauvegarderAuto()"></select>
     <div class="grid" style="margin-top:5px;">
-        <input type="text" id="nouveau_cp" placeholder="Ajouter un CP..." style="margin-bottom:0">
+        <input type="text" id="nouveau_cp" placeholder="Nouveau CP..." style="margin-bottom:0">
         <button onclick="ajouterCP()" style="background:var(--green); color:white; border:none; border-radius:8px;">＋</button>
     </div>
 
-    <label>Client / Enseigne</label>
-    <input type="text" id="val_client" placeholder="ex: Magasin U" oninput="sauvegarderAuto()">
+    <label>Client</label>
+    <input type="text" id="val_client" oninput="sauvegarderAuto()">
 
     <label>Adresse du site</label>
-    <input type="text" id="val_adresse" placeholder="Adresse complète" oninput="sauvegarderAuto()">
+    <input type="text" id="val_adresse" oninput="sauvegarderAuto()">
 </div>
 
-<div class="card" style="border-top-color: var(--orange);">
-    <h3>📡 Mesures Signal Cradlepoint</h3>
+<div class="card" id="card_mesures">
+    <h3>📊 Mesures & Données Techniques</h3>
     <div class="grid">
         <div>
             <label>RSRP (dBm)</label>
@@ -76,23 +87,21 @@
             <input type="number" id="val_sinr" placeholder="15" oninput="sauvegarderAuto();">
         </div>
     </div>
-    <div id="signal_feedback" style="font-size:12px; padding:8px; border-radius:5px; margin-top:5px; background:#f0f0f0;">
-        Logique auto basée sur le RSRP.
-    </div>
+    <div id="signal_feedback" style="font-size:12px; padding:8px; border-radius:5px; margin-top:5px; background:#f0f0f0;">Logique auto RSRP active.</div>
 
-    <div id="section_magasin_u" style="display:none; margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+    <div id="section_prerequis" class="form-block">
         <p style="font-size:12px; color:var(--orange); font-weight:bold;">📋 Prérequis Magasin U :</p>
         <label><input type="checkbox" id="pre_gaine" checked> Pose gaine de 40mm</label>
         <label><input type="checkbox" id="pre_percement"> Percement dalle toiture</label>
-        <label><input type="checkbox" id="pre_nacelle"> Mise à disposition nacelle</label>
+        <label><input type="checkbox" id="pre_nacelle"> Nacelle à disposition</label>
     </div>
 </div>
 
 <div class="card">
-    <h3>✍️ Signature & Technicien</h3>
+    <h3>✍️ Signature</h3>
     <input type="text" id="val_tech" placeholder="Nom du technicien" oninput="sauvegarderAuto()">
     <canvas id="signature-pad"></canvas>
-    <button onclick="clearSig()" style="width:100%; border:none; background:none; color:#666; font-size:12px; margin-top:5px;">Effacer la signature</button>
+    <button onclick="clearSig()" style="width:100%; border:none; background:none; color:#666; font-size:12px;">Effacer signature</button>
 </div>
 
 <div class="footer-btns">
@@ -112,22 +121,27 @@
         if(n) { chefsDeProjet.push(n); document.getElementById('nouveau_cp').value=""; rafraichirCP(); }
     }
 
-    // --- LOGIQUE SIGNAL ---
+    // --- INTERFACE DYNAMIQUE ---
+    function majInterface() {
+        const rapport = document.getElementById('selectRapport').value;
+        const projet = document.getElementById('type_projet').value;
+        
+        // Afficher mesures seulement si Cradlepoint ou PICO
+        document.getElementById('card_mesures').style.display = (rapport.includes("CRADLEPOINT") || rapport.includes("PICO")) ? "block" : "none";
+        // Afficher prérequis seulement si Aérien
+        document.getElementById('section_prerequis').style.display = (projet === "AERIEN_PARTAGE") ? "block" : "none";
+    }
+
     function analyserSignal() {
         const rsrp = parseInt(document.getElementById('val_rsrp').value);
         const fb = document.getElementById('signal_feedback');
         if (rsrp >= -90) {
-            fb.innerHTML = "🟢 SIGNAL BON : La partie 'Antenne Externe' sera retirée.";
+            fb.innerHTML = "🟢 SIGNAL BON : Paragraphes 'Antenne Externe' supprimés du rapport.";
             fb.style.color = "green";
         } else {
-            fb.innerHTML = "🔴 SIGNAL FAIBLE : Antenne Déportée nécessaire.";
+            fb.innerHTML = "🔴 SIGNAL FAIBLE : Préconisation Antenne Déportée maintenue.";
             fb.style.color = "red";
         }
-    }
-
-    function majLogiqueProjet() {
-        const type = document.getElementById('type_projet').value;
-        document.getElementById('section_magasin_u').style.display = (type === "AERIEN_PARTAGE") ? "block" : "none";
     }
 
     // --- OCR ---
@@ -140,62 +154,62 @@
             if(ot) document.getElementById('val_ot').value = ot[0];
             document.getElementById('ocr-status').innerText = "✅ Importé";
             sauvegarderAuto();
-        } catch (e) { document.getElementById('ocr-status').innerText = "❌ Échec scan"; }
+        } catch (e) { document.getElementById('ocr-status').innerText = "❌ Échec"; }
     }
 
-    // --- GÉNÉRATION WORD ---
+    // --- GÉNÉRATION WORD UNIFIÉE ---
     async function genererWordFinal() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, WidthType, ImageRun } = docx;
-        const ot = document.getElementById('val_ot').value || "SANS_OT";
+        const rapportType = document.getElementById('selectRapport').value;
+        const projetType = document.getElementById('type_projet').value;
         const rsrp = parseInt(document.getElementById('val_rsrp').value);
-        const type = document.getElementById('type_projet').value;
+        const ot = document.getElementById('val_ot').value || "SANS_OT";
+
+        // Titre dynamique basé sur tes demandes
+        let titreDocument = rapportType.replace(/_/g, ' ');
+        if(rapportType === "AUDIT_CRADLEPOINT") {
+            titreDocument = (projetType === "SOGETREL_100") ? "AUDIT CRADLEPOINT 100% SOGETREL" : "AUDIT CRADLEPOINT AÉRIEN";
+        }
+
         const sigData = sigCanvas.toDataURL("image/png");
         const resS = await fetch(sigData); const blobS = await resS.blob();
 
         const content = [
             new Paragraph({ children: [new TextRun({ text: "SOGETREL", bold: true, color: "002d5b", size: 28 })], alignment: AlignmentType.RIGHT }),
             new Paragraph({ text: "", spacing: { after: 200 } }),
-            new Paragraph({ children: [new TextRun({ text: "CIT REPORT IA - AUDIT INFO U", bold: true, size: 36, color: "002d5b" })], alignment: AlignmentType.CENTER }),
+            new Paragraph({ children: [new TextRun({ text: titreDocument, bold: true, size: 32, color: "002d5b" })], alignment: AlignmentType.CENTER }),
             new Paragraph({ text: "", spacing: { after: 400 } }),
             
+            // Tableau de garde
             new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: [
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({ text: "NUMÉRO D’OT", bold: true })], shading: {fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(ot)] })
-                    ]}),
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({ text: "CHEF DE PROJET", bold: true })], shading: {fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(document.getElementById('liste_cp').value)] })
-                    ]}),
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({ text: "CLIENT", bold: true })], shading: {fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(document.getElementById('val_client').value)] })
-                    ]}),
-                    new TableRow({ children: [
-                        new TableCell({ children: [new Paragraph({ text: "ADRESSE", bold: true })], shading: {fill:"f0f0f0"} }),
-                        new TableCell({ children: [new Paragraph(document.getElementById('val_adresse').value)] })
-                    ]})
+                    new TableRow({ children: [new TableCell({ children: [new Paragraph({text:"N° OT", bold:true})], shading:{fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(ot)] }) ]}),
+                    new TableRow({ children: [new TableCell({ children: [new Paragraph({text:"CHEF DE PROJET", bold:true})], shading:{fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(document.getElementById('liste_cp').value)] }) ]}),
+                    new TableRow({ children: [new TableCell({ children: [new Paragraph({text:"CLIENT", bold:true})], shading:{fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(document.getElementById('val_client').value)] }) ]}),
+                    new TableRow({ children: [new TableCell({ children: [new Paragraph({text:"ADRESSE SITE", bold:true})], shading:{fill:"f0f0f0"} }), new TableCell({ children: [new Paragraph(document.getElementById('val_adresse').value)] }) ]})
                 ]
             }),
 
-            new Paragraph({ text: "1. PRÉAMBULE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 600} }),
-            new Paragraph("Audit réalisé dans le cadre de l'optimisation de connectivité INFO U."),
-            
-            new Paragraph({ text: "2. ANALYSE CRADLEPOINT", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} })
+            new Paragraph({ text: "1. PRÉAMBULE", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 500} }),
+            new Paragraph("Audit réalisé par Sogetrel pour le compte de INFO U. L'objectif est de valider la faisabilité technique."),
         ];
 
-        if (rsrp < -90) {
-            content.push(new Paragraph({ text: "PRÉCONISATION : Pose antenne déportée nécessaire (Signal faible).", color: "FF0000", bold: true }));
-        } else {
-            content.push(new Paragraph({ text: "CONSTAT : Signal interne suffisant. Installation intérieure standard.", color: "27ae60", bold: true }));
+        // Logique Cradlepoint
+        if(rapportType.includes("CRADLEPOINT")) {
+            content.push(new Paragraph({ text: "2. MESURES RADIO", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }));
+            if (rsrp >= -90) {
+                content.push(new Paragraph({ text: "CONSTAT : Signal satisfaisant (RSRP " + rsrp + "dBm). Pose intérieure validée.", color: "27ae60", bold: true }));
+            } else {
+                content.push(new Paragraph({ text: "PRÉCONISATION : Signal faible (RSRP " + rsrp + "dBm). Pose antenne externe nécessaire.", color: "FF0000", bold: true }));
+            }
         }
 
-        if (type === "AERIEN_PARTAGE") {
+        // Logique Prérequis Client (Si Aérien)
+        if (projetType === "AERIEN_PARTAGE") {
             content.push(new Paragraph({ text: "3. PREREQUIS CLIENT (MAGASIN U)", heading: docx.HeadingLevel.HEADING_1, spacing: {before: 400} }));
-            if(document.getElementById('pre_gaine').checked) content.push(new Paragraph("- Gaine 40mm à poser par le client."));
-            if(document.getElementById('pre_percement').checked) content.push(new Paragraph("- Percement dalle client à réaliser."));
+            if(document.getElementById('pre_gaine').checked) content.push(new Paragraph("- Gaine 40mm à la charge du client."));
+            if(document.getElementById('pre_percement').checked) content.push(new Paragraph("- Percement dalle à la charge du client."));
         }
 
         content.push(new Paragraph({ text: "SIGNATURE :", bold: true, spacing: {before: 600} }));
@@ -203,7 +217,7 @@
         content.push(new Paragraph({ children: [new ImageRun({ data: blobS, transformation: { width: 180, height: 70 } })] }));
 
         const doc = new Document({ sections: [{ children: content }] });
-        Packer.toBlob(doc).then(b => saveAs(b, `CIT_REPORT_${ot}.docx`));
+        Packer.toBlob(doc).then(b => saveAs(b, `RAPPORT_${ot}.docx`));
     }
 
     // --- SIGNATURE & STORAGE ---
@@ -221,14 +235,13 @@
         sigCtx.lineTo(x, y); sigCtx.stroke();
     };
     function clearSig() { sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); }
-
     function sauvegarderAuto() {
         const d = { ot: document.getElementById('val_ot').value, client: document.getElementById('val_client').value, tech: document.getElementById('val_tech').value };
         localStorage.setItem('brouillon_cit', JSON.stringify(d));
     }
 
     rafraichirCP();
-    majLogiqueProjet();
+    majInterface();
 </script>
 </body>
 </html>
