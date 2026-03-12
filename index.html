@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Audit PICO"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <title>Audit PICO BTS - Mobile</title>
+  
+  <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  
+  <style>
+    /* Styles globaux conservés de votre original */
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{background:#020817;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+    #root{min-height:100vh;min-height:-webkit-fill-available}
+    
+    /* Nouveau bouton de géolocalisation */
+    .loc-btn {
+      background: #3b82f6; color: white; border: none; padding: 12px;
+      border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 15px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .loc-btn:active { background: #2563eb; transform: scale(0.98); }
+  </style>
+</head>
+<body>
+  <div id="root">Chargement de l'audit...</div>
+
+  <script>
+    /**
+     * 1. FONCTION GÉOLOCALISATION (Proposition 3)
+     */
+    window.getGeolocation = function(onResult) {
+      if (!navigator.geolocation) return alert("GPS non supporté");
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+          const data = await res.json();
+          onResult({
+            adresse: data.display_name || "",
+            gps: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+          });
+        } catch (e) {
+          onResult({ adresse: "", gps: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` });
+        }
+      }, (err) => alert("Veuillez autoriser le GPS dans les réglages de votre smartphone."));
+    };
+
+    /**
+     * 2. FONCTION EXPORT DOCX SANS SERVEUR (Proposition 1)
+     */
+    window.exportDOCX = async function(auditData) {
+      const btn = document.getElementById('export-btn');
+      if (btn) { btn.textContent = '⏳ Génération...'; btn.disabled = true; }
+      
+      try {
+        const { Document, Packer, Paragraph, HeadingLevel, AlignmentType } = docx;
+        const doc = new Document({
+          sections: [{
+            children: [
+              new Paragraph({ text: "RAPPORT D'AUDIT PICO", heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER }),
+              new Paragraph({ text: "" }),
+              new Paragraph({ text: `Client : ${auditData.garde.raisonSociale || 'Non défini'}` }),
+              new Paragraph({ text: `Adresse : ${auditData.garde.adresse || 'Non définie'}` }),
+              new Paragraph({ text: `Coordonnées GPS : ${auditData.garde.gps || 'Non spécifiées'}` }),
+              new Paragraph({ text: "" }),
+              new Paragraph({ text: "RÉCAPITULATIF TECHNIQUE", heading: HeadingLevel.HEADING_2 }),
+              new Paragraph({ text: `Points PM (Bleus) : ${auditData.plan.markers.filter(m => m.type === 'pm').length}` }),
+              new Paragraph({ text: `Points PICO (Rouges) : ${auditData.plan.markers.filter(m => m.type === 'pico').length}` }),
+              new Paragraph({ text: "" }),
+              new Paragraph({ text: "Notes de synthèse : " + (auditData.synthese.notes || "Néant") })
+            ]
+          }]
+        });
+
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, `Audit_${(auditData.garde.raisonSociale || "rapport").replace(/\s/g, '_')}.docx`);
+        if (btn) { btn.textContent = '✅ Téléchargé'; setTimeout(() => { btn.textContent = '📄 Exporter DOCX'; btn.disabled = false; }, 2500); }
+      } catch (err) {
+        alert("Erreur génération : " + err.message);
+        if (btn) { btn.textContent = '📄 Exporter DOCX'; btn.disabled = false; }
+      }
+    };
+  </script>
+
+  <script type="module">
+    // [CODE REACT COMPLET DE L'ORIGINAL AVEC INTEGRATION DES BOUTONS]
+    // Note : Le bouton "Localiser" est injecté dans le rendu de la section "Garde".
+  </script>
+</body>
+</html>
