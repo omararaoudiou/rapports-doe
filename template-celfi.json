@@ -1,0 +1,110 @@
+{
+  "_comment": "Template CEL-FI QUATRA Audit/DOE",
+  "meta": {
+    "id": "audit_celfi",
+    "title": "Audit amplificateur",
+    "subtitle": "CEL-FI QUATRA",
+    "filename": "Audit_CELFI",
+    "confidentiel": "Sogetrel - Bouygues Telecom - Confidentiel"
+  },
+  "colors": {
+    "cover_bg": "#002060",
+    "section_bg": "#4C1D95",
+    "accent": "#A855F7",
+    "group_3g": "#0A0520",
+    "group_4g": "#050010"
+  },
+  "toc": [
+    {
+      "num": "1.",
+      "title": "Preambule",
+      "page": "3"
+    },
+    {
+      "num": "2.",
+      "title": "Outils de mesures",
+      "page": "3"
+    },
+    {
+      "num": "3.",
+      "title": "Network Unit et CU",
+      "page": "4"
+    },
+    {
+      "num": "4.",
+      "title": "Mesures 3G (RSCP/ECIO)",
+      "page": "5"
+    },
+    {
+      "num": "5.",
+      "title": "Mesures 4G/5G (RSRP/RSRQ)",
+      "page": "5"
+    },
+    {
+      "num": "6.",
+      "title": "Conclusion",
+      "page": "6"
+    },
+    {
+      "num": "7.",
+      "title": "Photos",
+      "page": "7"
+    }
+  ],
+  "preambule": {
+    "audit": "L'amplificateur CEL-FI QUATRA permet d'etendre la couverture 3G/4G a l'interieur du batiment. Cet audit valide la faisabilite technique de l'installation.",
+    "doe": "Document des Ouvrages Executes — Installation amplificateur CEL-FI QUATRA. Ce document atteste de la conformite de l'installation."
+  },
+  "mesures_3g": {
+    "title": "Mesures 3G (RSCP / EC/IO)",
+    "headers": [
+      "Operateur",
+      "Band",
+      "RNC",
+      "LCID",
+      "RSCP",
+      "EC/IO",
+      "UL",
+      "DL",
+      "Ping"
+    ],
+    "fields": [
+      "operateur",
+      "band",
+      "rnc",
+      "lcid",
+      "rscp",
+      "ecio",
+      "ul",
+      "dl",
+      "ping"
+    ]
+  },
+  "mesures_4g": {
+    "title": "Mesures 4G/5G (RSRP / RSRQ / SNR)",
+    "headers": [
+      "Operateur",
+      "Band",
+      "eNB",
+      "LCID",
+      "RSRP",
+      "RSRQ",
+      "SNR",
+      "UL",
+      "DL",
+      "Ping"
+    ],
+    "fields": [
+      "operateur",
+      "band",
+      "enb",
+      "lcid",
+      "rsrp",
+      "rsrq",
+      "snr",
+      "ul",
+      "dl",
+      "ping"
+    ]
+  }
+}

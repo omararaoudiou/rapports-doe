@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes">
+<title>Audit Travaux Chantier</title>
+<style>
+:root{--bg:#020817;--card:#0f2040;--line:#1e3a5f;--text:#e2e8f0;--muted:#94a3b8;--accent:#3b82f6}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1,h2,h3{margin:0 0 10px} .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+label{display:block;font-size:11px;font-weight:700;color:#64748b;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+input,textarea,select{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:#0a1628;color:var(--text);font-size:14px;outline:none}
+textarea{min-height:90px;resize:vertical}
+button{background:var(--accent);border:0;color:#fff;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+button.ghost{background:#1e3a5f} button.warn{background:#dc2626} button.ok{background:#16a34a}
+table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+small{color:var(--muted)} .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.sig{border:1px dashed #4b5563;border-radius:12px;background:#fff;touch-action:none}
+.badge{display:inline-block;background:#1d4ed8;color:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toolbar">
+    <button onclick="AuditTravauxApp.save()">💾 Sauvegarder</button>
+    <button class="ghost" onclick="AuditTravauxApp.load()">↻ Recharger</button>
+    <button class="ghost" onclick="AuditTravauxApp.addWork()">＋ Ajouter une ligne travaux</button>
+    <button class="ghost" onclick="AuditTravauxApp.addPhoto()">📸 Ajouter photo</button>
+    <button class="ghost" onclick="AuditTravauxApp.generateEstimate()">💰 Générer devis</button>
+    <button class="ghost" onclick="AuditTravauxApp.generatePlanning()">🗓️ Générer planning</button>
+    <button class="ghost" onclick="AuditTravauxApp.convertToDoe()">📋 Convertir en DOE Travaux</button>
+    <button class="ghost" onclick="AuditTravauxApp.exportWord()">📝 Export Word</button>
+    <button class="ghost" onclick="AuditTravauxApp.exportPdf()">📄 Export PDF</button>
+    <button class="ghost" onclick="AuditTravauxApp.syncNow()">☁️ Sync</button>
+  </div>
+
+  <div class="card">
+    <h1>🏗️ Audit Travaux Chantier <span class="badge">nouveau type de rapport</span></h1>
+    <small>Rapport indépendant des audits radio. Orienté câblage, wifi, terrassement, baie, chemin télécom, infrastructure, faisabilité, devis et DOE travaux.</small>
+  </div>
+
+  <div class="card">
+    <h2>1. Page de garde</h2>
+    <div class="grid">
+      <div><label>Numéro OT</label><input id="g_ot"></div>
+      <div><label>Date</label><input id="g_date"></div>
+      <div><label>Client</label><input id="g_client"></div>
+      <div><label>Adresse du site</label><input id="g_adresse"></div>
+      <div><label>Contact</label><input id="g_contact"></div>
+      <div><label>Téléphone</label><input id="g_tel"></div>
+      <div><label>Email</label><input id="g_mail"></div>
+      <div><label>Technicien</label><input id="g_technicien"></div>
+      <div><label>Société intervenante</label><input id="g_societe"></div>
+      <div><label>Type de chantier</label>
+        <select id="g_type">
+          <option value="cablage_reseau">Câblage réseau</option>
+          <option value="wifi">Pose de bornes WIFI</option>
+          <option value="terrassement">Terrassement / tranchée</option>
+          <option value="baie">Pose de baie</option>
+          <option value="mixte">Mixte</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Description du chantier</h2>
+    <div class="grid">
+      <div><label>Nature des travaux</label><textarea id="d_nature"></textarea></div>
+      <div><label>Description détaillée</label><textarea id="d_description"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Analyse du site</h2>
+    <div class="grid">
+      <div><label>Type de site</label><input id="s_type"></div>
+      <div><label>Surface / zone</label><input id="s_surface"></div>
+      <div><label>Nombre d'étages</label><input id="s_etages"></div>
+      <div><label>Environnement</label><input id="s_environnement"></div>
+      <div><label>Infrastructure existante</label><textarea id="s_infra"></textarea></div>
+      <div><label>Contraintes générales</label><textarea id="s_contraintes"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Accès et conditions</h2>
+    <div class="grid">
+      <div><label>Accès</label><input id="a_acces"></div>
+      <div><label>Contraintes horaires</label><input id="a_horaires"></div>
+      <div><label>Stationnement</label><input id="a_stationnement"></div>
+      <div><label>Risques particuliers</label><textarea id="a_risques"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. Tableau des travaux</h2>
+    <table id="worksTable">
+      <thead><tr><th>Zone</th><th>Travail</th><th>Quantité</th><th>Unité</th><th>Difficulté</th><th>Commentaire</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>6. Cheminement / passage / terrassement</h2>
+    <div class="grid">
+      <div><label>Type de passage</label><textarea id="c_passage"></textarea></div>
+      <div><label>Distance estimée</label><input id="c_distance"></div>
+      <div><label>Complexité</label><input id="c_complexite"></div>
+      <div><label>Contraintes</label><textarea id="c_contraintes"></textarea></div>
+      <div><label>Type de sol</label><input id="t_sol"></div>
+      <div><label>Longueur tranchée</label><input id="t_longueur"></div>
+      <div><label>Profondeur</label><input id="t_profondeur"></div>
+      <div><label>Pose / remise en état</label><textarea id="t_pose"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>7. Équipements / moyens / contraintes / sécurité</h2>
+    <div class="grid">
+      <div><label>Équipements à installer</label><textarea id="e_equipements"></textarea></div>
+      <div><label>Moyens nécessaires</label><textarea id="m_moyens"></textarea></div>
+      <div><label>Nombre de techniciens</label><input id="m_nbTech"></div>
+      <div><label>Durée estimée</label><input id="m_duree"></div>
+      <div><label>Hauteur d'intervention</label><input id="m_hauteur"></div>
+      <div><label>Contraintes techniques</label><textarea id="ct_tech"></textarea></div>
+      <div><label>Sécurité / risques</label><textarea id="sec_risques"></textarea></div>
+      <div><label>Mesures à prévoir</label><textarea id="sec_mesures"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>8. Reporting photos</h2>
+    <div id="photos"></div>
+  </div>
+
+  <div class="card">
+    <h2>9. Conclusion</h2>
+    <div class="grid">
+      <div><label>Faisabilité</label>
+        <select id="co_faisabilite">
+          <option>OK</option><option>OK sous conditions</option><option>Non faisable</option>
+        </select>
+      </div>
+      <div><label>Conditions</label><textarea id="co_conditions"></textarea></div>
+      <div><label>Recommandations</label><textarea id="co_reco"></textarea></div>
+      <div><label>Validation client</label><input id="co_validation"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>10. Devis estimatif</h2>
+    <div id="estimateBox"><small>Aucune estimation générée.</small></div>
+  </div>
+
+  <div class="card">
+    <h2>11. Planning d'intervention</h2>
+    <div id="planningBox"><small>Aucun planning généré.</small></div>
+  </div>
+
+  <div class="card">
+    <h2>12. Signature client</h2>
+    <canvas id="signature" class="sig" width="900" height="220"></canvas>
+    <div class="toolbar" style="margin-top:12px">
+      <button class="ghost" onclick="AuditTravauxApp.clearSignature()">Effacer signature</button>
+      <button class="ok" onclick="AuditTravauxApp.saveSignature()">Enregistrer signature</button>
+    </div>
+    <div id="signatureStatus"><small>Pas encore enregistrée.</small></div>
+  </div>
+</div>
+<script src="terrain_modules/offline-sync-queue.js"></script>
+<script src="terrain_modules/audit-travaux-standalone.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+{
+  "_comment": "Template DOE Antenne Deportee — tableau comparatif AVANT/APRES",
+  "meta": {
+    "id": "doe_antenne",
+    "title": "DOE antenne deportee",
+    "subtitle": "4G/5G MIMO",
+    "filename": "DOE_Antenne_Deportee",
+    "confidentiel": "Sogetrel - Bouygues Telecom - Confidentiel"
+  },
+  "inherits": "antenne",
+  "colors": {
+    "cover_bg": "#002060",
+    "section_bg": "#92400E",
+    "accent": "#FB923C",
+    "group_sans": "#042210",
+    "group_avec": "#040A28"
+  },
+  "toc": [
+    {
+      "num": "1.",
+      "title": "Objet des travaux",
+      "page": "3"
+    },
+    {
+      "num": "2.",
+      "title": "Mesures comparatives AVANT / APRES",
+      "page": "4"
+    },
+    {
+      "num": "3.",
+      "title": "Prerequis valides",
+      "page": "5"
+    },
+    {
+      "num": "4.",
+      "title": "Plan et cheminement cable",
+      "page": "6"
+    },
+    {
+      "num": "5.",
+      "title": "Mise en oeuvre realisee",
+      "page": "7"
+    },
+    {
+      "num": "6.",
+      "title": "Photos du chantier",
+      "page": "8"
+    }
+  ],
+  "comparative_table": {
+    "group_1": {
+      "label": "Mesures SANS antenne externe",
+      "subtitle": "Emplacement antenne (avant installation)"
+    },
+    "group_2": {
+      "label": "Mesures AVEC antenne deportee",
+      "subtitle": "Emplacement routeur (apres installation)"
+    },
+    "bilan_label": "Bilan signal (gain moyen RSRP)"
+  }
+}

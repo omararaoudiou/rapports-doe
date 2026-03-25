@@ -1,0 +1,207 @@
+{
+  "_comment": "Template Audit PICO BTS — modifier les textes et couleurs ici",
+  "meta": {
+    "id": "audit",
+    "title": "Audit de couverture mobile",
+    "subtitle": "PICO BTS",
+    "filename": "Audit_PICO_BTS",
+    "confidentiel": "Sogetrel - Bouygues Telecom - Confidentiel"
+  },
+  "colors": {
+    "cover_bg": "#002060",
+    "header_bg": "#002060",
+    "section_bg": "#1B4480",
+    "accent": "#FE7800",
+    "sogetrel_blue": "#1B4480",
+    "text": "#000000",
+    "text_light": "#FFFFFF",
+    "grey": "#737373",
+    "table_row_even": "#F2F2F2",
+    "quality_good": "#93D051",
+    "quality_medium": "#FFC000",
+    "quality_poor": "#FF8000",
+    "quality_bad": "#FF0000",
+    "quality_none": "#D9D9D9"
+  },
+  "toc": [
+    {
+      "num": "1.",
+      "title": "Preambule",
+      "page": "3"
+    },
+    {
+      "num": "2.",
+      "title": "Outil de mesures / Tests",
+      "page": "3"
+    },
+    {
+      "num": "3.",
+      "title": "Plans du site et points de mesures",
+      "page": "4"
+    },
+    {
+      "num": "",
+      "title": "  Etat de la couverture radio...",
+      "page": "5",
+      "sub": true
+    },
+    {
+      "num": "",
+      "title": "  Mise en place de la solution PICO BTS :",
+      "page": "6"
+    },
+    {
+      "num": "",
+      "title": "    3.1. Local Technique :",
+      "page": "6",
+      "sub": true
+    },
+    {
+      "num": "",
+      "title": "    3.2. Reporting photos :",
+      "page": "8",
+      "sub": true
+    },
+    {
+      "num": "4.",
+      "title": "Mise en oeuvre :",
+      "page": "9"
+    },
+    {
+      "num": "5.",
+      "title": "Acces site :",
+      "page": "9"
+    }
+  ],
+  "sections": [
+    {
+      "id": "preambule",
+      "num": "1.",
+      "title": "Preambule",
+      "texts": [
+        "L'audit de couverture mobile permet de determiner le nombre d'antennes et leurs",
+        "emplacements afin de garantir une qualite du reseau 4G optimal au sein de la structure.",
+        "",
+        "Elle survient a la suite d'une sollicitation du client qui rencontre des difficultes",
+        "de connexion au reseau mobile au sein de ses locaux."
+      ]
+    },
+    {
+      "id": "outils",
+      "num": "2.",
+      "title": "Outil de mesures / Tests",
+      "software_label": "NETWORK CELL INFO LITE",
+      "texts": [
+        "Note : A chaque point de mesure nous relevons a minima le niveau d affaiblissement",
+        "que recoit le terminal. Nous recommandons de realiser un speedtest (4G) a l exterieur",
+        "de la societe auditee puis un releve a l interieur pour comparer les niveaux de couverture."
+      ]
+    },
+    {
+      "id": "plans",
+      "num": "3.",
+      "title": "Plans du site et points de mesures",
+      "note": "Note : idealement realisez un point de mesure par zone de 100m2",
+      "quality_table": {
+        "subtitle": "Etat de la couverture radio le jour de l'audit :",
+        "rows": [
+          {
+            "label": "Bonne",
+            "value": "> -97dBm",
+            "color_key": "quality_good"
+          },
+          {
+            "label": "Moyenne",
+            "value": "-98dBm < X < -107dBm",
+            "color_key": "quality_medium"
+          },
+          {
+            "label": "Mediocre",
+            "value": "-108dBm < X < -117dBm",
+            "color_key": "quality_poor"
+          },
+          {
+            "label": "Mauvaise",
+            "value": "> -118 dBm",
+            "color_key": "quality_bad"
+          },
+          {
+            "label": "Inexistante",
+            "value": "Pas de couverture",
+            "color_key": "quality_none"
+          }
+        ]
+      },
+      "pm_table": {
+        "headers": [
+          "Points de mesures",
+          "4G (RSRP/RSRQ/Band)",
+          "5G (RSRP/RSRQ/Band)",
+          "Speedtest DL / UL Mb"
+        ],
+        "col_widths": [
+          130,
+          120,
+          120,
+          120
+        ]
+      },
+      "note_after_pm": "Note : A l issu des releves nous pouvons determiner si le site necessite une couverture pico BTS."
+    },
+    {
+      "id": "mise_en_place",
+      "title": "Mise en place de la solution PICO BTS :",
+      "subsections": [
+        {
+          "id": "local",
+          "num": "3.1.",
+          "title": "Local Technique :",
+          "notes": [
+            "Note : precisez le nombre de U disponibles, nombre de prises electriques.",
+            "S il existe un lien Bytel il faut relever son MSISDN (0842XXXXXX)"
+          ]
+        },
+        {
+          "id": "reporting_photos",
+          "num": "3.2.",
+          "title": "Reporting photos :",
+          "note": "Note : prendre des photos suffisamment larges pour retrouver l emplacement des picos."
+        }
+      ]
+    },
+    {
+      "id": "mise_en_oeuvre",
+      "num": "4.",
+      "title": "Mise en oeuvre :",
+      "note": "Note : Lister les moyens necessaires au deploiement de la solution.",
+      "default_fournitures": [
+        "injecteur POE",
+        "Cablage Ethernet (voir desserte)"
+      ],
+      "outils": "Perforateur + jeu de meches betons / metal + visseuse",
+      "prerequis_client": [
+        {
+          "label": "Besoin de VLAN ?    :",
+          "field": "vlan",
+          "default": "NON"
+        },
+        {
+          "label": "Si oui sur quel port ?:",
+          "field": "vlanPort",
+          "default": "N/A"
+        },
+        {
+          "label": "Solution validee par ?:",
+          "field": "validePar",
+          "default": "M. X"
+        }
+      ]
+    },
+    {
+      "id": "acces",
+      "num": "5.",
+      "title": "Acces site :",
+      "default_text": "RAS"
+    }
+  ]
+}

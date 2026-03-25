@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Générateur de Rapport</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#020817;--card:#0f2040;--border:#1e3a5f;--text:#f1f5f9;--muted:#475569;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;--purple:#7c3aed;--yellow:#f59e0b}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* Layout */
+#app{display:flex;flex-direction:column;min-height:100vh}
+header{background:linear-gradient(135deg,#0c2040,#1a3a60);padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.logo{font-size:22px}
+.header-title{flex:1}
+.header-title h1{font-size:16px;font-weight:800}
+.header-title p{font-size:11px;color:var(--muted)}
+.header-btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600}
+.btn-logout{background:#1e3a5f;color:#93c5fd}
+nav{background:var(--card);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
+.nav-tab{padding:12px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
+.nav-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.nav-tab:hover{color:var(--text)}
+main{flex:1;padding:16px;max-width:900px;margin:0 auto;width:100%}
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+/* Forms */
+.field{margin-bottom:12px}
+label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+input,select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:#0a1628;color:var(--text);font-size:14px;outline:none;font-family:inherit}
+input:focus,select:focus{border-color:var(--blue)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* Buttons */
+.btn{padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.85}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{background:var(--border);color:#93c5fd}
+/* Tech list */
+.tech-item{background:#0a1628;border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.tech-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.tech-name{font-size:14px;font-weight:700}
+.tech-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px}
+.badge-admin{background:#7c3aed22;color:#a78bfa}
+.badge-tech{background:#1e3a5f;color:#64748b}
+.badge-resp{background:#0369a122;color:#38bdf8}
+.toggle{width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--green)}.toggle.off{background:#1e3a5f}
+.toggle::after{content:'';position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+.toggle.on::after{left:21px}.toggle.off::after{left:3px}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:#0a1628;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.stat-n{font-size:28px;font-weight:800;color:var(--blue)}
+.stat-l{font-size:11px;color:var(--muted);margin-top:2px}
+/* Alerts */
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px}
+.alert-ok{background:#052e16;border:1px solid #22c55e40;color:var(--green)}
+.alert-err{background:#450a0a;border:1px solid #ef444440;color:var(--red)}
+.loading{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+/* Password dots */
+.pwd-dots{letter-spacing:4px;font-size:16px}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:16px;font-weight:800;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Login screen -->
+  <div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px">
+    <div style="width:100%;max-width:360px">
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-size:48px;margin-bottom:10px">🔐</div>
+        <div style="font-size:20px;font-weight:800">Interface Admin</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Générateur de Rapport — Bouygues</div>
+      </div>
+      <div class="card">
+        <div class="field"><label>Code administrateur</label>
+          <input type="password" id="login-pwd" placeholder="••••" inputmode="numeric" maxlength="4" autofocus></div>
+        <div id="login-err" class="alert alert-err" style="display:none"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doLogin()">Connexion</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main app -->
+  <div id="main-app" style="display:none">
+    <header>
+      <div class="logo">⚙️</div>
+      <div class="header-title">
+        <h1>Interface Admin</h1>
+        <p>Générateur de Rapport — Bouygues</p>
+      </div>
+      <button class="header-btn btn-logout" onclick="logout()">Déconnexion</button>
+    </header>
+    <nav>
+      <button class="nav-tab active" onclick="showTab('techniciens',this)">👷 Techniciens</button>
+      <button class="nav-tab" onclick="showTab('rapports',this)">📄 Rapports</button>
+      <button class="nav-tab" onclick="showTab('config',this)">🛠 Config</button>
+    </nav>
+    <main id="main-content"></main>
+  </div>
+</div>
+
+<script>
+var API = '../api.php';
+var KEY = (window.APP_API_KEY || localStorage.getItem('__api_key__') || '');
+var COLORS = ['#3b82f6','#22c55e','#f97316','#a855f7','#ef4444','#06b6d4'];
+
+// ── Hash (DJB2 comme l'app) ────────────────────────────────────────────────
+function hashPwd(pwd){
+  var h=5381;
+  for(var i=0;i<pwd.length;i++) h=((h<<5)+h)^pwd.charCodeAt(i);
+  h=h>>>0;
+  var c='0123456789abcdefghijklmnopqrstuvwxyz',n=h,r='';
+  if(!n)return'0';
+  while(n){r=c[n%36]+r;n=Math.floor(n/36);}
+  return r;
+}
+function avatarColor(n){var h=0;for(var i=0;i<(n||'').length;i++)h=(h<<5)-h+n.charCodeAt(i);return COLORS[Math.abs(h)%COLORS.length];}
+function initials(n){return(n||'?').split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase()||'?';}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── API ────────────────────────────────────────────────────────────────────
+async function api(action, method, body){
+  var url = API+'?action='+action+'&k='+KEY;
+  var opts = {method:method||'GET',headers:{'Content-Type':'application/json'}};
+  if(body) opts.body = JSON.stringify(body);
+  var r = await fetch(url, opts);
+  return r.json();
+}
+
+// ── Login ──────────────────────────────────────────────────────────────────
+document.getElementById('login-pwd').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+async function doLogin(){
+  var pwd = document.getElementById('login-pwd').value.trim();
+  if(!pwd){showErr('Code requis');return;}
+  var hash = hashPwd(pwd);
+  // Vérifier contre admin_omar dans la DB
+  var data = await api('get_profiles','GET').catch(function(){ return null; });
+  var profiles = (data&&data.profiles)||[];
+  var admin = profiles.find(function(p){ return p.id==='admin_omar'||p.username==='5671'; });
+  if(!admin){ showErr('Profil admin introuvable'); return; }
+  if(!admin.pwdHash || hash !== admin.pwdHash){ showErr('Code incorrect'); return; }
+  sessionStorage.setItem('admin_auth', hash);
+  showApp();
+}
+
+function showErr(msg){
+  var el=document.getElementById('login-err');
+  el.textContent=msg; el.style.display='block';
+}
+
+function logout(){
+  sessionStorage.removeItem('admin_auth');
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-pwd').value='';
+}
+
+// Check if already logged in
+if(sessionStorage.getItem('admin_auth')){
+  showApp();
+}
+
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  showTab('techniciens', document.querySelector('.nav-tab'));
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
+function showTab(tab, btn){
+  document.querySelectorAll('.nav-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var content = document.getElementById('main-content');
+  content.innerHTML = '<div class="loading">⏳ Chargement...</div>';
+  if(tab==='techniciens') loadTechniciens();
+  if(tab==='rapports') loadRapports();
+  if(tab==='config') loadConfig();
+}
+
+// ── TECHNICIENS ────────────────────────────────────────────────────────────
+var allProfiles = [];
+async function loadTechniciens(){
+  var data = await api('get_profiles','GET');
+  allProfiles = (data&&data.profiles)||[];
+  var techs = allProfiles.filter(function(p){return !p.isAdmin;});
+  var admins = allProfiles.filter(function(p){return p.isAdmin;});
+  var c = document.getElementById('main-content');
+
+  var statsHtml = '<div class="stats">'
+    +'<div class="stat"><div class="stat-n">'+techs.length+'</div><div class="stat-l">Techniciens</div></div>'
+    +'<div class="stat"><div class="stat-n">'+techs.filter(function(p){return p.active!==false;}).length+'</div><div class="stat-l">Actifs</div></div>'
+    +'<div class="stat"><div class="stat-n">'+admins.length+'</div><div class="stat-l">Admins</div></div>'
+    +'</div>';
+
+  var addBtn = '<div style="display:flex;justify-content:flex-end;margin-bottom:12px">'
+    +'<button class="btn btn-green" onclick="showAddModal()">➕ Nouveau technicien</button></div>';
+
+  var techHtml = techs.length===0 ? '<div class="loading">Aucun technicien</div>' :
+    techs.map(function(p){
+      var col = avatarColor(p.name);
+      var role = p.isResponsable ? '<span class="badge badge-resp">Responsable</span>' : '<span class="badge badge-tech">Tech</span>';
+      var active = p.active!==false;
+      return '<div class="tech-item" id="item-'+p.id+'">'
+        +'<div class="tech-avatar" style="background:'+col+'">'+initials(p.name)+'</div>'
+        +'<div style="flex:1">'
+          +'<div class="tech-name">'+esc(p.name)+role+'</div>'
+          +'<div class="tech-meta">🪪 '+esc(p.username||'—')+(p.phone?' · 📞 '+esc(p.phone):'')+'</div>'
+        +'</div>'
+        +'<button class="toggle '+(active?'on':'off')+'" title="'+(active?'Désactiver':'Activer')+'" onclick="toggleActive(\''+p.id+'\','+active+')"></button>'
+        +'<button class="btn btn-ghost" style="padding:6px 10px;margin-left:6px" onclick="editTech(\''+p.id+'\')">✏️</button>'
+        +'<button class="btn btn-red" style="padding:6px 10px;margin-left:6px" onclick="deleteTech(\''+p.id+'\',\''+esc(p.name)+'\')">🗑️</button>'
+      +'</div>';
+    }).join('');
+
+  c.innerHTML = statsHtml + addBtn
+    + '<div class="card"><div class="card-title">👷 Techniciens ('+techs.length+')</div>'+techHtml+'</div>';
+}
+
+async function toggleActive(id, current){
+  var data = await api('get_profiles','GET');
+  var profs = (data&&data.profiles)||[];
+  var updated = profs.map(function(p){
+    if(p.id===id) return Object.assign({},p,{active:!current});
+    return p;
+  });
+  await api('save_profiles','POST',{profiles:updated});
+  loadTechniciens();
+}
+
+async function deleteTech(id, name){
+  if(!confirm('Supprimer "'+name+'" ? Cette action est irréversible.')) return;
+  var data = await api('get_profiles','GET');
+  var profs = (data&&data.profiles)||[];
+  var updated = profs.filter(function(p){return p.id!==id;});
+  await api('save_profiles','POST',{profiles:updated});
+  loadTechniciens();
+}
+
+// ── Modal ajout technicien ────────────────────────────────────────────────
+function showAddModal(editId){
+  var edit = editId ? allProfiles.find(function(p){return p.id===editId;}) : null;
+  var modal = document.createElement('div');
+  modal.className = 'modal-bg';
+  modal.id = 'add-modal';
+  modal.innerHTML = '<div class="modal">'
+    +'<h2>'+(edit?'✏️ Modifier':'➕ Nouveau technicien')+'</h2>'
+    +'<div class="field"><label>Nom complet *</label>'
+    +'<input id="f-name" value="'+(edit?esc(edit.name):'')+'" placeholder="Jean DUPONT"></div>'
+    +'<div class="row">'
+      +'<div class="field"><label>Identifiant *</label>'
+      +'<input id="f-username" value="'+(edit?esc(edit.username||''):'')+'" placeholder="1234" inputmode="numeric"></div>'
+      +'<div class="field"><label>Téléphone</label>'
+      +'<input id="f-phone" value="'+(edit?esc(edit.phone||''):'')+'" placeholder="06 12 34 56 78" type="tel"></div>'
+    +'</div>'
+    +(edit?'<div class="field"><label>Nouveau code (laisser vide = inchangé)</label>'
+      +'<input id="f-pwd" placeholder="4 chiffres" inputmode="numeric" maxlength="4" type="password"></div>'
+    :'<div class="row">'
+      +'<div class="field"><label>Code secret *</label>'
+      +'<input id="f-pwd" placeholder="4 chiffres" inputmode="numeric" maxlength="4" type="password"></div>'
+      +'<div class="field"><label>Confirmer *</label>'
+      +'<input id="f-pwd2" placeholder="4 chiffres" inputmode="numeric" maxlength="4" type="password"></div>'
+    +'</div>')
+    +'<div class="field"><label>Rôle</label>'
+    +'<select id="f-role">'
+      +'<option value="technicien" '+(edit&&edit.isResponsable?'':'selected')+'>👷 Technicien</option>'
+      +'<option value="responsable" '+(edit&&edit.isResponsable?'selected':'')+'>👥 Responsable</option>'
+    +'</select></div>'
+    +'<div class="field"><label>Date d\'expiration</label>'
+    +'<input id="f-expiry" type="date" value="'+(edit&&edit.expiryDate?edit.expiryDate.split('T')[0]:'')+'"></div>'
+    +'<div id="modal-err" class="alert alert-err" style="display:none"></div>'
+    +'<div style="display:flex;gap:10px;margin-top:16px">'
+      +'<button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Annuler</button>'
+      +'<button class="btn btn-green" style="flex:1" onclick="saveProfile('+(edit?'\''+editId+'\'':'null')+')">💾 Enregistrer</button>'
+    +'</div>'
+  +'</div>';
+  document.body.appendChild(modal);
+}
+
+function editTech(id){ showAddModal(id); }
+function closeModal(){ var m=document.getElementById('add-modal'); if(m) m.remove(); }
+
+async function saveProfile(editId){
+  var name = document.getElementById('f-name').value.trim();
+  var username = document.getElementById('f-username').value.trim();
+  var phone = document.getElementById('f-phone').value.trim();
+  var pwd = document.getElementById('f-pwd').value.trim();
+  var pwd2 = editId ? pwd : (document.getElementById('f-pwd2')||{}).value||'';
+  var role = document.getElementById('f-role').value;
+  var expiry = document.getElementById('f-expiry').value;
+
+  if(!name){showModalErr('Nom requis');return;}
+  if(!username){showModalErr('Identifiant requis');return;}
+  if(!editId && !pwd){showModalErr('Code secret requis');return;}
+  if(!editId && pwd!==pwd2){showModalErr('Codes différents');return;}
+  if(pwd && pwd.length<4){showModalErr('Code minimum 4 chiffres');return;}
+
+  // Vérifier unicité login
+  var existing = allProfiles.find(function(p){ return p.username===username && p.id!==editId; });
+  if(existing){showModalErr('Identifiant déjà utilisé');return;}
+
+  var data = await api('get_profiles','GET');
+  var profs = (data&&data.profiles)||[];
+  var newId = editId || ('u_'+Date.now());
+
+  if(editId){
+    profs = profs.map(function(p){
+      if(p.id!==editId) return p;
+      var updated = Object.assign({},p,{
+        name:name, username:username, phone:phone,
+        isResponsable:role==='responsable',
+        expiryDate:expiry||null,
+      });
+      if(pwd) updated.pwdHash = hashPwd(pwd);
+      return updated;
+    });
+  } else {
+    profs.push({
+      id:newId, name:name, username:username, phone:phone,
+      isAdmin:false, isResponsable:role==='responsable',
+      active:true, pwdHash:hashPwd(pwd),
+      needSetup:false, role:role,
+      expiryDate:expiry||null,
+      createdAt:new Date().toISOString(),
+    });
+  }
+
+  var res = await api('save_profiles','POST',{profiles:profs});
+  if(res&&res.ok){
+    closeModal();
+    loadTechniciens();
+  } else {
+    showModalErr('Erreur serveur: '+(res&&res.error||'inconnue'));
+  }
+}
+
+function showModalErr(msg){
+  var el=document.getElementById('modal-err');
+  el.textContent=msg; el.style.display='block';
+}
+
+// ── RAPPORTS ───────────────────────────────────────────────────────────────
+async function loadRapports(){
+  var data = await api('list_rapports','GET').catch(function(){return null;});
+  var rapports = (data&&data.rapports)||[];
+  var c = document.getElementById('main-content');
+  if(rapports.length===0){
+    c.innerHTML='<div class="card"><div class="card-title">📄 Rapports</div><div class="loading">Aucun rapport</div></div>';
+    return;
+  }
+  var html = rapports.slice(0,50).map(function(r){
+    var garde = r.garde||{};
+    var colors = {audit:'#3b82f6',doe:'#22c55e',antenne:'#f97316',audit_cradlepoint:'#f59e0b'};
+    var col = colors[r.type]||'#475569';
+    var statusColor = r.status==='Terminé' ? '#22c55e' : '#f59e0b';
+    return '<div style="background:#0a1628;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px">'
+      +'<div style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0"></div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(garde.raisonSociale||r.id)+'</div>'
+        +'<div style="font-size:11px;color:var(--muted)">'+(garde.date||'')+(garde.ot?' · OT '+garde.ot:'')+(garde.technicien?' · '+garde.technicien:'')+'</div>'
+      +'</div>'
+      +'<div style="font-size:10px;font-weight:700;color:'+statusColor+';flex-shrink:0">'+(r.status||'En cours')+'</div>'
+    +'</div>';
+  }).join('');
+  c.innerHTML = '<div class="card"><div class="card-title">📄 Rapports ('+rapports.length+')</div>'+html+'</div>';
+}
+
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+function loadConfig(){
+  var c = document.getElementById('main-content');
+  c.innerHTML = '<div class="card"><div class="card-title">🛠 Configuration</div>'
+    +'<div class="field"><label>Changer le mot de passe admin</label>'
+    +'<input id="cfg-pwd1" type="password" placeholder="Nouveau code (4 chiffres)" inputmode="numeric" maxlength="4">'
+    +'</div>'
+    +'<div class="field">'
+    +'<input id="cfg-pwd2" type="password" placeholder="Confirmer le code" inputmode="numeric" maxlength="4">'
+    +'</div>'
+    +'<div id="cfg-msg" style="font-size:12px;margin-bottom:8px;min-height:18px"></div>'
+    +'<button class="btn btn-primary" onclick="changePwd()">💾 Changer le mot de passe</button>'
+    +'</div>'
+    +'<div class="card"><div class="card-title">🔗 Accès rapide</div>'
+    +'<p style="font-size:13px;color:var(--muted);margin-bottom:10px">Liens utiles :</p>'
+    +'<a href="../" style="display:block;padding:10px 14px;background:#0a1628;border:1px solid var(--border);border-radius:8px;color:var(--blue);font-size:13px;text-decoration:none;margin-bottom:6px">🏠 Retour à l\'application principale</a>'
+    +'<div style="display:block;padding:10px 14px;background:#0a1628;border:1px solid var(--border);border-radius:8px;color:#94a3b8;font-size:13px">🗄️ Reset DB désactivé en version finale</div>'
+    +'</div>';
+}
+
+async function changePwd(){
+  var p1=document.getElementById('cfg-pwd1').value.trim();
+  var p2=document.getElementById('cfg-pwd2').value.trim();
+  var msg=document.getElementById('cfg-msg');
+  if(!p1||p1.length<4){msg.style.color='#ef4444';msg.textContent='Code minimum 4 chiffres';return;}
+  if(p1!==p2){msg.style.color='#ef4444';msg.textContent='Codes différents';return;}
+  var data = await api('get_profiles','GET');
+  var profs = (data&&data.profiles)||[];
+  var updated = profs.map(function(p){
+    if(p.id==='admin_omar') return Object.assign({},p,{pwdHash:hashPwd(p1)});
+    return p;
+  });
+  var res = await api('save_profiles','POST',{profiles:updated});
+  if(res&&res.ok){msg.style.color='#22c55e';msg.textContent='✅ Mot de passe modifié';}
+  else{msg.style.color='#ef4444';msg.textContent='Erreur serveur';}
+}
+
+// Fix js syntax error in rapports
+</script>
+</body>
+</html>

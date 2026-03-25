@@ -1,0 +1,107 @@
+{
+  "_comment": "Template Audit Antenne Deportee",
+  "meta": {
+    "id": "antenne",
+    "title": "Audit antenne deportee",
+    "subtitle": "4G/5G MIMO",
+    "filename": "Audit_Antenne_Deportee",
+    "confidentiel": "Sogetrel - Bouygues Telecom - Confidentiel"
+  },
+  "colors": {
+    "cover_bg": "#002060",
+    "header_bg": "#002060",
+    "section_bg": "#7C2D12",
+    "accent": "#F97316",
+    "sogetrel_blue": "#1B4480",
+    "prereq_ok": "#22C55E",
+    "prereq_nok": "#EF4444",
+    "group_antenne": "#052010",
+    "group_routeur": "#000A18"
+  },
+  "toc": [
+    {
+      "num": "1.",
+      "title": "Preambule",
+      "page": "3"
+    },
+    {
+      "num": "2.",
+      "title": "Outils de mesures",
+      "page": "3"
+    },
+    {
+      "num": "3.",
+      "title": "Prerequis techniques",
+      "page": "4"
+    },
+    {
+      "num": "4.",
+      "title": "Mesures radio",
+      "page": "5"
+    },
+    {
+      "num": "5.",
+      "title": "Plan et cheminement",
+      "page": "6"
+    },
+    {
+      "num": "6.",
+      "title": "Conclusion et mise en oeuvre",
+      "page": "7"
+    },
+    {
+      "num": "7.",
+      "title": "Photos",
+      "page": "8"
+    }
+  ],
+  "preambule": {
+    "text": "Audit de faisabilite pour le deploiement d'une antenne 4G deportee MIMO. Verification de la couverture signal et validation technique de l'installation."
+  },
+  "mesures_table": {
+    "headers": [
+      "Operateur",
+      "Band",
+      "eNB",
+      "LCID",
+      "RSRP",
+      "RSRQ",
+      "SNR",
+      "UL",
+      "DL",
+      "Ping"
+    ],
+    "fields": [
+      "operateur",
+      "band",
+      "enb",
+      "lcid",
+      "rsrp",
+      "rsrq",
+      "snr",
+      "ul",
+      "dl",
+      "ping"
+    ],
+    "groups": [
+      {
+        "label": "Emplacement antenne externe (3 tests)",
+        "rows": "0-2",
+        "color": "#042210"
+      },
+      {
+        "label": "Emplacement routeur (3 tests)",
+        "rows": "3-5",
+        "color": "#040A28"
+      }
+    ]
+  },
+  "prereqs": [
+    "Qualite signal 4G (RSRQ > -14dBm)",
+    "Reception 4G outdoor > -105dBm",
+    "Ecart debit indoor/outdoor > 2Mbps",
+    "Distance routeur/antenne externe <= 30m",
+    "Positionnement antenne valide avec client",
+    "Autorisations administratives gerees client"
+  ]
+}

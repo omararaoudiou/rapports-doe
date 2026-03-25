@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "audit_travaux",
+    "title": "Audit Travaux Chantier"
+  },
+  "colors": {
+    "primary": "#0F2040",
+    "accent": "#F59E0B",
+    "success": "#22C55E",
+    "danger": "#DC2626"
+  },
+  "sections": [
+    "garde",
+    "description",
+    "site",
+    "acces",
+    "travaux",
+    "cheminement",
+    "terrassement",
+    "equipements",
+    "moyens",
+    "contraintes",
+    "securite",
+    "photos",
+    "conclusion",
+    "estimate",
+    "planning",
+    "signature"
+  ]
+}

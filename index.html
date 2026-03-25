@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+  <!-- PWA / Add to Home Screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Gen. Rapport"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="application-name" content="Gen. Rapport"/>
+  <meta name="theme-color" content="#0f2040"/>
+  <meta name="description" content="Audit de couverture mobile PICO BTS — Bouygues"/>
+  <!-- Manifest PWA inline -->
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkF1ZGl0IFBJQ08gQlRTIFx1MjAxNCBTb2dldHJlbCIsICJzaG9ydF9uYW1lIjogIkF1ZGl0IFBJQ08iLCAiZGVzY3JpcHRpb24iOiAiQXBwbGljYXRpb24gZCdhdWRpdCBkZSBjb3V2ZXJ0dXJlIG1vYmlsZSBQSUNPIEJUUyIsICJzdGFydF91cmwiOiAiLi8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0IiwgImJhY2tncm91bmRfY29sb3IiOiAiIzAyMDgxNyIsICJ0aGVtZV9jb2xvciI6ICIjMGYyMDQwIiwgImljb25zIjogW3sic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIWnBaWGRDYjNnOUlqQWdNQ0F4T1RJZ01Ua3lJajRLSUNBOGNtVmpkQ0IzYVdSMGFEMGlNVGt5SWlCb1pXbG5hSFE5SWpFNU1pSWdjbmc5SWpNeUlpQm1hV3hzUFNJak1ESXdPREUzSWk4K0NpQWdQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUhKNFBTSXpNaUlnWm1sc2JEMGlkWEpzS0NOaVp5a2lMejRLSUNBOFpHVm1jejRLSUNBZ0lEeHNhVzVsWVhKSGNtRmthV1Z1ZENCcFpEMGlZbWNpSUhneFBTSXdJaUI1TVQwaU1DSWdlREk5SWpFaUlIa3lQU0l4SWo0S0lDQWdJQ0FnUEhOMGIzQWdiMlptYzJWMFBTSXdKU0lnYzNSdmNDMWpiMnh2Y2owaUl6Qm1NakEwTUNJdlBnb2dJQ0FnSUNBOGMzUnZjQ0J2Wm1aelpYUTlJakV3TUNVaUlITjBiM0F0WTI5c2IzSTlJaU14WlROaE5XWWlMejRLSUNBZ0lEd3ZiR2x1WldGeVIzSmhaR2xsYm5RK0NpQWdQQzlrWldaelBnb2dJRHgwWlhoMElIZzlJamsySWlCNVBTSXhNekFpSUdadmJuUXRjMmw2WlQwaU1UQXdJaUIwWlhoMExXRnVZMmh2Y2owaWJXbGtaR3hsSWlCbWIyNTBMV1poYldsc2VUMGljM2x6ZEdWdExYVnBJajd3bjVPaFBDOTBaWGgwUGdvOEwzTjJaejQ9IiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn0sIHsic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIWnBaWGRDYjNnOUlqQWdNQ0F4T1RJZ01Ua3lJajRLSUNBOGNtVmpkQ0IzYVdSMGFEMGlNVGt5SWlCb1pXbG5hSFE5SWpFNU1pSWdjbmc5SWpNeUlpQm1hV3hzUFNJak1ESXdPREUzSWk4K0NpQWdQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUhKNFBTSXpNaUlnWm1sc2JEMGlkWEpzS0NOaVp5a2lMejRLSUNBOFpHVm1jejRLSUNBZ0lEeHNhVzVsWVhKSGNtRmthV1Z1ZENCcFpEMGlZbWNpSUhneFBTSXdJaUI1TVQwaU1DSWdlREk5SWpFaUlIa3lQU0l4SWo0S0lDQWdJQ0FnUEhOMGIzQWdiMlptYzJWMFBTSXdKU0lnYzNSdmNDMWpiMnh2Y2owaUl6Qm1NakEwTUNJdlBnb2dJQ0FnSUNBOGMzUnZjQ0J2Wm1aelpYUTlJakV3TUNVaUlITjBiM0F0WTI5c2IzSTlJaU14WlROaE5XWWlMejRLSUNBZ0lEd3ZiR2x1WldGeVIzSmhaR2xsYm5RK0NpQWdQQzlrWldaelBnb2dJRHgwWlhoMElIZzlJamsySWlCNVBTSXhNekFpSUdadmJuUXRjMmw2WlQwaU1UQXdJaUIwWlhoMExXRnVZMmh2Y2owaWJXbGtaR3hsSWlCbWIyNTBMV1poYldsc2VUMGljM2x6ZEdWdExYVnBJajd3bjVPaFBDOTBaWGgwUGdvOEwzTjJaejQ9IiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ=="/>
+  <!-- iOS icon inline -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj4KICA8cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjMyIiBmaWxsPSIjMDIwODE3Ii8+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIzMiIgZmlsbD0idXJsKCNiZykiLz4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMjA0MCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxZTNhNWYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDx0ZXh0IHg9Ijk2IiB5PSIxMzAiIGZvbnQtc2l6ZT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIj7wn5OhPC90ZXh0Pgo8L3N2Zz4="/>
+  <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj4KICA8cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjMyIiBmaWxsPSIjMDIwODE3Ii8+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIzMiIgZmlsbD0idXJsKCNiZykiLz4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMjA0MCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxZTNhNWYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDx0ZXh0IHg9Ijk2IiB5PSIxMzAiIGZvbnQtc2l6ZT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIj7wn5OhPC90ZXh0Pgo8L3N2Zz4="/>
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj4KICA8cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjMyIiBmaWxsPSIjMDIwODE3Ii8+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIzMiIgZmlsbD0idXJsKCNiZykiLz4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMjA0MCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxZTNhNWYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDx0ZXh0IHg9Ijk2IiB5PSIxMzAiIGZvbnQtc2l6ZT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIj7wn5OhPC90ZXh0Pgo8L3N2Zz4="/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj4KICA8cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjMyIiBmaWxsPSIjMDIwODE3Ii8+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIzMiIgZmlsbD0idXJsKCNiZykiLz4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMjA0MCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxZTNhNWYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDx0ZXh0IHg9Ijk2IiB5PSIxMzAiIGZvbnQtc2l6ZT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIj7wn5OhPC90ZXh0Pgo8L3N2Zz4="/>
+  <title>Generateur de Rapport — Bouygues</title>
+  <style>
+  :root {
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left:   env(safe-area-inset-left,   0px);
+    --safe-right:  env(safe-area-inset-right,  0px);
+    --tab-height:  calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #020817;
+    width: 100%; overflow-x: hidden;
+  }
+  #root { min-height: 100dvh; width: 100%; }
+
+  /* Espace en haut pour la barre de statut Android (heure, batterie...) */
+  .audit-root {
+    padding-top: max(env(safe-area-inset-top, 0px), 28px);
+  }
+
+  /* ── PORTRAIT : centré, max 430px ── */
+  /* Bottom nav bar — au-dessus des contrôles système Android */
+  .audit-tab-bar-fixed {
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important;
+    z-index: 1000;
+    border-top: 2px solid #1e3a5f !important;
+    border-bottom: none !important;
+    /* Marge sous la barre : safe-area si dispo, sinon 52px (barre nav Samsung) */
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 52px) !important;
+  }
+
+  @media (orientation: portrait) {
+    .audit-root {
+      max-width: 430px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .audit-tab-bar-fixed {
+      max-width: 430px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Contenu : espace en bas pour la barre carrousel */
+  .audit-content-area {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 8px));
+  }
+
+  /* ── PAYSAGE : pleine largeur ── */
+  @media (orientation: landscape) {
+    .audit-root {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    /* Barre d'onglets en bas pleine largeur */
+    .audit-tab-bar-fixed {
+      max-width: 100% !important;
+      left: 0 !important;
+      right: 0 !important;
+      transform: none !important;
+    }
+    /* Tableau PM s'étale */
+    table { min-width: unset !important; width: 100%; }
+    /* Grille rapports 2 colonnes */
+    .audit-list-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    /* Contenu rapport: padding latéral */
+    .audit-section-content {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+
+  /* ── Scrollbar fine ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 4px; }
+</style>
+</head>
+<body>
+<script>
+// Force désinstallation du service worker et rechargement propre
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(reg) { reg.unregister(); });
+  });
+}
+</script>
+  <div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#020817;color:#475569;font-family:system-ui;font-size:14px;flex-direction:column;gap:12px"><div style="font-size:36px">📡</div><div>Chargement...</div></div></div>
+<script>
+
+
+
+// Global error handler - catches any JS error
+if (window.addEventListener) {
+  window.addEventListener('error', function(event) {
+    var err = event.error || {};
+    var msg = (err.message || event.message || 'Erreur inconnue');
+    var stack = (err.stack || '').split('\n').slice(0, 12).join('\n');
+    var el = document.getElementById('root') || document.body;
+    if (el) el.innerHTML =
+      '<div style="color:#ef4444;padding:20px;font-family:monospace;background:#020817;min-height:100vh;word-break:break-all;font-size:13px">' +
+      '<div style="font-size:18px;font-weight:bold;margin-bottom:16px">⚠️ Erreur JavaScript au démarrage</div>' +
+      '<div style="background:#300;border:1px solid #ef4444;border-radius:8px;padding:14px;margin-bottom:14px;font-size:14px">' + msg + '</div>' +
+      '<pre style="font-size:10px;color:#94a3b8;white-space:pre-wrap;background:#111;padding:12px;border-radius:6px;overflow:auto;max-height:400px">' + stack + '</pre>' +
+      '<br><button onclick="location.reload()" style="background:#3b82f6;color:#fff;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700">🔄 Recharger</button>' +
+      '</div>';
+  });
+  window.addEventListener('unhandledrejection', function(event) {
+    var reason = event.reason;
+    var msg = reason ? (reason.message || String(reason)) : 'Promise rejetee';
+    if (msg.indexOf('no real file') >= 0 || msg.indexOf('fetch') >= 0) return;
+    console.error('Unhandled promise:', msg);
+  });
+}
+/* ── Browser globals polyfill (for compatibility) ── */
+if (typeof HTMLElement === 'undefined') { window.HTMLElement = function(){}; }
+if (typeof HTMLIFrameElement === 'undefined') { window.HTMLIFrameElement = function(){}; }
+if (typeof HTMLInputElement === 'undefined') { window.HTMLInputElement = function(){}; }
+if (typeof HTMLTextAreaElement === 'undefined') { window.HTMLTextAreaElement = function(){}; }
+if (typeof HTMLButtonElement === 'undefined') { window.HTMLButtonElement = function(){}; }
+if (typeof HTMLSelectElement === 'undefined') { window.HTMLSelectElement = function(){}; }
+if (typeof Node === 'undefined') { window.Node = { ELEMENT_NODE:1, TEXT_NODE:3, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_FRAGMENT_NODE:11 }; }
+if (typeof SVGElement === 'undefined') { window.SVGElement = function(){}; }
+
+/* ── pdf-lib ── */
+</script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" crossorigin="anonymous"></script>
+  <!-- React is included in react-bundle.js (bundled with app) -->
+<script src="lib-custom.js?v=final20260323"></script>
+<script src="qr_api.js"></script>
+<script src="templates.js?v=final20260323"></script>
+<script src="pdf_v2.js?v=final20260323"></script>
+<script src="word.js?v=final20260323"></script>
+<script src="cradlepoint_report.js?v=final20260323"></script>
+<!-- ═══ Templates rapport (modifier ici pour changer la mise en page) ═══ -->
+<!-- ═══ Modules de l'application ═══ -->
+<script src="signal.js?v=final20260323"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="react-bundle.js?v=final20260323"></script>
+<script src="infou_form.js?v=final20260323"></script>
+<script src="photo_annotator.js?v=final20260323"></script>
+<script src="sync.js?v=final20260323"></script>
+<script src="ui-shared-v3.js?v=final20260323"></script>
+<script src="antenne.js?v=final20260323"></script>
+<script src="infou_mise_en_place.js?v=final20260323"></script>
+<script src="app-core.js?v=final20260323"></script>
+<script>
+
+
+/* ── PWA Service Worker + Install Prompt ── */
+if ('serviceWorker' in navigator) {
+  // Register inline service worker via blob
+  var swCode = [
+    'var CACHE="audit-pico-final-v1";',
+    'var CDN=[',
+    '  "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",',
+    '  "https://cdn.jsdelivr.net/npm/react@19/umd/react.production.min.js",',
+    '  "https://cdn.jsdelivr.net/npm/react-dom@19/umd/react-dom.production.min.js"',
+    '];',
+    'self.addEventListener("install",function(e){',
+    '  e.waitUntil(caches.open(CACHE).then(function(c){',
+    '    return c.addAll(["./","./index.html","./signal.js","./react-bundle.js","./sync.js?v=final20260323","./ui-shared-v3.js?v=final20260323","./antenne.js","./app-core.js?v=final20260323","./pdf_v2.js?v=final20260323","./qr_api.js","./lib-custom.js?v=final20260323"].concat(CDN));',
+    '  }).catch(function(){}));',
+    '  self.skipWaiting();',
+    '});',
+    'self.addEventListener("activate",function(e){',
+    '  e.waitUntil(clients.claim());',
+    '});',
+    'self.addEventListener("fetch",function(e){',
+    '  e.respondWith(caches.match(e.request).then(function(r){',
+    '    return r || fetch(e.request).catch(function(){',
+    '      return caches.match("./");',
+    '    });',
+    '  }));',
+    '});'
+  ].join('\n');
+  try {
+    var swBlob = new Blob([swCode], {type:'application/javascript'});
+    var swUrl = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(function(){});
+  } catch(e) {}
+}
+
+/* Store install prompt for later use */
+window._pwaInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  window._pwaInstallPrompt = e;
+  // Dispatch event so app can show install button
+  window.dispatchEvent(new CustomEvent('pwa-installable'));
+});
+window.addEventListener('appinstalled', function() {
+  window._pwaInstallPrompt = null;
+});
+
+/* Helper to trigger install */
+window.triggerPWAInstall = function() {
+  if (window._pwaInstallPrompt) {
+    window._pwaInstallPrompt.prompt();
+    window._pwaInstallPrompt.userChoice.then(function(r) {
+      window._pwaInstallPrompt = null;
+    });
+    return true;
+  }
+  return false; // Not available (iOS or already installed)
+};
+
+
+</script>
+<script>
+(function() {
+  function applyBottomInset() {
+    var inset = 0;
+    // Method 1: CSS env() via a test element
+    var test = document.createElement('div');
+    test.style.cssText = 'position:fixed;bottom:env(safe-area-inset-bottom,0px);height:0;width:0;visibility:hidden;';
+    document.body.appendChild(test);
+    var envVal = parseInt(window.getComputedStyle(test).bottom) || 0;
+    document.body.removeChild(test);
+    
+    // Method 2: visualViewport height difference
+    if (window.visualViewport) {
+      var diff = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
+      if (diff > 0) inset = Math.max(inset, diff);
+    }
+    
+    // Method 3: window height vs screen height ratio
+    var navBarH = window.screen.height - window.innerHeight;
+    if (navBarH > 20 && navBarH < 200) inset = Math.max(inset, navBarH);
+    
+    // Use env() value if available, otherwise our calculation
+    var final = Math.max(envVal, inset, 0);
+    
+    document.documentElement.style.setProperty('--safe-bottom', final + 'px');
+    document.documentElement.style.setProperty('--tab-height', (56 + final) + 'px');
+  }
+  
+  applyBottomInset();
+  window.addEventListener('resize', applyBottomInset);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', applyBottomInset);
+  }
+  // Re-apply after page load
+  window.addEventListener('load', applyBottomInset);
+  setTimeout(applyBottomInset, 500);
+  setTimeout(applyBottomInset, 1500);
+})();
+</script>
+</body>
+</html>

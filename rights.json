@@ -1,0 +1,25 @@
+{
+  "roles": {
+    "admin": {
+      "canResetDevices": true,
+      "canEditCompanies": true,
+      "canEditUsers": true,
+      "canEditReports": true,
+      "canViewAllReports": true
+    },
+    "referent": {
+      "canResetDevices": false,
+      "canEditCompanies": false,
+      "canEditUsers": false,
+      "canEditReports": true,
+      "canViewAssignedReports": true
+    },
+    "technicien": {
+      "canResetDevices": false,
+      "canEditCompanies": false,
+      "canEditUsers": false,
+      "canEditReports": true,
+      "canViewAssignedReports": false
+    }
+  }
+}

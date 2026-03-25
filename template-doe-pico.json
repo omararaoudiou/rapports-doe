@@ -1,0 +1,103 @@
+{
+  "_comment": "Template DOE PICO BTS — identique Audit sauf titre et sections specifiques",
+  "meta": {
+    "id": "doe",
+    "title": "DOE de couverture mobile",
+    "subtitle": "PICO BTS",
+    "filename": "DOE_PICO_BTS",
+    "confidentiel": "Sogetrel - Bouygues Telecom - Confidentiel"
+  },
+  "inherits": "audit-pico",
+  "colors": {
+    "cover_bg": "#002060",
+    "header_bg": "#002060",
+    "section_bg": "#1B4480",
+    "accent": "#FE7800",
+    "sogetrel_blue": "#1B4480",
+    "pico_ok": "#22C55E",
+    "pico_ko": "#EF4444",
+    "pico_pending": "#F59E0B"
+  },
+  "toc": [
+    {
+      "num": "1.",
+      "title": "Preambule",
+      "page": "3"
+    },
+    {
+      "num": "2.",
+      "title": "Outil de mesures / Tests",
+      "page": "3"
+    },
+    {
+      "num": "3.",
+      "title": "Plan du site et cheminement cables",
+      "page": "4"
+    },
+    {
+      "num": "4.",
+      "title": "Statut des PICO BTS",
+      "page": "5"
+    },
+    {
+      "num": "5.",
+      "title": "Releves de mesures radio",
+      "page": "6"
+    },
+    {
+      "num": "6.",
+      "title": "Mise en oeuvre :",
+      "page": "7"
+    },
+    {
+      "num": "7.",
+      "title": "DOE - Reste a faire",
+      "page": "8"
+    }
+  ],
+  "pico_table": {
+    "title": "Statut des PICO BTS et mesures radio",
+    "headers": [
+      "N° PICO",
+      "IMEI",
+      "S/N",
+      "MAC",
+      "Statut",
+      "PCI",
+      "Emplacement"
+    ],
+    "col_widths": [
+      45,
+      95,
+      80,
+      90,
+      50,
+      40,
+      80
+    ]
+  },
+  "mesures_table": {
+    "headers": [
+      "Point",
+      "4G RSRP",
+      "4G RSRQ",
+      "4G Band",
+      "5G RSRP",
+      "5G SNR",
+      "DL Mbps",
+      "UL Mbps",
+      "Ping"
+    ],
+    "col_widths": [
+      48,
+      60,
+      60,
+      60,
+      60,
+      55,
+      55,
+      55,
+      50
+    ]
+  }
+}

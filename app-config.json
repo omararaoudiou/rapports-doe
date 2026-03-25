@@ -1,0 +1,7 @@
+{
+  "apiUrl": "./api.php",
+  "apiKey": "CHANGE_ME_API_KEY",
+  "syncMode": "auto",
+  "syncTimeoutMs": 15000,
+  "adminFolder": "adm5671"
+}

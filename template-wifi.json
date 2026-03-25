@@ -1,0 +1,117 @@
+{
+  "_comment": "Template Audit WIFI",
+  "meta": {
+    "id": "audit_wifi",
+    "title": "Audit deploiement",
+    "subtitle": "WIFI",
+    "filename": "Audit_WIFI",
+    "confidentiel": "Sogetrel - Bouygues Telecom - Confidentiel"
+  },
+  "colors": {
+    "cover_bg": "#002060",
+    "section_bg": "#0E7480",
+    "accent": "#06B6D4",
+    "wifi_blue": "#06B6D4"
+  },
+  "toc": [
+    {
+      "num": "1.",
+      "title": "Preambule",
+      "page": "3"
+    },
+    {
+      "num": "2.",
+      "title": "Outils de mesures",
+      "page": "3"
+    },
+    {
+      "num": "3.",
+      "title": "Inventaire bornes",
+      "page": "4"
+    },
+    {
+      "num": "4.",
+      "title": "Mesures signal WIFI",
+      "page": "5"
+    },
+    {
+      "num": "5.",
+      "title": "Conclusion",
+      "page": "6"
+    },
+    {
+      "num": "6.",
+      "title": "Photos",
+      "page": "7"
+    }
+  ],
+  "preambule": {
+    "text": "Audit de deploiement de bornes WIFI pour amelioration de la connectivite interieure. Releves de couverture et mesures de performance."
+  },
+  "bornes_table": {
+    "title": "Inventaire des bornes WIFI",
+    "headers": [
+      "N° Borne",
+      "S/N",
+      "MAC",
+      "Hauteur",
+      "Cablage",
+      "N°Prise",
+      "Emplacement"
+    ],
+    "col_widths": [
+      50,
+      80,
+      90,
+      55,
+      55,
+      50,
+      100
+    ]
+  },
+  "mesures_table": {
+    "title": "Mesures signal WIFI",
+    "headers": [
+      "Point",
+      "Borne",
+      "SSID",
+      "RSSI",
+      "Canal",
+      "UL",
+      "DL",
+      "Ping"
+    ],
+    "fields": [
+      "label",
+      "borne",
+      "ssid",
+      "rssi",
+      "channel",
+      "ul",
+      "dl",
+      "ping"
+    ],
+    "quality_scale": [
+      {
+        "label": "Excellent",
+        "threshold": -60,
+        "color": "#93D051"
+      },
+      {
+        "label": "Bon",
+        "threshold": -70,
+        "color": "#FFC000"
+      },
+      {
+        "label": "Moyen",
+        "threshold": -80,
+        "color": "#FF8000"
+      },
+      {
+        "label": "Faible",
+        "threshold": -999,
+        "color": "#FF0000"
+      }
+    ]
+  }
+}

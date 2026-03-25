@@ -1,0 +1,143 @@
+{
+  "_comment": "Template Audit Starlink / Cradlepoint — Projets INFO U",
+  "meta": {
+    "id": "audit_starlink",
+    "title": "Audit installation",
+    "subtitle": "STARLINK / INFO U",
+    "filename": "Audit_Starlink",
+    "confidentiel": "Sogetrel - Bouygues Telecom - Confidentiel"
+  },
+  "colors": {
+    "cover_bg": "#002060",
+    "section_bg": "#78350F",
+    "accent": "#EAB308",
+    "bytel_blue": "#005BBB",
+    "orange_telec": "#EA580C",
+    "starlink_gold": "#EAB308"
+  },
+  "projet_types": {
+    "aerien": "Sogetrel / MagasinU realise les travaux",
+    "u_tech": "Projet V2 U-TECH — Sogetrel assure l'installation",
+    "schiever_crea": "Travaux a realiser a 100% par Sogetrel"
+  },
+  "toc": [
+    {
+      "num": "1.",
+      "title": "Preambule",
+      "page": "3"
+    },
+    {
+      "num": "2.",
+      "title": "Prerequis techniques",
+      "page": "3"
+    },
+    {
+      "num": "3.",
+      "title": "Mesures comparatives Bouygues/Orange",
+      "page": "4"
+    },
+    {
+      "num": "4.",
+      "title": "Mesures Starlink",
+      "page": "5"
+    },
+    {
+      "num": "5.",
+      "title": "Mise en oeuvre et fournitures",
+      "page": "6"
+    },
+    {
+      "num": "6.",
+      "title": "Photos",
+      "page": "7"
+    }
+  ],
+  "preambule": {
+    "starlink": "Audit de faisabilite pour l'installation d'une antenne satellite Starlink dans le cadre du programme INFO U. Verification des prerequis structuraux, test d'obstruction et mesures comparatives de couverture mobile.",
+    "cradlepoint": "Audit de deploiement d'une solution Cradlepoint 4G/5G. Releve des niveaux de couverture operateurs et validation technique de l'installation."
+  },
+  "comparative_table": {
+    "title": "Mesures comparatives operateurs",
+    "op1": {
+      "label": "BOUYGUES TELECOM",
+      "color": "#005BBB",
+      "fields": [
+        "op_bytel_rsrp",
+        "op_bytel_rsrq",
+        "op_bytel_snr",
+        "op_bytel_dl",
+        "op_bytel_ul"
+      ]
+    },
+    "op2": {
+      "label": "ORANGE",
+      "color": "#EA580C",
+      "fields": [
+        "op_orange_rsrp",
+        "op_orange_rsrq",
+        "op_orange_snr",
+        "op_orange_dl",
+        "op_orange_ul"
+      ]
+    },
+    "col_headers": [
+      "RSRP",
+      "RSRQ",
+      "SNR",
+      "DL",
+      "UL"
+    ]
+  },
+  "mesures_starlink": {
+    "headers": [
+      "Test",
+      "Band",
+      "RSSI",
+      "Latence",
+      "UL Mbps",
+      "DL Mbps",
+      "Ping"
+    ],
+    "fields": [
+      "label",
+      "band",
+      "rsrp",
+      "latence",
+      "ul",
+      "dl",
+      "ping"
+    ]
+  },
+  "fournitures_defaults": [
+    {
+      "label": "Kit Starlink Standard / Flat HP",
+      "qty": "1",
+      "unite": "u"
+    },
+    {
+      "label": "Mat autostable 2m",
+      "qty": "1",
+      "unite": "u"
+    },
+    {
+      "label": "Gaine fendue 35mm",
+      "qty": "",
+      "unite": "m"
+    },
+    {
+      "label": "Cheville + vis acier inox",
+      "qty": "6",
+      "unite": "u"
+    },
+    {
+      "label": "Manchon lest beton",
+      "qty": "1",
+      "unite": "u"
+    },
+    {
+      "label": "Chemin de cable / colliers",
+      "qty": "",
+      "unite": "lot"
+    }
+  ]
+}

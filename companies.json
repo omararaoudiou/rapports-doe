@@ -1,0 +1,24 @@
+{
+  "companies": [
+    {
+      "id": "sogetrel",
+      "name": "Sogetrel",
+      "logo": "sogetrel.png",
+      "phone": "",
+      "email": "",
+      "direction": "",
+      "ocrProfile": "sogetrel",
+      "enabled": true
+    },
+    {
+      "id": "bugbusters",
+      "name": "Bugbusters",
+      "logo": "bugbusters.png",
+      "phone": "",
+      "email": "",
+      "direction": "",
+      "ocrProfile": "bugbusters",
+      "enabled": true
+    }
+  ]
+}

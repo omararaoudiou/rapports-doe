@@ -1,0 +1,70 @@
+{
+  "users": [
+    {
+      "id": "admin-001",
+      "username": "admin",
+      "role": "admin",
+      "assignedCompanies": [
+        "sogetrel",
+        "bugbusters"
+      ],
+      "devices": {
+        "mobile": {
+          "deviceId": "",
+          "name": "",
+          "type": "mobile"
+        },
+        "desktop": {
+          "deviceId": "",
+          "name": "",
+          "type": "desktop"
+        }
+      }
+    },
+    {
+      "id": "ref-001",
+      "username": "julien",
+      "role": "referent",
+      "managedTechnicians": [
+        "tech-001"
+      ],
+      "assignedCompanies": [
+        "sogetrel"
+      ],
+      "devices": {
+        "mobile": {
+          "deviceId": "",
+          "name": "",
+          "type": "mobile"
+        },
+        "desktop": {
+          "deviceId": "",
+          "name": "",
+          "type": "desktop"
+        }
+      }
+    },
+    {
+      "id": "tech-001",
+      "username": "emmanuel",
+      "role": "technicien",
+      "referentId": "ref-001",
+      "assignedCompanies": [
+        "sogetrel",
+        "bugbusters"
+      ],
+      "devices": {
+        "mobile": {
+          "deviceId": "",
+          "name": "",
+          "type": "mobile"
+        },
+        "desktop": {
+          "deviceId": "",
+          "name": "",
+          "type": "desktop"
+        }
+      }
+    }
+  ]
+}
